@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal WebGIS | ENGEFORM & SABESP - Lote 4 Itapetininga</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet GIS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Portal Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation Bar - ENGEFORM & SABESP Theme -->
+    <header id="app-header">
+        <div class="brand-container">
+            <!-- Engeform Official Logo -->
+            <div class="engeform-logo-box">
+                <img src="img/engeform_logo.png" alt="ENGEFORM ENGENHARIA" class="engeform-logo-img">
+            </div>
+
+            <div class="brand-divider"></div>
+
+            <!-- Sabesp & Project Titles -->
+            <div>
+                <h1 class="brand-title">ENGEFORM | SABESP WebGIS</h1>
+                <p class="brand-subtitle">Universalização • Acompanhamento de Obras • Lote 4 - Itapetininga</p>
+            </div>
+        </div>
+
+        <!-- Global Search Bar -->
+        <div class="header-search">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="global-search" placeholder="Pesquisar por Bairro, AE_ID, Município..." autocomplete="off">
+            <div id="search-dropdown" class="search-results-dropdown"></div>
+        </div>
+
+        <!-- Header Action Controls -->
+        <div class="header-actions">
+            <button id="btn-open-metas-header" class="btn-header" style="background: rgba(2, 132, 199, 0.2); border-color: #0284c7; color: #38bdf8;">
+                <i class="fas fa-bullseye"></i> Metas de Economias
+            </button>
+
+            <button id="btn-open-quant-modal" class="btn-header btn-engeform">
+                <i class="fas fa-ruler-combined"></i> Painel de Quantidade de Rede
+            </button>
+
+            <button id="btn-theme-toggle" class="btn-header">
+                <i class="fas fa-sun"></i> Light Mode
+            </button>
+
+            <button id="btn-export-csv" class="btn-header" style="background: rgba(16, 185, 129, 0.25); border-color: #10b981;">
+                <i class="fas fa-file-csv"></i> Exportar CSV
+            </button>
+
+            <button id="btn-print-map" class="btn-header">
+                <i class="fas fa-print"></i> Imprimir Mapas
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Application Body -->
+    <div id="app-body">
+
+        <!-- Collapsible Left Sidebar (Expanded 550px) -->
+        <aside id="sidebar">
+
+            <!-- Sidebar Navigation Tabs -->
+            <nav class="sidebar-tabs">
+                <button class="nav-tab-btn" data-tab="geral">
+                    <i class="fas fa-th-large"></i> Geral
+                </button>
+                <button class="nav-tab-btn active" data-tab="camadas">
+                    <i class="fas fa-layer-group"></i> Camadas
+                </button>
+                <button class="nav-tab-btn" data-tab="quantitativos">
+                    <i class="fas fa-ruler-combined"></i> Quantidades
+                </button>
+                <button class="nav-tab-btn" data-tab="metas">
+                    <i class="fas fa-bullseye"></i> Metas
+                </button>
+                <button class="nav-tab-btn" data-tab="dashboard">
+                    <i class="fas fa-chart-pie"></i> Indicadores
+                </button>
+                <button class="nav-tab-btn" data-tab="filtros">
+                    <i class="fas fa-filter"></i> Filtros
+                </button>
+                <button class="nav-tab-btn" data-tab="tabela">
+                    <i class="fas fa-table"></i> Tabela
+                </button>
+            </nav>
+
+            <!-- Sidebar Tab Content Panels -->
+            <div class="sidebar-content">
+
+                <!-- Tab 0: Painel Geral (Visão Geral & Frente de Obra) -->
+                <div id="tab-geral" class="tab-pane">
+
+                    <div class="widget-card engeform-card">
+                        <div class="widget-title" style="color: white;">
+                            <span><i class="fas fa-globe-americas"></i> Visão Geral — Lote 4 Itapetininga</span>
+                            <button id="btn-export-geral-csv" style="background: #10b981; color: white; border: none; border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.75rem; cursor: pointer; font-weight: 700;">
+                                <i class="fas fa-download"></i> Exportar CSV
+                            </button>
+                        </div>
+                        <div style="font-size: 1.65rem; font-weight: 900; color: #ffffff;">
+                            34.437,40 <span style="font-size: 0.9rem; font-weight: 500; opacity: 0.85;">metros de rede</span>
+                        </div>
+                        <div style="font-size: 0.82rem; color: #e2e8f0; margin-top: 0.25rem;">
+                            Equivalente a <strong style="color: #c0c4b7;">34,44 km</strong> e <strong style="color: #c0c4b7;">11 EEEs</strong> distribuídos em 4 bairros consolidados.
+                        </div>
+                    </div>
+
+                    <!-- Quadro Frente de Obra (Apresentação Independente - Não é lista suspensa) -->
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-hard-hat"></i> Frente de Obra</span>
+                            <span style="font-size:0.75rem; font-weight:400; color:var(--engeform-light-taupe);">💡 Clique no bairro para aproximar (zoom) no mapa</span>
+                        </div>
+                        
+                        <!-- 1. Pedras e Vitória (Guareí - Unificado) -->
+                        <div class="quant-row bairro-card" data-bairro="PEDRAS E VITÓRIA">
+                            <div class="quant-header-row">
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#919389; font-size:9px; margin-right:4px;"></i> Pedras e Vitória (Guareí)</span>
+                                <strong class="quant-value-text">21.542,65 m (21,54 km)</strong>
+                            </div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 62.6%; background:#919389;"></div></div>
+                            <div class="quant-sub-info">
+                                <span>Participação: <strong>62,6% do lote</strong></span>
+                                <span><i class="fas fa-industry" style="color:var(--engeform-light-taupe); margin-right:3px;"></i> Obras Localizadas: <strong>5 EEEs</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- 2. Serra da Prata (Paranapanema) -->
+                        <div class="quant-row bairro-card" data-bairro="SERRA DA PRATA">
+                            <div class="quant-header-row">
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Serra da Prata (Paranapanema)</span>
+                                <strong class="quant-value-text">6.672,19 m (6,67 km)</strong>
+                            </div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 19.4%; background:#0284c7;"></div></div>
+                            <div class="quant-sub-info">
+                                <span>Participação: <strong>19,4% do lote</strong></span>
+                                <span><i class="fas fa-industry" style="color:#0284c7; margin-right:3px;"></i> Obras Localizadas: <strong>3 EEEs</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- 3. Pocinho (São Miguel Arcanjo) -->
+                        <div class="quant-row bairro-card" data-bairro="POCINHO">
+                            <div class="quant-header-row">
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#10b981; font-size:9px; margin-right:4px;"></i> Pocinho (São Miguel Arcanjo)</span>
+                                <strong class="quant-value-text">4.140,67 m (4,14 km)</strong>
+                            </div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 12.0%; background:#10b981;"></div></div>
+                            <div class="quant-sub-info">
+                                <span>Participação: <strong>12,0% do lote</strong></span>
+                                <span><i class="fas fa-industry" style="color:#10b981; margin-right:3px;"></i> Obras Localizadas: <strong>2 EEEs</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- 4. Jardim Aeroporto (Itapetininga) -->
+                        <div class="quant-row bairro-card" data-bairro="JARDIM AEROPORTO">
+                            <div class="quant-header-row">
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Aeroporto (Itapetininga)</span>
+                                <strong class="quant-value-text">2.081,88 m (2,08 km)</strong>
+                            </div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 6.0%; background:#f59e0b;"></div></div>
+                            <div class="quant-sub-info">
+                                <span>Participação: <strong>6,0% do lote</strong></span>
+                                <span><i class="fas fa-industry" style="color:#f59e0b; margin-right:3px;"></i> Obras Localizadas: <strong>1 EEE</strong></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Tab 1: Camadas & Legendas -->
+                <div id="tab-camadas" class="tab-pane active">
+
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-layers"></i> Camadas do Geopackage</span>
+                        </div>
+
+                        <!-- Layer 1: Áreas de Expansão -->
+                        <div class="layer-item">
+                            <div class="layer-header">
+                                <label class="layer-title-box">
+                                    <input type="checkbox" id="chk-layer-areas" class="layer-checkbox" checked>
+                                    <span class="layer-name">Áreas de Expansão (Polígonos)</span>
+                                </label>
+                                <span class="layer-count-badge">7 áreas</span>
+                            </div>
+                            <div class="layer-details">
+                                <div class="opacity-slider-box">
+                                    <span>Opacidade:</span>
+                                    <input type="range" id="slider-opacity-areas" min="0" max="1" step="0.1" value="0.8">
+                                </div>
+                                <div class="legend-group">
+                                    <div class="legend-row"><div class="legend-color-box" style="background:#919389; border:1px dashed #ffffff;"></div><span>Polígonos de Expansão Urbana (Sem Classificação)</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Layer 2: Camada Linear -->
+                        <div class="layer-item">
+                            <div class="layer-header">
+                                <label class="layer-title-box">
+                                    <input type="checkbox" id="chk-layer-linear" class="layer-checkbox" checked>
+                                    <span class="layer-name">Redes de Esgoto (Linhas)</span>
+                                </label>
+                                <span class="layer-count-badge">454 trechos</span>
+                            </div>
+                            <div class="layer-details">
+                                <div class="opacity-slider-box">
+                                    <span>Opacidade:</span>
+                                    <input type="range" id="slider-opacity-linear" min="0" max="1" step="0.1" value="0.9">
+                                </div>
+                                <div id="layer-linear-legend" class="legend-group">
+                                    <!-- Legenda da camada linear dinamicamente sincronizada -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Layer 3: Camada Localizada -->
+                        <div class="layer-item">
+                            <div class="layer-header">
+                                <label class="layer-title-box">
+                                    <input type="checkbox" id="chk-layer-localizada" class="layer-checkbox" checked>
+                                    <span class="layer-name">Estações Elevatórias EEE (Pontos)</span>
+                                </label>
+                                <span class="layer-count-badge" title="Visível em zoom aproximado (≥ 13)">11 EEEs</span>
+                            </div>
+                            <div class="layer-details">
+                                <div class="legend-group">
+                                    <div class="legend-row"><div class="legend-color-circle" style="background:#919389;"></div><span>EEE (Estação Elevatória Esgoto)</span></div>
+                                </div>
+                                <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:4px; display:flex; align-items:center; gap:5px;">
+                                    <i class="fas fa-search-plus" style="font-size:0.7rem; color:var(--engeform-light-taupe);"></i>
+                                    <span>Visível em zoom aproximado (nível ≥ 13)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Tab 2: Painel de Quantidade de Rede (Unified Pedras e Vitória) -->
+                <div id="tab-quantitativos" class="tab-pane">
+                    
+                    <div class="widget-card engeform-card">
+                        <div class="widget-title" style="color: white;">
+                            <span><i class="fas fa-ruler-combined"></i> Resumo de Quantitativos de Rede</span>
+                            <button id="btn-export-quant-csv" style="background: #10b981; color: white; border: none; border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.75rem; cursor: pointer; font-weight: 700;">
+                                <i class="fas fa-download"></i> Exportar CSV
+                            </button>
+                        </div>
+                        <div style="font-size: 1.65rem; font-weight: 900; color: #ffffff;">
+                            34.437,40 <span style="font-size: 0.9rem; font-weight: 500; opacity: 0.85;">metros totais</span>
+                        </div>
+                        <div style="font-size: 0.82rem; color: #e2e8f0; margin-top: 0.25rem;">
+                            Equivalente a <strong style="color: #c0c4b7;">34,44 km</strong> distribuídos em 4 bairros consolidados e 454 trechos.
+                        </div>
+                    </div>
+
+                    <!-- Quadro: Frente de Obra (Lista Suspensa) -->
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-hard-hat"></i> Frente de Obra</span>
+                            <span style="font-size:0.75rem; font-weight:400; color:var(--engeform-light-taupe);">💡 Clique para expandir e selecionar</span>
+                        </div>
+
+                        <!-- Lista Suspensa Recolhível (Accordion Dropdown) -->
+                        <details class="quant-dropdown" id="dropdown-frente-obra-quant">
+                            <summary class="quant-summary">
+                                <div class="quant-summary-main">
+                                    <span class="quant-title-text"><i class="fas fa-map-marker-alt" style="color:var(--engeform-light-taupe); font-size:9px; margin-right:4px;"></i> Lista de Frentes de Obra</span>
+                                    <span class="quant-toggle-badge" id="badge-frente-obra-quant">Ver Frentes (4) <i class="fas fa-chevron-down"></i></span>
+                                </div>
+                            </summary>
+                            <div class="quant-dropdown-content" style="padding-top: 0.4rem;">
+                                <div class="quant-row bairro-card" data-bairro="" style="cursor:pointer; padding:0.45rem 0.7rem; border-radius:6px; margin-bottom:4px; border:1px dashed var(--border-dark); font-size:0.78rem;">
+                                    <div class="quant-header-row">
+                                        <span class="quant-title-text"><i class="fas fa-layer-group" style="color:var(--engeform-light-taupe); font-size:9px; margin-right:6px;"></i> Todas as Frentes (Geral Lote 4)</span>
+                                    </div>
+                                </div>
+                                <div class="quant-row bairro-card" data-bairro="PEDRAS E VITÓRIA" style="cursor:pointer; padding:0.5rem 0.7rem; border-radius:6px; margin-bottom:4px;">
+                                    <div class="quant-header-row">
+                                        <span class="quant-title-text"><i class="fas fa-circle" style="color:#919389; font-size:9px; margin-right:6px;"></i> Pedras e Vitória (Guareí)</span>
+                                    </div>
+                                </div>
+                                <div class="quant-row bairro-card" data-bairro="SERRA DA PRATA" style="cursor:pointer; padding:0.5rem 0.7rem; border-radius:6px; margin-bottom:4px;">
+                                    <div class="quant-header-row">
+                                        <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:6px;"></i> Serra da Prata (Paranapanema)</span>
+                                    </div>
+                                </div>
+                                <div class="quant-row bairro-card" data-bairro="POCINHO" style="cursor:pointer; padding:0.5rem 0.7rem; border-radius:6px; margin-bottom:4px;">
+                                    <div class="quant-header-row">
+                                        <span class="quant-title-text"><i class="fas fa-circle" style="color:#10b981; font-size:9px; margin-right:6px;"></i> Pocinho (São Miguel Arcanjo)</span>
+                                    </div>
+                                </div>
+                                <div class="quant-row bairro-card" data-bairro="JARDIM AEROPORTO" style="cursor:pointer; padding:0.5rem 0.7rem; border-radius:6px; margin-bottom:4px;">
+                                    <div class="quant-header-row">
+                                        <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:6px;"></i> Jardim Aeroporto (Itapetininga)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Layout Lado a Lado: Obras lineares e Obras Localizadas -->
+                    <div class="quant-side-by-side-grid">
+
+                        <!-- Coluna 1: Obras lineares -->
+                        <div class="widget-card quant-column-card">
+                            <div class="widget-title">
+                                <span id="segment-widget-title"><i class="fas fa-network-wired"></i> Obras lineares</span>
+                            </div>
+                            
+                            <div id="segment-dropdowns-container">
+                                <div class="quant-empty-state">
+                                    <i class="fas fa-hand-pointer"></i>
+                                    <span>Selecione uma frente de obra na lista suspensa acima para exibir as informações.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coluna 2: Obras Localizadas (Estações Elevatórias EEE) -->
+                        <div class="widget-card quant-column-card">
+                            <div class="widget-title">
+                                <span id="localizada-widget-title"><i class="fas fa-industry"></i> Obras Localizadas (EEE)</span>
+                            </div>
+                            
+                            <div id="localizada-container">
+                                <div class="quant-empty-state">
+                                    <i class="fas fa-hand-pointer"></i>
+                                    <span>Selecione uma frente de obra na lista suspensa acima para exibir as informações.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Tab 2.5: Painel Metas de Economias (Excel: metas_economias.xlsx) -->
+                <div id="tab-metas" class="tab-pane">
+
+                    <!-- Header Banner Card -->
+                    <div class="widget-card engeform-card" style="background: linear-gradient(135deg, #1e293b, #0369a1);">
+                        <div class="widget-title" style="color: white;">
+                            <span><i class="fas fa-bullseye"></i> Metas de Economias — Lote 4</span>
+                            <div style="display:flex; gap:6px;">
+                                <button id="btn-export-metas-csv" style="background: #10b981; color: white; border: none; border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.75rem; cursor: pointer; font-weight: 700;">
+                                    <i class="fas fa-file-csv"></i> Exportar CSV
+                                </button>
+                            </div>
+                        </div>
+                        <div style="font-size: 1.65rem; font-weight: 900; color: #ffffff;">
+                            <span id="metas-kpi-total-geral">21.887</span> <span style="font-size: 0.9rem; font-weight: 500; opacity: 0.85;">economias totais</span>
+                        </div>
+                        <div style="font-size: 0.82rem; color: #e2e8f0; margin-top: 0.25rem;">
+                            Contrato <strong>Pacote O1L4 (Itapetininga)</strong> | Meta de Universalização Sabesp (2026-2028).
+                        </div>
+                    </div>
+
+                    <!-- Filtro Interativo de Município e Escopo -->
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-filter"></i> Selecionar Município</span>
+                            <button id="btn-metas-reset-filter" style="background:transparent; border:none; color:var(--engeform-light-taupe); font-size:0.75rem; cursor:pointer;">
+                                <i class="fas fa-undo"></i> Ver Geral
+                            </button>
+                        </div>
+                        <div class="filter-group">
+                            <select id="metas-select-municipio" class="form-select" style="font-weight:600;">
+                                <!-- Options populadas dinamicamente via JS -->
+                            </select>
+                        </div>
+                        <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
+                            <div style="font-size:0.8rem; font-weight:700; color:var(--text-dark);" id="metas-scope-title">
+                                Consolidado Lote 4 (10 Municípios)
+                            </div>
+                            <div id="metas-gis-badge" style="display:none; cursor:pointer; background:rgba(2, 132, 199, 0.2); border:1px solid #0284c7; color:#38bdf8; border-radius:6px; padding:4px 8px; font-size:0.75rem; align-items:center; gap:6px;">
+                                <!-- Preenchido dinamicamente se o município tem frente mapeada -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seletor de Tipo de Serviço (Geral / Esgoto / Água) -->
+                    <div class="metas-service-toggle">
+                        <button class="metas-service-btn active" data-service="all">
+                            <i class="fas fa-layer-group"></i> Geral (Água + Esgoto)
+                        </button>
+                        <button class="metas-service-btn" data-service="esgoto">
+                            <i class="fas fa-water"></i> Esgoto (IEC)
+                        </button>
+                        <button class="metas-service-btn" data-service="agua">
+                            <i class="fas fa-tint"></i> Água
+                        </button>
+                    </div>
+
+                    <!-- KPIs Resumo Água x Esgoto -->
+                    <div class="metas-kpi-grid">
+                        <div class="kpi-card green" style="padding:0.75rem;">
+                            <div class="kpi-label"><i class="fas fa-water"></i> Esgoto (IEC)</div>
+                            <div class="kpi-value"><span id="metas-kpi-total-esgoto">13.489</span></div>
+                            <div style="font-size:0.7rem; color:var(--text-muted-dark); margin-top:2px;">Participação: <strong id="metas-kpi-pct-esgoto">61.6%</strong></div>
+                        </div>
+                        <div class="kpi-card blue" style="padding:0.75rem;">
+                            <div class="kpi-label"><i class="fas fa-tint"></i> Água</div>
+                            <div class="kpi-value"><span id="metas-kpi-total-agua">8.398</span></div>
+                            <div style="font-size:0.7rem; color:var(--text-muted-dark); margin-top:2px;">Participação: <strong id="metas-kpi-pct-agua">38.4%</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Metas por Ano (Linha do Tempo 2026, 2027, 2028) -->
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-calendar-alt"></i> Metas Anuais de Economias</span>
+                            <span style="font-size:0.72rem; color:var(--engeform-light-taupe);">2026 à 2028</span>
+                        </div>
+                        <div class="metas-years-grid">
+                            <div class="metas-year-card">
+                                <span class="metas-year-badge y2026">2026</span>
+                                <div class="metas-year-val" id="metas-val-2026">3.392</div>
+                                <div class="metas-year-pct" id="metas-pct-2026">15.5%</div>
+                                <div class="metas-bar-bg"><div class="metas-bar-fill" id="metas-bar-2026" style="width: 15.5%; background:#38bdf8;"></div></div>
+                            </div>
+                            <div class="metas-year-card">
+                                <span class="metas-year-badge y2027">2027</span>
+                                <div class="metas-year-val" id="metas-val-2027">12.708</div>
+                                <div class="metas-year-pct" id="metas-pct-2027">58.1%</div>
+                                <div class="metas-bar-bg"><div class="metas-bar-fill" id="metas-bar-2027" style="width: 58.1%; background:#10b981;"></div></div>
+                            </div>
+                            <div class="metas-year-card">
+                                <span class="metas-year-badge y2028">2028</span>
+                                <div class="metas-year-val" id="metas-val-2028">5.787</div>
+                                <div class="metas-year-pct" id="metas-pct-2028">26.4%</div>
+                                <div class="metas-bar-bg"><div class="metas-bar-fill" id="metas-bar-2028" style="width: 26.4%; background:#f59e0b;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Distribuição por Recorte (Formal x Rural) -->
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-map-marked"></i> Distribuição por Recorte Territorial</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:3px;">
+                                    <span><i class="fas fa-city" style="color:#38bdf8;"></i> <strong>Formal (Urbano)</strong></span>
+                                    <span><strong id="metas-formal-val">9.904</strong> economias (<span id="metas-formal-pct">45.2%</span>)</span>
+                                </div>
+                                <div class="metas-bar-bg"><div class="metas-bar-fill" id="metas-formal-bar" style="width: 45.2%; background:#38bdf8;"></div></div>
+                            </div>
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:3px;">
+                                    <span><i class="fas fa-tree" style="color:#10b981;"></i> <strong>Rural (Sistemas Isolados)</strong></span>
+                                    <span><strong id="metas-rural-val">11.983</strong> economias (<span id="metas-rural-pct">54.8%</span>)</span>
+                                </div>
+                                <div class="metas-bar-bg"><div class="metas-bar-fill" id="metas-rural-bar" style="width: 54.8%; background:#10b981;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ranking dos 10 Municípios -->
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-trophy"></i> Metas por Município (Ranking Lote 4)</span>
+                            <span style="font-size:0.72rem; color:var(--engeform-light-taupe);">💡 Clique no município para filtrar</span>
+                        </div>
+                        <div id="metas-ranking-container" style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
+                            <!-- Populado dinamicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Tabela Completa de Dados da Planilha -->
+                    <div class="widget-card">
+                        <div class="widget-title" style="flex-wrap: wrap; gap: 6px;">
+                            <span><i class="fas fa-table"></i> Dados da Planilha Excel</span>
+                            <div style="display:flex; gap:4px;">
+                                <button class="metas-tab-view-btn active" data-view="geral">Geral</button>
+                                <button class="metas-tab-view-btn" data-view="anos">Por Ano</button>
+                                <button class="metas-tab-view-btn" data-view="recorte">Por Recorte</button>
+                            </div>
+                        </div>
+                        <div id="metas-table-container" style="overflow-x: auto; max-height: 350px;">
+                            <!-- Tabela dinâmica -->
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-muted-dark); margin-top:6px; display:flex; align-items:center; gap:5px;">
+                            <i class="fas fa-file-excel" style="color:#10b981;"></i>
+                            <span>Fonte: <code>metas_economias.xlsx</code> (LOTE 4-ITAPETININGA\Acompanhamento de Obras\projeto_01)</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tab 3: Painel de Indicadores (Quadro de Metas por Ano e por Recorte) -->
+                <div id="tab-dashboard" class="tab-pane">
+
+                    <!-- Header Card -->
+                    <div class="widget-card engeform-card" style="background: linear-gradient(135deg, #1e293b, #0f766e);">
+                        <div class="widget-title" style="color: white;">
+                            <span><i class="fas fa-chart-line"></i> Metas por Ano e Recorte por Município</span>
+                            <button id="btn-export-quadro-indicadores-csv" style="background: #10b981; color: white; border: none; border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.75rem; cursor: pointer; font-weight: 700;">
+                                <i class="fas fa-file-csv"></i> Exportar CSV
+                            </button>
+                        </div>
+                        <div style="font-size: 1.55rem; font-weight: 900; color: #ffffff;">
+                            <span id="quadro-total-economias">21.887</span> <span style="font-size: 0.85rem; font-weight: 500; opacity: 0.9;">economias no Lote 4</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #ccfbf1; margin-top: 0.25rem;">
+                            Distribuição contratual por <strong>Ano (2026, 2027, 2028)</strong> e <strong>Recorte (Formal Urbano e Rural)</strong> nos 10 municípios.
+                        </div>
+                    </div>
+
+                    <!-- Seletor de Tipo de Serviço (Geral / Esgoto / Água) -->
+                    <div class="metas-service-toggle">
+                        <button class="quadro-service-btn active" data-service="all">
+                            <i class="fas fa-layer-group"></i> Geral (Água + Esgoto)
+                        </button>
+                        <button class="quadro-service-btn" data-service="esgoto">
+                            <i class="fas fa-water"></i> Apenas Esgoto (IEC)
+                        </button>
+                        <button class="quadro-service-btn" data-service="agua">
+                            <i class="fas fa-tint"></i> Apenas Água
+                        </button>
+                    </div>
+
+                    <!-- Resumo dos Recortes & Anos -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card blue" style="padding: 0.75rem;">
+                            <div class="kpi-label"><i class="fas fa-city"></i> Recorte Formal (Total)</div>
+                            <div class="kpi-value"><span id="quadro-kpi-formal">9.904</span><span class="kpi-unit">econ.</span></div>
+                            <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:3px;">
+                                2026: <strong id="quadro-f26">3.392</strong> | 2027: <strong id="quadro-f27">5.456</strong> | 2028: <strong id="quadro-f28">1.056</strong>
+                            </div>
+                        </div>
+                        <div class="kpi-card green" style="padding: 0.75rem;">
+                            <div class="kpi-label"><i class="fas fa-tree"></i> Recorte Rural (Total)</div>
+                            <div class="kpi-value"><span id="quadro-kpi-rural">11.983</span><span class="kpi-unit">econ.</span></div>
+                            <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:3px;">
+                                2026: <strong id="quadro-r26">0</strong> | 2027: <strong id="quadro-r27">7.252</strong> | 2028: <strong id="quadro-r28">4.731</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget: Diagrama de Barras Comparativo (Metas vs Domicílios em Obras em Execução) -->
+                    <div class="widget-card">
+                        <div class="widget-title" style="flex-wrap: wrap; gap: 6px;">
+                            <span><i class="fas fa-chart-bar"></i> Comparativo: Metas Sabesp vs. Domicílios em Obras</span>
+                        </div>
+                        
+                        <!-- Controles do Diagrama de Barras -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                            <!-- Seletor do Horizonte de Comparação -->
+                            <div class="diag-toggle-group" style="display:flex; background:rgba(0,0,0,0.25); border:1px solid var(--border-dark); border-radius:6px; padding:2px; gap:3px;">
+                                <button class="diag-mode-btn active" data-mode="2026" style="padding:3px 8px; font-size:0.72rem; font-weight:600; border-radius:4px; border:none; background:#0284c7; color:white; cursor:pointer;">
+                                    Meta 2026
+                                </button>
+                                <button class="diag-mode-btn" data-mode="esgoto" style="padding:3px 8px; font-size:0.72rem; font-weight:600; border-radius:4px; border:none; background:transparent; color:var(--text-muted-dark); cursor:pointer;">
+                                    Meta Esgoto (IEC)
+                                </button>
+                                <button class="diag-mode-btn" data-mode="total" style="padding:3px 8px; font-size:0.72rem; font-weight:600; border-radius:4px; border:none; background:transparent; color:var(--text-muted-dark); cursor:pointer;">
+                                    Meta Total
+                                </button>
+                            </div>
+
+                            <!-- Seletor de Escopo de Municípios -->
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <label style="font-size:0.72rem; color:var(--text-muted-dark); cursor:pointer;">
+                                    <input type="checkbox" id="chk-diag-all-mun" style="cursor:pointer; vertical-align:middle;">
+                                    <span>Exibir todos os 10 mun.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Mini KPIs de Aderência da Execução -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px;">
+                            <div style="background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.3); border-radius:6px; padding:6px; text-align:center;">
+                                <div style="font-size:0.68rem; color:#10b981; font-weight:700;">Domicílios em Execução</div>
+                                <div style="font-size:1.05rem; font-weight:800; color:#10b981;" id="diag-kpi-dom-exec">705 <span style="font-size:0.7rem;">dom.</span></div>
+                            </div>
+                            <div style="background:rgba(245, 158, 11, 0.12); border:1px solid rgba(245, 158, 11, 0.3); border-radius:6px; padding:6px; text-align:center;">
+                                <div style="font-size:0.68rem; color:#f59e0b; font-weight:700;">Meta Sabesp Selecionada</div>
+                                <div style="font-size:1.05rem; font-weight:800; color:#f59e0b;" id="diag-kpi-meta-val">1.285 <span style="font-size:0.7rem;">econ.</span></div>
+                            </div>
+                            <div style="background:rgba(2, 132, 199, 0.12); border:1px solid rgba(2, 132, 199, 0.3); border-radius:6px; padding:6px; text-align:center;">
+                                <div style="font-size:0.68rem; color:#38bdf8; font-weight:700;">% Aderência / Cobertura</div>
+                                <div style="font-size:1.05rem; font-weight:800; color:#38bdf8;" id="diag-kpi-aderencia">54.9%</div>
+                            </div>
+                        </div>
+
+                        <!-- Canvas do Diagrama de Barras -->
+                        <div style="position: relative; height: 230px; width: 100%;">
+                            <canvas id="chart-metas-domicilios"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Quadro Tabela Matricial Completa: Município x Ano x Recorte -->
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-table"></i> Quadro Matricial por Município</span>
+                            <span style="font-size:0.72rem; color:var(--engeform-light-taupe);">Role horizontalmente se necessário</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px;">
+                            <input type="text" id="quadro-search-mun" class="form-input" placeholder="🔍 Filtrar município..." style="padding:0.35rem 0.6rem; font-size:0.75rem; border-radius:6px; flex:1;">
+                            <span style="font-size:0.72rem; color:var(--text-muted-dark);" id="quadro-mun-count">10 municípios</span>
+                        </div>
+                        <div id="quadro-matriz-container" style="overflow-x: auto; max-height: 480px; border:1px solid var(--border-dark); border-radius:8px;">
+                            <!-- Tabela Matricial Renderizada via JS -->
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-muted-dark); margin-top:8px; display:flex; align-items:center; gap:6px;">
+                            <i class="fas fa-info-circle" style="color:var(--engeform-light-taupe);"></i>
+                            <span>Clique em qualquer linha com o ícone <i class="fas fa-map-marker-alt" style="color:#0284c7;"></i> para navegar até a Frente de Obra no mapa.</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tab 4: Filtros Avançados -->
+                <div id="tab-filtros" class="tab-pane">
+
+                    <div class="widget-card">
+                        <div class="widget-title">
+                            <span><i class="fas fa-filter"></i> Filtros Multicritério</span>
+                            <button id="btn-reset-filters" style="background:transparent; border:none; color:#c0c4b7; font-size:0.78rem; cursor:pointer;">Limpar</button>
+                        </div>
+
+                        <!-- Filter Município -->
+                        <div class="filter-group">
+                            <label class="filter-label">Município:</label>
+                            <select id="filter-municipio" class="form-select">
+                                <option value="all">Todos os Municípios</option>
+                                <option value="GUAREÍ">Guareí</option>
+                                <option value="ITAPETININGA">Itapetininga</option>
+                                <option value="PARANAPANEMA">Paranapanema</option>
+                                <option value="SÃO MIGUEL ARCANJO">São Miguel Arcanjo</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Status -->
+                        <div class="filter-group">
+                            <label class="filter-label">Status da Obra:</label>
+                            <select id="filter-status" class="form-select">
+                                <option value="all">Todos os Status</option>
+                                <option value="CONCLUÍDO">Concluído</option>
+                                <option value="INICIADO">Iniciado</option>
+                                <option value="NÃO INICIADO">Não Iniciado</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Segmento -->
+                        <div class="filter-group">
+                            <label class="filter-label">Segmento / Infraestrutura:</label>
+                            <select id="filter-segmento" class="form-select">
+                                <option value="all">Todos os Segmentos</option>
+                                <option value="REDE COLETORA">Rede Coletora</option>
+                                <option value="LINHA DE RECALQUE">Linha de Recalque</option>
+                                <option value="EMISSÁRIO">Emissário</option>
+                                <option value="EEE">EEE (Estação Elevatória)</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Material -->
+                        <div class="filter-group">
+                            <label class="filter-label">Material da Tubulação:</label>
+                            <select id="filter-material" class="form-select">
+                                <option value="all">Todos os Materiais</option>
+                                <option value="PVC">PVC</option>
+                                <option value="PVC-O">PVC-O</option>
+                                <option value="PEAD">PEAD</option>
+                                <option value="FOFO">FOFO (Ferro Fundido)</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Recorte -->
+                        <div class="filter-group">
+                            <label class="filter-label">Recorte (Tipo Área):</label>
+                            <select id="filter-recorte" class="form-select">
+                                <option value="all">Todos os Recortes</option>
+                                <option value="FORMAL">Formal / Urbano</option>
+                                <option value="RURAL">Rural</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Tab 5: Tabela de Atributos -->
+                <div id="tab-tabela" class="tab-pane">
+                    <div class="widget-card" style="padding: 0.5rem;">
+                        <div class="widget-title" style="padding: 0.5rem;">
+                            <span><i class="fas fa-table"></i> Tabela de Atributos</span>
+                        </div>
+                        <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:0.5rem; padding: 0 0.5rem;" id="table-count">Exibindo trechos de redes</div>
+
+                        <div class="datatable-wrapper">
+                            <table class="datatable">
+                                <thead>
+                                    <tr>
+                                        <th>FID</th>
+                                        <th>Município</th>
+                                        <th>Bairro</th>
+                                        <th>Segmento</th>
+                                        <th>Material</th>
+                                        <th>Extensão</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body">
+                                    <!-- Populated via Javascript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Draggable Sidebar Resizer Handle -->
+            <div id="sidebar-resizer" class="sidebar-resizer" title="Arraste para ajustar a largura do painel (duplo clique para restaurar padrão)" role="separator" aria-orientation="vertical" tabindex="0">
+                <div class="sidebar-resizer-line"></div>
+            </div>
+        </aside>
+
+        <!-- Sidebar Collapse Toggle Button -->
+        <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Alternar Painel Lateral">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <!-- Main Interactive Leaflet Map Container -->
+        <main id="map-container">
+            <div id="map"></div>
+
+            <!-- Floating Map Tools -->
+            <div class="map-floating-tools">
+                <button id="btn-tool-fit" class="map-tool-btn" title="Ajustar Extensão (Enquadrar Lote 4)">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+                <button id="btn-tool-locate" class="map-tool-btn" title="Minha Localização">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <div style="position: relative;">
+                    <select id="select-basemap" class="map-tool-btn" style="width: auto; padding: 0 0.5rem; font-size: 0.8rem;" title="Mudar Mapa de Fundo">
+                        <option value="satellite" selected>Satélite (Esri)</option>
+                        <option value="osm">OpenStreetMap</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Map Floating Legend & Style Selector Container -->
+            <div id="map-floating-legend" class="map-floating-legend">
+                <div class="map-floating-legend-header">
+                    <span class="map-floating-legend-title">
+                        <i class="fas fa-layer-group"></i> Legenda do Mapa
+                    </span>
+                    <button id="btn-toggle-floating-legend" class="map-floating-legend-toggle" title="Minimizar / Expandir Legenda">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div id="map-floating-legend-body" class="map-floating-legend-body">
+                    <div class="map-floating-legend-control">
+                        <label for="select-legend-mode" class="map-floating-legend-label">
+                            <i class="fas fa-sliders-h"></i> Estilo da Legenda:
+                        </label>
+                        <select id="select-legend-mode" class="form-select legend-select-map">
+                            <option value="status" selected>Colorir por Status de Execução</option>
+                            <option value="segmento">Colorir por Segmento (Infraestrutura)</option>
+                            <option value="material">Colorir por Material do Tubo</option>
+                        </select>
+                    </div>
+                    <div id="map-floating-legend-items" class="legend-group">
+                        <!-- Itens da legenda populados dinamicamente via Javascript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Coordinates & Scale Bar Box -->
+            <div class="map-status-bar">
+                <span id="status-coords">LAT: -23.60893 | LON: -48.44813 | ZOOM: 11</span>
+                <span>EPSG:4326 (WGS84)</span>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Modal Quantidade de Rede -->
+    <div id="modal-quantitativos" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title"><i class="fas fa-ruler-combined" style="color:#c0c4b7;"></i> Painel de Quantidade de Rede (Caderno de Quantitativos)</h2>
+                    <p class="modal-subtitle">ENGEFORM ENGENHARIA • Universalização SABESP • Lote 4 - Itapetininga</p>
+                </div>
+                <button id="btn-close-modal" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                
+                <!-- KPI Header Grid -->
+                <div class="modal-kpi-grid">
+                    <div class="modal-kpi-card">
+                        <div class="modal-kpi-title">EXTENSÃO TOTAL DA REDE</div>
+                        <div class="modal-kpi-num" style="color:#919389;">34.437,40 m</div>
+                        <div class="modal-kpi-sub">34,44 quilômetros mapeados</div>
+                    </div>
+                    <div class="modal-kpi-card">
+                        <div class="modal-kpi-title">REDE COLETORA (ESGOTO)</div>
+                        <div class="modal-kpi-num" style="color:#2563eb;">24.029,68 m</div>
+                        <div class="modal-kpi-sub">69,8% do total do lote</div>
+                    </div>
+                    <div class="modal-kpi-card">
+                        <div class="modal-kpi-title">LINHAS DE RECALQUE</div>
+                        <div class="modal-kpi-num" style="color:#dc2626;">9.761,02 m</div>
+                        <div class="modal-kpi-sub">28,3% do total do lote</div>
+                    </div>
+                    <div class="modal-kpi-card">
+                        <div class="modal-kpi-title">CONCLUÍDO (REALIZADO)</div>
+                        <div class="modal-kpi-num" style="color:#10b981;">3.218,13 m</div>
+                        <div class="modal-kpi-sub">9,3% de avanço físico</div>
+                    </div>
+                </div>
+
+                <!-- Quantitativos por Bairro Unificado Table -->
+                <div class="widget-card" style="margin-top: 1.25rem;">
+                    <div class="widget-title"><i class="fas fa-map-marker-alt"></i> Tabela Completa de Quantitativos por Bairro Consolidados</div>
+                    <table class="datatable">
+                        <thead>
+                            <tr>
+                                <th>Bairro</th>
+                                <th>Município</th>
+                                <th>Extensão (m)</th>
+                                <th>Extensão (km)</th>
+                                <th>Trechos</th>
+                                <th>% Lote</th>
+                                <th>Status Dominante</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Pedras e Vitória</strong></td><td>Guareí</td><td>21.542,65 m</td><td>21,54 km</td><td>348</td><td><span class="popup-badge nao-iniciado">62.6%</span></td><td>Não Iniciado (21,3 km) / Iniciado (0,2 km) / Concluído (0,05 km)</td></tr>
+                            <tr><td><strong>Serra da Prata</strong></td><td>Paranapanema</td><td>6.672,19 m</td><td>6,67 km</td><td>13</td><td><span class="popup-badge iniciado">19.4%</span></td><td>Iniciado (3,0 km) / Não Iniciado (3,5 km)</td></tr>
+                            <tr><td><strong>Pocinho</strong></td><td>São Miguel Arcanjo</td><td>4.140,67 m</td><td>4,14 km</td><td>72</td><td><span class="popup-badge concluido">12.0%</span></td><td>Concluído (2,2 km) / Não Iniciado (1,9 km)</td></tr>
+                            <tr><td><strong>Jardim Aeroporto</strong></td><td>Itapetininga</td><td>2.081,88 m</td><td>2,08 km</td><td>21</td><td><span class="popup-badge concluido">6.0%</span></td><td>Concluído (0,8 km) / Não Iniciado (1,3 km)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Detailed Tables Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1rem;">
+                    
+                    <!-- Table 1: Quantitativo por Município e Segmento -->
+                    <div class="widget-card">
+                        <div class="widget-title"><i class="fas fa-city"></i> Quantitativo por Município e Segmento</div>
+                        <table class="datatable">
+                            <thead>
+                                <tr>
+                                    <th>Município</th>
+                                    <th>Segmento</th>
+                                    <th>Extensão (m)</th>
+                                    <th>Extensão (km)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Guareí</strong></td><td>Rede Coletora</td><td>19.064,88 m</td><td>19,06 km</td></tr>
+                                <tr><td><strong>Guareí</strong></td><td>Linha de Recalque</td><td>2.477,76 m</td><td>2,48 km</td></tr>
+                                <tr><td><strong>Paranapanema</strong></td><td>Linha de Recalque</td><td>5.721,28 m</td><td>5,72 km</td></tr>
+                                <tr><td><strong>Paranapanema</strong></td><td>Emissário</td><td>646,69 m</td><td>0,65 km</td></tr>
+                                <tr><td><strong>Paranapanema</strong></td><td>Rede Coletora</td><td>304,23 m</td><td>0,30 km</td></tr>
+                                <tr><td><strong>São Miguel Arcanjo</strong></td><td>Rede Coletora</td><td>3.202,00 m</td><td>3,20 km</td></tr>
+                                <tr><td><strong>São Miguel Arcanjo</strong></td><td>Linha de Recalque</td><td>938,67 m</td><td>0,94 km</td></tr>
+                                <tr><td><strong>Itapetininga</strong></td><td>Rede Coletora</td><td>1.458,57 m</td><td>1,46 km</td></tr>
+                                <tr><td><strong>Itapetininga</strong></td><td>Linha de Recalque</td><td>623,31 m</td><td>0,62 km</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Table 2: Quantitativo por Diâmetro e Material -->
+                    <div class="widget-card">
+                        <div class="widget-title"><i class="fas fa-boxes"></i> Matriz Completa de Tubulações (BOQ)</div>
+                        <table class="datatable">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Diâmetro (DN)</th>
+                                    <th>Extensão (m)</th>
+                                    <th>% Lote</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>PVC</strong></td><td>DN 150 mm</td><td>24.024,54 m</td><td>69,8%</td></tr>
+                                <tr><td><strong>FOFO (Ferro)</strong></td><td>DN 100 mm</td><td>3.000,31 m</td><td>8,7%</td></tr>
+                                <tr><td><strong>PEAD</strong></td><td>DN 90 mm</td><td>2.068,83 m</td><td>6,0%</td></tr>
+                                <tr><td><strong>PVC-O</strong></td><td>DN 100 mm</td><td>1.899,38 m</td><td>5,5%</td></tr>
+                                <tr><td><strong>PVC-O</strong></td><td>DN 200 mm</td><td>1.026,63 m</td><td>3,0%</td></tr>
+                                <tr><td><strong>PVC</strong></td><td>DN 90 mm</td><td>938,67 m</td><td>0,94 km</td></tr>
+                                <tr><td><strong>PEAD</strong></td><td>DN 110 mm</td><td>850,59 m</td><td>2,5%</td></tr>
+                                <tr><td><strong>PEAD</strong></td><td>DN 150 mm</td><td>623,31 m</td><td>1,8%</td></tr>
+                                <tr><td><strong>PVC-O</strong></td><td>DN 150 mm</td><td>5,14 m</td><td>0,0%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <!-- Table 3: Sub-classificação de Diâmetro (DN) por Tipo de Rede (Segmento) -->
+                <div class="widget-card" style="margin-top: 1.25rem;">
+                    <div class="widget-title"><i class="fas fa-sitemap"></i> Sub-classificação de Diâmetro Nominal (DN) por Tipo de Rede</div>
+                    <table class="datatable">
+                        <thead>
+                            <tr>
+                                <th>Tipo de Rede (Segmento)</th>
+                                <th>Sub-classificação Diâmetro (DN)</th>
+                                <th>Extensão (m)</th>
+                                <th>Extensão (km)</th>
+                                <th>% do Tipo de Rede</th>
+                                <th>% do Lote Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong style="color:#2563eb;">Rede Coletora de Esgoto</strong></td><td>DN 150 mm</td><td>24.029,68 m</td><td>24,03 km</td><td>100,0%</td><td><span class="popup-badge concluido">69.8%</span></td></tr>
+                            <tr><td><strong style="color:#dc2626;">Linha de Recalque</strong></td><td>DN 100 mm</td><td>4.899,69 m</td><td>4,90 km</td><td>50,2%</td><td><span class="popup-badge iniciado">14.2%</span></td></tr>
+                            <tr><td><strong style="color:#dc2626;">Linha de Recalque</strong></td><td>DN 90 mm</td><td>3.007,50 m</td><td>3,01 km</td><td>30,8%</td><td><span class="popup-badge iniciado">8.7%</span></td></tr>
+                            <tr><td><strong style="color:#dc2626;">Linha de Recalque</strong></td><td>DN 110 mm</td><td>850,59 m</td><td>0,85 km</td><td>8,7%</td><td><span class="popup-badge nao-iniciado">2.5%</span></td></tr>
+                            <tr><td><strong style="color:#dc2626;">Linha de Recalque</strong></td><td>DN 150 mm</td><td>623,31 m</td><td>0,62 km</td><td>6,4%</td><td><span class="popup-badge nao-iniciado">1.8%</span></td></tr>
+                            <tr><td><strong style="color:#dc2626;">Linha de Recalque</strong></td><td>DN 200 mm</td><td>379,93 m</td><td>0,38 km</td><td>3,9%</td><td><span class="popup-badge nao-iniciado">1.1%</span></td></tr>
+                            <tr><td><strong style="color:#ea580c;">Emissário de Esgoto</strong></td><td>DN 200 mm</td><td>646,69 m</td><td>0,65 km</td><td>100,0%</td><td><span class="popup-badge nao-iniciado">1.9%</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="btn-export-quant-modal" class="btn-header" style="background:#10b981; border:none; color:white;">
+                    <i class="fas fa-file-excel"></i> Exportar Quantitativos (CSV)
+                </button>
+                <button id="btn-close-modal-footer" class="btn-header">
+                    Fechar Painel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS CDN -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Embedded GeoJSON Data Package -->
+    <script src="js/data.js"></script>
+    <script src="js/metas_data.js"></script>
+
+    <!-- WebGIS Modules -->
+    <script src="js/layers.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/metas.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

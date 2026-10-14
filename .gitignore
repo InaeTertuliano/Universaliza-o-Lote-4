@@ -1,0 +1,12 @@
+# Python temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Scratch and debug files
+scratch/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
