@@ -137,40 +137,6 @@ window.GIS_LAYERS = (function() {
         return marker;
     }
 
-    // Styles for Limites Municipais (Lote 4 Polygons)
-    function styleMunicipios(feature) {
-        return {
-            color: '#38bdf8',               // Cyan boundary line
-            weight: 1.8,                    // Defined border
-            dashArray: '5, 5',              // Dashed administrative demarcation
-            fillColor: '#0284c7',           // Subtle cyan tint
-            fillOpacity: 0.03,              // Very translucent so networks & areas stay prominent
-            opacity: 0.85
-        };
-    }
-
-    // Popup for Limites Municipais
-    function createMunicipioPopup(props) {
-        const aguaVal = props.invest_agua ? 'R$ ' + props.invest_agua.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Não informado';
-        const esgotoVal = props.invest_esgoto ? 'R$ ' + props.invest_esgoto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Não informado';
-        const areaKm2 = props.area_m2 ? (props.area_m2 / 1000000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' km²' : '-';
-
-        return `
-            <div class="popup-header" style="background: linear-gradient(135deg, #0284c7, #0f172a);">
-                <div class="popup-category">Limite Municipal (${props.lote || 'Lote 4'})</div>
-                <div class="popup-title">${props.nm_mun || 'Município'}</div>
-            </div>
-            <div class="popup-body">
-                <div class="popup-row"><span class="popup-key">Código IBGE:</span><span class="popup-val">${props.cd_mun || props.ibge || '-'}</span></div>
-                <div class="popup-row"><span class="popup-key">Prioridade / Onda:</span><span class="popup-val"><span class="popup-badge iniciado">${props.prioridade || 'P2'}</span></span></div>
-                <div class="popup-row"><span class="popup-key">Operação Sabesp:</span><span class="popup-val" style="color:#10b981; font-weight:700;"><i class="fas fa-check-circle"></i> ${props.operado || 'Sim'}</span></div>
-                <div class="popup-row"><span class="popup-key">Investimento Água (PPI):</span><span class="popup-val" style="color:#38bdf8; font-weight:700;">${aguaVal}</span></div>
-                <div class="popup-row"><span class="popup-key">Investimento Esgoto (PPI):</span><span class="popup-val" style="color:#10b981; font-weight:700;">${esgotoVal}</span></div>
-                <div class="popup-row"><span class="popup-key">Área Territorial:</span><span class="popup-val">${areaKm2}</span></div>
-            </div>
-        `;
-    }
-
     // Styles for Áreas de Expansão (Polygons) - Uniform Non-classified Style
     function styleAreas(feature) {
         return {
@@ -539,8 +505,8 @@ window.GIS_LAYERS = (function() {
     return {
         init: function(leafletMap) {
             map = leafletMap;
-
-            // 0. Camada de Limites Municipais (Lote 4 Itapetininga)
+            
+            // 0. Camada de Limites Municipais (Apenas limite territorial e nome)
             if (window.GIS_MUNICIPIOS) {
                 if (!map.getPane('municipiosPane')) {
                     const mPane = map.createPane('municipiosPane');
@@ -549,34 +515,51 @@ window.GIS_LAYERS = (function() {
 
                 layerGroupMunicipios = L.geoJSON(window.GIS_MUNICIPIOS, {
                     pane: 'municipiosPane',
-                    style: styleMunicipios,
+                    style: function() {
+                        return {
+                            color: '#0284c7',          // Azul delimitador nítido
+                            weight: 1.8,               // Espessura equilibrada
+                            dashArray: '6, 6',         // Linha tracejada administrativa
+                            fillColor: '#0284c7',
+                            fillOpacity: 0.03,         // Extremamente translúcido
+                            opacity: 0.85
+                        };
+                    },
                     onEachFeature: function(feature, layer) {
-                        const props = feature.properties || {};
-                        layer.bindPopup(createMunicipioPopup(props));
+                        const nome = (feature.properties && feature.properties.nm_mun) ? feature.properties.nm_mun : 'Município';
+                        
+                        // Tooltip suave contendo apenas o nome do município
+                        layer.bindTooltip(`<strong>${nome}</strong>`, {
+                            sticky: true,
+                            direction: 'top',
+                            className: 'municipio-hover-tooltip'
+                        });
 
-                        if (props.nm_mun) {
-                            layer.bindTooltip(props.nm_mun, {
-                                permanent: true,
-                                direction: 'center',
-                                className: 'municipio-boundary-label'
-                            });
-                        }
+                        // Popup simples com apenas o nome do município
+                        layer.bindPopup(`
+                            <div class="popup-header" style="background: linear-gradient(135deg, #0284c7, #0369a1); padding: 8px 12px;">
+                                <div class="popup-category" style="font-size: 0.7rem; color: #bae6fd; text-transform: uppercase;">Limite Territorial</div>
+                                <div class="popup-title" style="font-size: 1rem; color: #ffffff; font-weight: 700; margin-top: 2px;">${nome}</div>
+                            </div>
+                        `);
 
                         layer.on('mouseover', function(e) {
                             e.target.setStyle({
-                                weight: 2.8,
-                                color: '#0ea5e9',
-                                fillOpacity: 0.12
+                                weight: 2.6,
+                                color: '#38bdf8',
+                                fillOpacity: 0.08
                             });
                         });
 
                         layer.on('mouseout', function(e) {
-                            layerGroupMunicipios.resetStyle(e.target);
+                            if (layerGroupMunicipios) {
+                                layerGroupMunicipios.resetStyle(e.target);
+                            }
                         });
                     }
                 }).addTo(map);
             }
-            
+
             layerGroupAreas = L.geoJSON(window.GIS_DATA.areas, {
                 style: styleAreas,
                 onEachFeature: function(feature, layer) {
@@ -652,7 +635,7 @@ window.GIS_LAYERS = (function() {
 
         setOpacity: function(layerName, opacity) {
             if (layerName === 'municipios' && layerGroupMunicipios) {
-                layerGroupMunicipios.setStyle({ fillOpacity: opacity * 0.12, opacity: opacity });
+                layerGroupMunicipios.setStyle({ fillOpacity: opacity * 0.05, opacity: opacity });
             } else if (layerName === 'areas' && layerGroupAreas) {
                 layerGroupAreas.setStyle({ fillOpacity: opacity * 0.5, opacity: opacity });
             } else if (layerName === 'linear' && layerGroupLinear) {

@@ -2297,22 +2297,27 @@ body.auth-locked .modal-backdrop {
     gap: 6px;
 }
 
-/* Limites Municipais - Rótulos Centrais dos Municípios */
-.municipio-boundary-label {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: #e0f2fe !important;
-    font-size: 0.85rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.08em !important;
-    text-transform: uppercase !important;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 12px rgba(2, 132, 199, 0.8) !important;
+
+/* ==========================================================================
+   TOOLTIP E ESTILO DE LIMITES MUNICIPAIS (APENAS LIMITE TERRITORIAL)
+   ========================================================================== */
+
+.municipio-hover-tooltip {
+    background: rgba(15, 23, 42, 0.94) !important;
+    border: 1px solid rgba(56, 189, 248, 0.5) !important;
+    color: #ffffff !important;
+    font-size: 0.825rem !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    padding: 4px 10px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
     pointer-events: none !important;
+    letter-spacing: 0.3px !important;
 }
 
-body.light-theme .municipio-boundary-label {
-    color: #0369a1 !important;
-    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95), 0 0 8px rgba(255, 255, 255, 0.9) !important;
+body.light-theme .municipio-hover-tooltip {
+    background: rgba(255, 255, 255, 0.96) !important;
+    border: 1px solid #0284c7 !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
-
