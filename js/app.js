@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 9. Layer Checkboxes & Opacity Sliders
-    ['areas', 'linear', 'localizada'].forEach(layerName => {
+    ['municipios', 'areas', 'linear', 'localizada'].forEach(layerName => {
         const chk = document.getElementById(`chk-layer-${layerName}`);
         if (chk) {
             chk.addEventListener('change', function(e) {

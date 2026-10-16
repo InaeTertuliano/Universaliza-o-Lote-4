@@ -263,6 +263,29 @@
                             <span><i class="fas fa-layers"></i> Camadas do Geopackage</span>
                         </div>
 
+                        <!-- Layer 0: Limites Municipais -->
+                        <div class="layer-item">
+                            <div class="layer-header">
+                                <label class="layer-title-box">
+                                    <input type="checkbox" id="chk-layer-municipios" class="layer-checkbox" checked>
+                                    <span class="layer-name">Limites Municipais (Lote 4)</span>
+                                </label>
+                                <span class="layer-count-badge" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">10 municípios</span>
+                            </div>
+                            <div class="layer-details">
+                                <div class="opacity-slider-box">
+                                    <span>Opacidade:</span>
+                                    <input type="range" id="slider-opacity-municipios" min="0" max="1" step="0.1" value="0.8">
+                                </div>
+                                <div class="legend-group">
+                                    <div class="legend-row">
+                                        <div class="legend-color-box" style="background: rgba(2, 132, 199, 0.15); border: 1.5px dashed #38bdf8;"></div>
+                                        <span>Delimitação Municipal Oficial (IBGE / Sabesp)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Layer 1: Áreas de Expansão -->
                         <div class="layer-item">
                             <div class="layer-header">
@@ -1028,6 +1051,7 @@
 
     <!-- Embedded GeoJSON Data Package -->
     <script src="js/data.js"></script>
+    <script src="js/municipios_data.js"></script>
     <script src="js/metas_data.js"></script>
 
     <!-- WebGIS Modules -->

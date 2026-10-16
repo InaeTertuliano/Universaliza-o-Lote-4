@@ -2296,3 +2296,23 @@ body.auth-locked .modal-backdrop {
     justify-content: center;
     gap: 6px;
 }
+
+/* Limites Municipais - Rótulos Centrais dos Municípios */
+.municipio-boundary-label {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #e0f2fe !important;
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 12px rgba(2, 132, 199, 0.8) !important;
+    pointer-events: none !important;
+}
+
+body.light-theme .municipio-boundary-label {
+    color: #0369a1 !important;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95), 0 0 8px rgba(255, 255, 255, 0.9) !important;
+}
+
