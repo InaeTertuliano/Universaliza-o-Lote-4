@@ -69,6 +69,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetPane = document.getElementById(`tab-${targetTab}`);
             if (targetPane) targetPane.classList.add('active');
 
+            // Garante que a lista suspensa de frentes na Visão Detalhada fique sempre recolhida
+            const dropFrenteEl = document.getElementById('dropdown-frente-obra-quant');
+            if (dropFrenteEl) {
+                dropFrenteEl.open = false;
+            }
+
             if (targetTab === 'geral') {
                 if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
                     window.GIS_LAYERS.setLegendMode('status');
@@ -803,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     c.classList.remove('active-bairro');
                 }
             });
-            if (badgeFrente) badgeFrente.innerHTML = `${bairroTarget} <i class="fas fa-check"></i>`;
+            if (badgeFrente) badgeFrente.innerHTML = `${bairroTarget} <i class="fas fa-chevron-down" style="font-size:0.75rem; margin-left:3px;"></i>`;
 
             updateSegmentWidget(bairroTarget);
             updateLocalizadaWidget(bairroTarget);
@@ -853,20 +859,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+
+        // A lista de frentes de obra deve ficar permanentemente recolhida e fechar automaticamente após a escolha
+        if (dropdownFrente) {
+            dropdownFrente.open = false;
+        }
     }
 
     // Expose selectBairro globally for centroid markers and external integrations
     window.selectBairro = selectBairro;
 
     bairroCards.forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function(e) {
             const bairroTarget = this.dataset.bairro;
             if (!bairroTarget) {
                 selectBairro(null, false);
-                return;
+            } else {
+                selectBairro(bairroTarget, true);
             }
-            selectBairro(bairroTarget, true);
+            if (dropdownFrente) {
+                dropdownFrente.open = false;
+            }
         });
+    });
+
+    // Fechar automaticamente a lista suspensa ao clicar fora dela
+    document.addEventListener('click', function(e) {
+        if (dropdownFrente && dropdownFrente.open && !dropdownFrente.contains(e.target)) {
+            dropdownFrente.open = false;
+        }
+    });
+
+    // Fechar com a tecla ESC caso esteja aberta
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && dropdownFrente && dropdownFrente.open) {
+            dropdownFrente.open = false;
+        }
     });
 
     console.log("Portal WebGIS Engeform & Sabesp ready with Dynamic Bairro Segment & Obras Localizadas Widgets!");
