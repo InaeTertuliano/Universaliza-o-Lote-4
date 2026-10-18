@@ -26,12 +26,12 @@ window.GIS_LAYERS = (function() {
             id: 'PEDRAS E VITÓRIA',
             nome: 'Pedras e Vitória',
             municipio: 'Guareí',
-            status: 'NÃO INICIADO',
-            statusLabel: 'Não Iniciado',
+            status: 'INICIADO',
+            statusLabel: 'Iniciado',
             lat: -23.366327,
             lng: -48.144570,
-            cor: '#f59e0b',
-            icone: 'fa-clock'
+            cor: '#0284c7',
+            icone: 'fa-spinner'
         },
         {
             id: 'TURVO DOS ALMEIDAS',
@@ -357,9 +357,9 @@ window.GIS_LAYERS = (function() {
             title: 'Status de Execução',
             icon: 'fas fa-tasks',
             items: [
-                { label: 'Concluído', color: '#10b981', type: 'both' },
-                { label: 'Iniciado', color: '#0284c7', type: 'both' },
-                { label: 'Não Iniciado', color: '#f59e0b', type: 'both' }
+                { label: 'Concluído', color: '#10b981', icon: 'fa-check', type: 'both' },
+                { label: 'Iniciado', color: '#0284c7', icon: 'fa-spinner', type: 'both' },
+                { label: 'Não Iniciado', color: '#f59e0b', icon: 'fa-clock', type: 'both' }
             ]
         },
         segmento: {
@@ -395,9 +395,11 @@ window.GIS_LAYERS = (function() {
             let symbolHtml = '';
             if (item.type === 'both') {
                 symbolHtml = `
-                    <div style="display:inline-flex; align-items:center; gap:5px; margin-right:6px;">
-                        <div class="legend-color-circle" style="background:${item.color}; border:1.5px solid rgba(255,255,255,0.7); box-shadow:0 0 5px ${item.color}88; width:13px; height:13px;" title="Marcador de Frente (Zoom Distante)"></div>
-                        <div class="legend-color-line" style="background:${item.color}; width:16px; height:4px; border-radius:2px;" title="Trecho de Rede"></div>
+                    <div style="display:inline-flex; align-items:center; gap:6px; margin-right:6px;">
+                        <span style="display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; background:${item.color}; border:2px solid #ffffff; box-shadow:0 0 5px ${item.color}aa; font-size:8px; color:#ffffff;" title="Ícone da Frente no Mapa (Zoom Distante)">
+                            <i class="fas ${item.icon || 'fa-map-marker-alt'}"></i>
+                        </span>
+                        <div class="legend-color-line" style="background:${item.color}; width:16px; height:4px; border-radius:2px;" title="Rede de Esgoto (Zoom Próximo)"></div>
                     </div>
                 `;
             } else if (item.type === 'line') {
@@ -469,7 +471,7 @@ window.GIS_LAYERS = (function() {
     function createCentroidMarker(bairro) {
         const iconHtml = `
             <div class="bairro-centroid-marker" title="Frente de Obra: ${bairro.nome} (${bairro.municipio}) - Status: ${bairro.statusLabel}">
-                <div class="bairro-centroid-pin" style="background-color: ${bairro.cor}; border-color: #ffffff; box-shadow: 0 4px 14px ${bairro.cor}88;">
+                <div class="bairro-centroid-pin" style="background-color: ${bairro.cor}; color: ${bairro.cor}; border-color: #ffffff; box-shadow: 0 4px 14px ${bairro.cor}88;">
                     <i class="fas ${bairro.icone}" style="color: #ffffff;"></i>
                 </div>
                 <div class="bairro-centroid-label">
