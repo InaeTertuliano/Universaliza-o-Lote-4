@@ -432,175 +432,14 @@ window.GIS_LAYERS = (function() {
         return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
     }
 
+    // A função de realce que alterava as cores dos elementos no mapa foi desativada a pedido do usuário.
+    // Todas as camadas mantêm estritamente suas cores e estilos da legenda ativa (apenas zoom e enquadramento ocorrem).
     function highlightBairro(bairroTarget) {
         currentHighlightedBairro = bairroTarget;
-        const normTarget = bairroTarget ? normStr(bairroTarget) : null;
-
-        const isMatchingBairro = function(props) {
-            if (!normTarget) return false;
-            const b = normStr(props.bairro || '');
-            if (!b) return false;
-            if (b === normTarget) return true;
-            if (normTarget.startsWith("PEDRAS E VITORIA") && b.startsWith("PEDRAS E VITORIA")) return true;
-            if (normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) return true;
-            return false;
-        };
-
-        // Linear Layer Highlight
-        if (layerGroupLinear) {
-            layerGroupLinear.eachLayer(function(layer) {
-                const props = layer.feature.properties;
-                const isSelected = isMatchingBairro(props);
-
-                if (!normTarget) {
-                    layerGroupLinear.resetStyle(layer);
-                } else if (isSelected) {
-                    // Vivid Cyan Highlight with thick weight
-                    layer.setStyle({
-                        color: '#00ffff',
-                        weight: 7,
-                        opacity: 1.0,
-                        lineCap: 'round',
-                        lineJoin: 'round'
-                    });
-                    if (layer.bringToFront) layer.bringToFront();
-                } else {
-                    // Muted background state - STILL FULLY VISIBLE
-                    layer.setStyle({
-                        opacity: 0.35,
-                        weight: 2
-                    });
-                }
-            });
-        }
-
-        // Areas Layer Highlight
-        if (layerGroupAreas) {
-            layerGroupAreas.eachLayer(function(layer) {
-                const props = layer.feature.properties;
-                const isSelected = isMatchingBairro(props);
-
-                if (!normTarget) {
-                    layerGroupAreas.resetStyle(layer);
-                } else if (isSelected) {
-                    layer.setStyle({
-                        fillColor: '#00ffff',
-                        fillOpacity: 0.55,
-                        color: '#00ffff',
-                        weight: 4,
-                        dashArray: ''
-                    });
-                    if (layer.bringToFront) layer.bringToFront();
-                } else {
-                    layer.setStyle({
-                        fillOpacity: 0.12,
-                        opacity: 0.25,
-                        weight: 1
-                    });
-                }
-            });
-        }
-
-        // Localizada Marker Highlight
-        if (layerGroupLocalizada) {
-            layerGroupLocalizada.eachLayer(function(layer) {
-                const props = layer.feature ? layer.feature.properties : {};
-                const isSelected = isMatchingBairro(props);
-                const el = (typeof layer.getElement === 'function') ? layer.getElement() : null;
-                if (el) {
-                    if (!normTarget) {
-                        el.style.opacity = '1.0';
-                        el.style.transform = 'scale(1)';
-                    } else if (isSelected) {
-                        el.style.opacity = '1.0';
-                        el.style.transform = 'scale(1.5)';
-                        el.style.zIndex = '1000';
-                    } else {
-                        el.style.opacity = '0.4';
-                        el.style.transform = 'scale(0.85)';
-                    }
-                }
-            });
-        }
-
-        // Escopo Original Linear Highlight
-        if (layerGroupOrigLinear) {
-            layerGroupOrigLinear.eachLayer(function(layer) {
-                const props = layer.feature ? layer.feature.properties : {};
-                const isSelected = isMatchingBairro(props);
-
-                if (!normTarget) {
-                    layerGroupOrigLinear.resetStyle(layer);
-                } else if (isSelected) {
-                    layer.setStyle({
-                        color: '#ea580c',
-                        weight: 6,
-                        opacity: 1.0,
-                        dashArray: '8, 8',
-                        lineCap: 'round',
-                        lineJoin: 'round'
-                    });
-                    if (layer.bringToFront) layer.bringToFront();
-                } else {
-                    layer.setStyle({
-                        opacity: 0.15,
-                        weight: 1.5,
-                        dashArray: '6, 6'
-                    });
-                }
-            });
-        }
-
-        // Escopo Original Areas Highlight
-        if (layerGroupOrigAreas) {
-            layerGroupOrigAreas.eachLayer(function(layer) {
-                const props = layer.feature ? layer.feature.properties : {};
-                const isSelected = isMatchingBairro(props);
-
-                if (!normTarget) {
-                    layerGroupOrigAreas.resetStyle(layer);
-                } else if (isSelected) {
-                    layer.setStyle({
-                        color: '#ea580c',
-                        fillColor: '#ea580c',
-                        weight: 4.0,
-                        opacity: 1.0,
-                        fillOpacity: 0.35,
-                        dashArray: '5, 5'
-                    });
-                    if (layer.bringToFront) layer.bringToFront();
-                } else {
-                    layer.setStyle({
-                        opacity: 0.15,
-                        fillOpacity: 0.05,
-                        weight: 1.0,
-                        dashArray: '5, 5'
-                    });
-                }
-            });
-        }
-
-        // Escopo Original Pontual Highlight
-        if (layerGroupOrigPontual) {
-            layerGroupOrigPontual.eachLayer(function(layer) {
-                const props = layer.feature ? layer.feature.properties : {};
-                const isSelected = isMatchingBairro(props);
-                const el = (typeof layer.getElement === 'function') ? layer.getElement() : null;
-                if (el) {
-                    if (!normTarget) {
-                        el.style.opacity = '1.0';
-                        el.style.transform = 'scale(1)';
-                    } else if (isSelected) {
-                        el.style.opacity = '1.0';
-                        el.style.transform = 'scale(1.4)';
-                        el.style.zIndex = '1000';
-                    } else {
-                        el.style.opacity = '0.2';
-                        el.style.transform = 'scale(0.85)';
-                    }
-                }
-            });
-        }
+        if (layerGroupLinear) layerGroupLinear.setStyle(styleLinear);
+        if (layerGroupAreas) layerGroupAreas.setStyle(styleAreas);
+        if (layerGroupOrigLinear) layerGroupOrigLinear.setStyle(styleOrigLinear);
+        if (layerGroupOrigAreas) layerGroupOrigAreas.setStyle(styleOrigAreas);
     }
 
     // Legend Configurations for the Styling Modes (Escopo, Status, Segmento, Material)
@@ -949,14 +788,10 @@ window.GIS_LAYERS = (function() {
                         }
                     });
                     layer.on('mouseover', function(e) {
-                        if (!currentHighlightedBairro) {
-                            e.target.setStyle({ fillOpacity: 0.6, weight: 3 });
-                        }
+                        e.target.setStyle({ fillOpacity: 0.5, weight: 3 });
                     });
                     layer.on('mouseout', function(e) {
-                        if (!currentHighlightedBairro) {
-                            layerGroupAreas.resetStyle(e.target);
-                        }
+                        layerGroupAreas.resetStyle(e.target);
                     });
                 }
             }).addTo(map);
@@ -966,14 +801,10 @@ window.GIS_LAYERS = (function() {
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(createLinearPopup(feature.properties));
                     layer.on('mouseover', function(e) {
-                        if (!currentHighlightedBairro) {
-                            e.target.setStyle({ weight: (e.target.options.weight || 3) + 3, opacity: 1 });
-                        }
+                        e.target.setStyle({ weight: (e.target.options.weight || 3) + 2 });
                     });
                     layer.on('mouseout', function(e) {
-                        if (!currentHighlightedBairro) {
-                            layerGroupLinear.resetStyle(e.target);
-                        }
+                        layerGroupLinear.resetStyle(e.target);
                     });
                 }
             }).addTo(map);
@@ -998,14 +829,10 @@ window.GIS_LAYERS = (function() {
                                 }
                             });
                             layer.on('mouseover', function(e) {
-                                if (!currentHighlightedBairro) {
-                                    e.target.setStyle({ fillOpacity: 0.45, weight: 3.5 });
-                                }
+                                e.target.setStyle({ fillOpacity: 0.35, weight: 3.5 });
                             });
                             layer.on('mouseout', function(e) {
-                                if (!currentHighlightedBairro) {
-                                    layerGroupOrigAreas.resetStyle(e.target);
-                                }
+                                layerGroupOrigAreas.resetStyle(e.target);
                             });
                         }
                     });
@@ -1017,14 +844,10 @@ window.GIS_LAYERS = (function() {
                         onEachFeature: function(feature, layer) {
                             layer.bindPopup(createOrigLinearPopup(feature.properties));
                             layer.on('mouseover', function(e) {
-                                if (!currentHighlightedBairro) {
-                                    e.target.setStyle({ weight: 5.5, opacity: 1.0 });
-                                }
+                                e.target.setStyle({ weight: 5.5 });
                             });
                             layer.on('mouseout', function(e) {
-                                if (!currentHighlightedBairro) {
-                                    layerGroupOrigLinear.resetStyle(e.target);
-                                }
+                                layerGroupOrigLinear.resetStyle(e.target);
                             });
                         }
                     });
