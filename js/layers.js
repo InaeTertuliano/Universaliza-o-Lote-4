@@ -15,8 +15,10 @@ window.GIS_LAYERS = (function() {
     let layerGroupOrigLinear = null;
     let layerGroupOrigPontual = null;
     let isOrigPontualEnabled = true;
+    let isOrigAreasEnabled = true;
+    let isOrigLinearEnabled = true;
 
-    let currentLegendMode = 'status'; // 'status', 'segmento', 'material'
+    let currentLegendMode = 'status'; // 'status', 'escopo', 'segmento', 'material'
     let currentHighlightedBairro = null;
 
     // Limiar de zoom:
@@ -648,28 +650,6 @@ window.GIS_LAYERS = (function() {
             `;
         });
         html += '</div>';
-
-        // Rodapé com os dois tipos de escopo sempre que outro modo estiver selecionado
-        if (mode !== 'escopo') {
-            html += `
-                <div class="legend-escopo-footer" style="margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--border-dark); font-size: 0.72rem;">
-                    <div style="font-size: 0.65rem; font-weight: 700; color: var(--engeform-light-taupe); text-transform: uppercase; margin-bottom: 3px; display: flex; align-items: center; gap: 4px;">
-                        <i class="fas fa-balance-scale" style="color: #f97316;"></i> Tipos de Escopo:
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-                        <span style="display: flex; align-items: center; gap: 4px;" title="Projeto Consolidado no Geopackage">
-                            <span style="display: inline-block; width: 14px; height: 3px; background: #0284c7; border-radius: 1px;"></span>
-                            <span>Escopo Final</span>
-                        </span>
-                        <span style="display: flex; align-items: center; gap: 4px;" title="Estudo Preliminar Conceitual">
-                            <span style="display: inline-block; width: 14px; height: 3px; background: #f97316; border-top: 1.5px dashed #ffedd5;"></span>
-                            <span>Escopo Original</span>
-                        </span>
-                    </div>
-                </div>
-            `;
-        }
-
         return html;
     }
 
@@ -794,10 +774,57 @@ window.GIS_LAYERS = (function() {
             }
         }
 
-        // 3. Escopo Original Pontual (EEE/ETE) - Visíveis em zoom aproximado (>= 13)
+        // 3. Escopo Original (Visibilidade controlada por modo de legenda 'escopo' e zoom)
+        updateOrigLayersVisibility();
+    }
+
+    // Gerenciador de visibilidade das camadas do Escopo Original:
+    // O Escopo Original só é visível no mapa quando a legenda ativa for "Classificar por Escopo" ('escopo')
+    function updateOrigLayersVisibility() {
+        if (!map) return;
+        const isEscopoActive = (currentLegendMode === 'escopo');
+        const currentZoom = map.getZoom();
+
+        // 1. Áreas Originais
+        if (layerGroupOrigAreas) {
+            const shouldBeVisible = isEscopoActive && isOrigAreasEnabled;
+            if (shouldBeVisible) {
+                if (!map.hasLayer(layerGroupOrigAreas)) {
+                    map.addLayer(layerGroupOrigAreas);
+                    layerGroupOrigAreas.setStyle(styleOrigAreas);
+                    if (currentHighlightedBairro) {
+                        highlightBairro(currentHighlightedBairro);
+                    }
+                }
+            } else {
+                if (map.hasLayer(layerGroupOrigAreas)) {
+                    map.removeLayer(layerGroupOrigAreas);
+                }
+            }
+        }
+
+        // 2. Redes Lineares Originais
+        if (layerGroupOrigLinear) {
+            const shouldBeVisible = isEscopoActive && isOrigLinearEnabled;
+            if (shouldBeVisible) {
+                if (!map.hasLayer(layerGroupOrigLinear)) {
+                    map.addLayer(layerGroupOrigLinear);
+                    layerGroupOrigLinear.setStyle(styleOrigLinear);
+                    if (currentHighlightedBairro) {
+                        highlightBairro(currentHighlightedBairro);
+                    }
+                }
+            } else {
+                if (map.hasLayer(layerGroupOrigLinear)) {
+                    map.removeLayer(layerGroupOrigLinear);
+                }
+            }
+        }
+
+        // 3. Obras Pontuais Originais (EEE/ETE) - Somente em modo escopo E zoom aproximado (>= 13)
         if (layerGroupOrigPontual) {
-            const shouldBeVisibleOrigPontual = isOrigPontualEnabled && (currentZoom >= MIN_ZOOM_LOCALIZADA);
-            if (shouldBeVisibleOrigPontual) {
+            const shouldBeVisible = isEscopoActive && isOrigPontualEnabled && (currentZoom >= MIN_ZOOM_LOCALIZADA);
+            if (shouldBeVisible) {
                 if (!map.hasLayer(layerGroupOrigPontual)) {
                     map.addLayer(layerGroupOrigPontual);
                     if (currentHighlightedBairro) {
@@ -928,7 +955,7 @@ window.GIS_LAYERS = (function() {
                                 }
                             });
                         }
-                    }).addTo(map);
+                    });
                 }
 
                 if (window.GIS_ESCOPO_ORIGINAL.linear) {
@@ -947,7 +974,7 @@ window.GIS_LAYERS = (function() {
                                 }
                             });
                         }
-                    }).addTo(map);
+                    });
                 }
 
                 if (window.GIS_ESCOPO_ORIGINAL.pontual) {
@@ -965,10 +992,10 @@ window.GIS_LAYERS = (function() {
                 layerGroupBairroCentroids.addLayer(createCentroidMarker(b));
             });
 
-            // Controle de exibição condicional por zoom:
-            // Centróides em zoom distante (< 13) e Obras Localizadas em zoom próximo (>= 13)
+            // Controle de exibição condicional por zoom e modo de legenda:
             map.on('zoomend', updateZoomVisibility);
             updateZoomVisibility();
+            updateOrigLayersVisibility();
 
             // Initialize legend displays for default mode
             updateLegends(currentLegendMode);
@@ -990,18 +1017,14 @@ window.GIS_LAYERS = (function() {
                 isLocalizadaEnabled = visible;
                 updateZoomVisibility();
             } else if (layerName === 'orig-areas') {
-                if (layerGroupOrigAreas) {
-                    if (visible) map.addLayer(layerGroupOrigAreas);
-                    else map.removeLayer(layerGroupOrigAreas);
-                }
+                isOrigAreasEnabled = visible;
+                updateOrigLayersVisibility();
             } else if (layerName === 'orig-linear') {
-                if (layerGroupOrigLinear) {
-                    if (visible) map.addLayer(layerGroupOrigLinear);
-                    else map.removeLayer(layerGroupOrigLinear);
-                }
+                isOrigLinearEnabled = visible;
+                updateOrigLayersVisibility();
             } else if (layerName === 'orig-pontual') {
                 isOrigPontualEnabled = visible;
-                updateZoomVisibility();
+                updateOrigLayersVisibility();
             }
         },
 
@@ -1023,6 +1046,7 @@ window.GIS_LAYERS = (function() {
             currentLegendMode = mode;
             updateLegends(mode);
             updateLocalizadaMarkers();
+            updateOrigLayersVisibility();
             if (currentHighlightedBairro) {
                 highlightBairro(currentHighlightedBairro);
             } else {

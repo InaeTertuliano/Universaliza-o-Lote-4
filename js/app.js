@@ -237,6 +237,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const chk = document.getElementById(`chk-layer-${layerName}`);
         if (chk) {
             chk.addEventListener('change', function(e) {
+                if (layerName.startsWith('orig-') && e.target.checked) {
+                    const selLegend = document.getElementById('select-legend-mode');
+                    if (selLegend && selLegend.value !== 'escopo') {
+                        selLegend.value = 'escopo';
+                        if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
+                            window.GIS_LAYERS.setLegendMode('escopo');
+                        }
+                    }
+                }
                 window.GIS_LAYERS.setLayerVisibility(layerName, e.target.checked);
             });
         }
@@ -346,6 +355,12 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const bairro = this.dataset.bairro;
             if (modalComparativo) modalComparativo.style.display = 'none';
+            // Ativa o modo escopo para que as camadas do escopo original fiquem visíveis no mapa
+            const selLegend = document.getElementById('select-legend-mode');
+            if (selLegend) selLegend.value = 'escopo';
+            if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
+                window.GIS_LAYERS.setLegendMode('escopo');
+            }
             if (window.selectBairro) window.selectBairro(bairro, false);
         });
     });
