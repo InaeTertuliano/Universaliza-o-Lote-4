@@ -195,33 +195,61 @@
                     <!-- Quadro Frente de Obra (Apresentação Independente - Não é lista suspensa) -->
                     <div class="widget-card">
                         <div class="widget-title">
-                            <span><i class="fas fa-hard-hat"></i> Frente de Obra</span>
-                            <span style="font-size:0.75rem; font-weight:400; color:var(--engeform-light-taupe);">💡 Clique no bairro para aproximar (zoom) no mapa</span>
+                            <span><i class="fas fa-hard-hat"></i> Frentes de Obra</span>
+                            <span style="font-size:0.75rem; font-weight:400; color:var(--engeform-light-taupe);">💡 Clique para aproximar no mapa</span>
+                        </div>
+
+                        <!-- Legenda do Mapa no Zoom Distante (Classificada em Concluído, Iniciado e Não Iniciado) -->
+                        <div class="legend-status-card" style="margin-bottom: 0.85rem; padding: 0.65rem 0.85rem; background: var(--bg-surface-elevated); border-radius: 8px; border: 1px solid var(--border-dark);">
+                            <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--engeform-light-taupe); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                                <span><i class="fas fa-map-marked-alt"></i> Legenda do Mapa (Zoom Distante):</span>
+                                <span style="font-size: 0.68rem; opacity: 0.8; font-weight: 400;">Classificação das Frentes</span>
+                            </div>
+                            <div style="display: flex; gap: 8px; justify-content: space-between;">
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981; border: 1.5px solid rgba(255,255,255,0.7); box-shadow: 0 0 6px rgba(16,185,129,0.5);"></div>
+                                    <span style="font-weight: 600; color: #10b981;">Concluído</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #0284c7; border: 1.5px solid rgba(255,255,255,0.7); box-shadow: 0 0 6px rgba(2,132,199,0.5);"></div>
+                                    <span style="font-weight: 600; color: #38bdf8;">Iniciado</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #f59e0b; border: 1.5px solid rgba(255,255,255,0.7); box-shadow: 0 0 6px rgba(245,158,11,0.5);"></div>
+                                    <span style="font-weight: 600; color: #fbbf24;">Não Iniciado</span>
+                                </div>
+                            </div>
                         </div>
                         
                         <!-- 1. Pedras e Vitória (Guareí - Unificado) -->
                         <div class="quant-row bairro-card" data-bairro="PEDRAS E VITÓRIA">
                             <div class="quant-header-row">
-                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#919389; font-size:9px; margin-right:4px;"></i> Pedras e Vitória (Guareí)</span>
-                                <strong class="quant-value-text">21.542,65 m (21,54 km)</strong>
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Pedras e Vitória (Guareí)</span>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="popup-badge nao-iniciado" style="font-size:0.65rem; padding:1px 5px;">Não Iniciado</span>
+                                    <strong class="quant-value-text">21.542,65 m</strong>
+                                </div>
                             </div>
-                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 47.4%; background:#919389;"></div></div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 47.4%; background:#f59e0b;"></div></div>
                             <div class="quant-sub-info">
                                 <span>Participação: <strong>47,4% do lote</strong></span>
-                                <span><i class="fas fa-industry" style="color:var(--engeform-light-taupe); margin-right:3px;"></i> Obras Localizadas: <strong>5 EEEs</strong></span>
+                                <span><i class="fas fa-industry" style="color:#f59e0b; margin-right:3px;"></i> Obras Localizadas: <strong>5 EEEs</strong></span>
                             </div>
                         </div>
 
                         <!-- 2. Turvo dos Almeidas (Capão Bonito) -->
                         <div class="quant-row bairro-card" data-bairro="TURVO DOS ALMEIDAS">
                             <div class="quant-header-row">
-                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#ec4899; font-size:9px; margin-right:4px;"></i> Turvo dos Almeidas (Capão Bonito)</span>
-                                <strong class="quant-value-text">9.037,90 m (9,04 km)</strong>
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Turvo dos Almeidas (Capão Bonito)</span>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="popup-badge nao-iniciado" style="font-size:0.65rem; padding:1px 5px;">Não Iniciado</span>
+                                    <strong class="quant-value-text">9.037,90 m</strong>
+                                </div>
                             </div>
-                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 19.9%; background:#ec4899;"></div></div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 19.9%; background:#f59e0b;"></div></div>
                             <div class="quant-sub-info">
                                 <span>Participação: <strong>19,9% do lote</strong></span>
-                                <span><i class="fas fa-network-wired" style="color:#ec4899; margin-right:3px;"></i> Obras de Rede: <strong>34 trechos</strong></span>
+                                <span><i class="fas fa-network-wired" style="color:#f59e0b; margin-right:3px;"></i> Obras de Rede: <strong>34 trechos</strong></span>
                             </div>
                         </div>
 
@@ -229,7 +257,10 @@
                         <div class="quant-row bairro-card" data-bairro="SERRA DA PRATA">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Serra da Prata (Paranapanema)</span>
-                                <strong class="quant-value-text">6.672,19 m (6,67 km)</strong>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="popup-badge iniciado" style="font-size:0.65rem; padding:1px 5px;">Iniciado</span>
+                                    <strong class="quant-value-text">6.672,19 m</strong>
+                                </div>
                             </div>
                             <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 14.7%; background:#0284c7;"></div></div>
                             <div class="quant-sub-info">
@@ -241,39 +272,48 @@
                         <!-- 4. Pocinho (São Miguel Arcanjo) -->
                         <div class="quant-row bairro-card" data-bairro="POCINHO">
                             <div class="quant-header-row">
-                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#10b981; font-size:9px; margin-right:4px;"></i> Pocinho (São Miguel Arcanjo)</span>
-                                <strong class="quant-value-text">4.140,67 m (4,14 km)</strong>
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Pocinho (São Miguel Arcanjo)</span>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="popup-badge iniciado" style="font-size:0.65rem; padding:1px 5px;">Iniciado</span>
+                                    <strong class="quant-value-text">4.140,67 m</strong>
+                                </div>
                             </div>
-                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 9.1%; background:#10b981;"></div></div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 9.1%; background:#0284c7;"></div></div>
                             <div class="quant-sub-info">
                                 <span>Participação: <strong>9,1% do lote</strong></span>
-                                <span><i class="fas fa-industry" style="color:#10b981; margin-right:3px;"></i> Obras Localizadas: <strong>2 EEEs</strong></span>
+                                <span><i class="fas fa-industry" style="color:#0284c7; margin-right:3px;"></i> Obras Localizadas: <strong>2 EEEs</strong></span>
                             </div>
                         </div>
 
                         <!-- 5. Jardim Aeroporto (Itapetininga) -->
                         <div class="quant-row bairro-card" data-bairro="JARDIM AEROPORTO">
                             <div class="quant-header-row">
-                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Aeroporto (Itapetininga)</span>
-                                <strong class="quant-value-text">2.081,88 m (2,08 km)</strong>
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Jardim Aeroporto (Itapetininga)</span>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="popup-badge iniciado" style="font-size:0.65rem; padding:1px 5px;">Iniciado</span>
+                                    <strong class="quant-value-text">2.081,88 m</strong>
+                                </div>
                             </div>
-                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 4.6%; background:#f59e0b;"></div></div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 4.6%; background:#0284c7;"></div></div>
                             <div class="quant-sub-info">
                                 <span>Participação: <strong>4,6% do lote</strong></span>
-                                <span><i class="fas fa-industry" style="color:#f59e0b; margin-right:3px;"></i> Obras Localizadas: <strong>1 EEE</strong></span>
+                                <span><i class="fas fa-industry" style="color:#0284c7; margin-right:3px;"></i> Obras Localizadas: <strong>1 EEE</strong></span>
                             </div>
                         </div>
 
                         <!-- 6. Pateo Velho (Angatuba) -->
                         <div class="quant-row bairro-card" data-bairro="PATEO VELHO">
                             <div class="quant-header-row">
-                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#8b5cf6; font-size:9px; margin-right:4px;"></i> Pateo Velho (Angatuba)</span>
-                                <strong class="quant-value-text">1.942,82 m (1,94 km)</strong>
+                                <span class="quant-title-text"><i class="fas fa-circle" style="color:#10b981; font-size:9px; margin-right:4px;"></i> Pateo Velho (Angatuba)</span>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="popup-badge concluido" style="font-size:0.65rem; padding:1px 5px;">Concluído</span>
+                                    <strong class="quant-value-text">1.942,82 m</strong>
+                                </div>
                             </div>
-                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 4.3%; background:#8b5cf6;"></div></div>
+                            <div class="quant-bar-bg"><div class="quant-bar-fill" style="width: 4.3%; background:#10b981;"></div></div>
                             <div class="quant-sub-info">
                                 <span>Participação: <strong>4,3% do lote</strong></span>
-                                <span><i class="fas fa-industry" style="color:#8b5cf6; margin-right:3px;"></i> Obras Localizadas: <strong>1 EEE</strong></span>
+                                <span><i class="fas fa-industry" style="color:#10b981; margin-right:3px;"></i> Obras Localizadas: <strong>1 EEE</strong></span>
                             </div>
                         </div>
 
@@ -319,7 +359,7 @@
                                     <input type="checkbox" id="chk-layer-areas" class="layer-checkbox" checked>
                                     <span class="layer-name">Áreas de Expansão (Polígonos)</span>
                                 </label>
-                                <span class="layer-count-badge">7 áreas</span>
+                                <span class="layer-count-badge">11 áreas</span>
                             </div>
                             <div class="layer-details">
                                 <div class="opacity-slider-box">
@@ -339,7 +379,7 @@
                                     <input type="checkbox" id="chk-layer-linear" class="layer-checkbox" checked>
                                     <span class="layer-name">Redes de Esgoto (Linhas)</span>
                                 </label>
-                                <span class="layer-count-badge">454 trechos</span>
+                                <span class="layer-count-badge">505 trechos</span>
                             </div>
                             <div class="layer-details">
                                 <div class="opacity-slider-box">

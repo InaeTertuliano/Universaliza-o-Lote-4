@@ -68,6 +68,12 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
             const targetPane = document.getElementById(`tab-${targetTab}`);
             if (targetPane) targetPane.classList.add('active');
+
+            if (targetTab === 'geral') {
+                if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
+                    window.GIS_LAYERS.setLegendMode('status');
+                }
+            }
         });
     });
 

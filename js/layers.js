@@ -19,61 +19,74 @@ window.GIS_LAYERS = (function() {
     const MIN_ZOOM_LOCALIZADA = 13;
     let isLocalizadaEnabled = true; // Controlado pelo checkbox da camada no painel
 
-    // Centróides calculados das 4 Frentes de Obra / Bairros para exibição em zoom distante (< 13)
+    // Centróides calculados das 6 Frentes de Obra / Bairros para exibição em zoom distante (< 13)
+    // Classificados rigorosamente por Status de Execução: Concluído (#10b981), Iniciado (#0284c7) e Não Iniciado (#f59e0b)
     const BAIRRO_CENTROIDS = [
         {
             id: 'PEDRAS E VITÓRIA',
             nome: 'Pedras e Vitória',
             municipio: 'Guareí',
+            status: 'NÃO INICIADO',
+            statusLabel: 'Não Iniciado',
             lat: -23.366327,
             lng: -48.144570,
-            cor: '#919389',
-            icone: 'fa-layer-group'
-        },
-        {
-            id: 'SERRA DA PRATA',
-            nome: 'Serra da Prata',
-            municipio: 'Paranapanema',
-            lat: -23.461632,
-            lng: -48.865993,
-            cor: '#0284c7',
-            icone: 'fa-map-marker-alt'
-        },
-        {
-            id: 'POCINHO',
-            nome: 'Pocinho',
-            municipio: 'São Miguel Arcanjo',
-            lat: -23.854393,
-            lng: -48.180873,
-            cor: '#10b981',
-            icone: 'fa-map-marker-alt'
-        },
-        {
-            id: 'JARDIM AEROPORTO',
-            nome: 'Jardim Aeroporto',
-            municipio: 'Itapetininga',
-            lat: -23.576133,
-            lng: -47.982075,
             cor: '#f59e0b',
-            icone: 'fa-map-marker-alt'
+            icone: 'fa-clock'
         },
         {
             id: 'TURVO DOS ALMEIDAS',
             nome: 'Turvo dos Almeidas',
             municipio: 'Capão Bonito',
+            status: 'NÃO INICIADO',
+            statusLabel: 'Não Iniciado',
             lat: -23.861787,
             lng: -48.197851,
-            cor: '#ec4899',
-            icone: 'fa-map-marker-alt'
+            cor: '#f59e0b',
+            icone: 'fa-clock'
+        },
+        {
+            id: 'SERRA DA PRATA',
+            nome: 'Serra da Prata',
+            municipio: 'Paranapanema',
+            status: 'INICIADO',
+            statusLabel: 'Iniciado',
+            lat: -23.461632,
+            lng: -48.865993,
+            cor: '#0284c7',
+            icone: 'fa-spinner'
+        },
+        {
+            id: 'POCINHO',
+            nome: 'Pocinho',
+            municipio: 'São Miguel Arcanjo',
+            status: 'INICIADO',
+            statusLabel: 'Iniciado',
+            lat: -23.854393,
+            lng: -48.180873,
+            cor: '#0284c7',
+            icone: 'fa-spinner'
+        },
+        {
+            id: 'JARDIM AEROPORTO',
+            nome: 'Jardim Aeroporto',
+            municipio: 'Itapetininga',
+            status: 'INICIADO',
+            statusLabel: 'Iniciado',
+            lat: -23.576133,
+            lng: -47.982075,
+            cor: '#0284c7',
+            icone: 'fa-spinner'
         },
         {
             id: 'PATEO VELHO',
             nome: 'Pateo Velho',
             municipio: 'Angatuba',
+            status: 'CONCLUÍDO',
+            statusLabel: 'Concluído',
             lat: -23.553913,
             lng: -48.311200,
-            cor: '#8b5cf6',
-            icone: 'fa-map-marker-alt'
+            cor: '#10b981',
+            icone: 'fa-check'
         }
     ];
 
@@ -344,9 +357,9 @@ window.GIS_LAYERS = (function() {
             title: 'Status de Execução',
             icon: 'fas fa-tasks',
             items: [
-                { label: 'Concluído (100% Executado)', color: '#10b981', type: 'line' },
-                { label: 'Iniciado (Em Execução)', color: '#0284c7', type: 'line' },
-                { label: 'Não Iniciado (A Iniciar)', color: '#f59e0b', type: 'line' }
+                { label: 'Concluído', color: '#10b981', type: 'both' },
+                { label: 'Iniciado', color: '#0284c7', type: 'both' },
+                { label: 'Não Iniciado', color: '#f59e0b', type: 'both' }
             ]
         },
         segmento: {
@@ -380,7 +393,14 @@ window.GIS_LAYERS = (function() {
         html += '<div class="legend-group">';
         legend.items.forEach(item => {
             let symbolHtml = '';
-            if (item.type === 'line') {
+            if (item.type === 'both') {
+                symbolHtml = `
+                    <div style="display:inline-flex; align-items:center; gap:5px; margin-right:6px;">
+                        <div class="legend-color-circle" style="background:${item.color}; border:1.5px solid rgba(255,255,255,0.7); box-shadow:0 0 5px ${item.color}88; width:13px; height:13px;" title="Marcador de Frente (Zoom Distante)"></div>
+                        <div class="legend-color-line" style="background:${item.color}; width:16px; height:4px; border-radius:2px;" title="Trecho de Rede"></div>
+                    </div>
+                `;
+            } else if (item.type === 'line') {
                 symbolHtml = `<div class="legend-color-line" style="background:${item.color};"></div>`;
             } else if (item.type === 'circle') {
                 symbolHtml = `<div class="legend-color-circle" style="background:${item.color}; border:1px solid rgba(255,255,255,0.4);"></div>`;
@@ -448,13 +468,13 @@ window.GIS_LAYERS = (function() {
     // Custom Marker for Bairro Centroid & Label (Distant zoom < 13)
     function createCentroidMarker(bairro) {
         const iconHtml = `
-            <div class="bairro-centroid-marker" title="Clique para focar e selecionar ${bairro.nome}">
-                <div class="bairro-centroid-pin" style="background-color: ${bairro.cor}; color: ${bairro.cor};">
+            <div class="bairro-centroid-marker" title="Frente de Obra: ${bairro.nome} (${bairro.municipio}) - Status: ${bairro.statusLabel}">
+                <div class="bairro-centroid-pin" style="background-color: ${bairro.cor}; border-color: #ffffff; box-shadow: 0 4px 14px ${bairro.cor}88;">
                     <i class="fas ${bairro.icone}" style="color: #ffffff;"></i>
                 </div>
                 <div class="bairro-centroid-label">
                     <div class="bairro-centroid-name">${bairro.nome}</div>
-                    <div class="bairro-centroid-mun">${bairro.municipio}</div>
+                    <div class="bairro-centroid-mun">${bairro.municipio} • <span style="color:${bairro.cor}; font-weight:700;">${bairro.statusLabel}</span></div>
                 </div>
             </div>
         `;
