@@ -142,7 +142,9 @@ window.GIS_LAYERS = (function() {
     }
 
     function getFeatureColor(props, layerType) {
-        if (currentLegendMode === 'status') {
+        if (currentLegendMode === 'escopo') {
+            return '#0284c7'; // Escopo Final (Consolidado)
+        } else if (currentLegendMode === 'status') {
             return getStatusColor(props.status || props.SIT_ATEND);
         } else if (currentLegendMode === 'segmento') {
             return getSegmentoColor(props.segmento);
@@ -174,8 +176,17 @@ window.GIS_LAYERS = (function() {
         return marker;
     }
 
-    // Styles for Áreas de Expansão (Polygons) - Uniform Non-classified Style
+    // Styles for Áreas de Expansão (Polygons) - Uniform Non-classified Style / Escopo
     function styleAreas(feature) {
+        if (currentLegendMode === 'escopo') {
+            return {
+                fillColor: '#0284c7',
+                fillOpacity: 0.22,
+                color: '#0284c7',
+                weight: 2.2,
+                dashArray: ''
+            };
+        }
         return {
             fillColor: '#919389',
             fillOpacity: 0.25,
@@ -549,8 +560,16 @@ window.GIS_LAYERS = (function() {
         }
     }
 
-    // Legend Configurations for the 3 Styling Modes
+    // Legend Configurations for the Styling Modes (Escopo, Status, Segmento, Material)
     const LEGENDS_DATA = {
+        escopo: {
+            title: 'Classificação por Escopo',
+            icon: 'fas fa-balance-scale',
+            items: [
+                { label: 'Escopo Final (Projeto Consolidado)', color: '#0284c7', type: 'escopo-final' },
+                { label: 'Escopo Original (Estudo Preliminar)', color: '#f97316', type: 'escopo-original' }
+            ]
+        },
         status: {
             title: 'Status de Execução',
             icon: 'fas fa-tasks',
@@ -591,7 +610,21 @@ window.GIS_LAYERS = (function() {
         html += '<div class="legend-group">';
         legend.items.forEach(item => {
             let symbolHtml = '';
-            if (item.type === 'both') {
+            if (item.type === 'escopo-final') {
+                symbolHtml = `
+                    <div style="display:inline-flex; align-items:center; gap:5px; margin-right:6px;">
+                        <div class="legend-color-line" style="background:${item.color}; width:20px; height:4px; border-radius:2px;" title="Rede Contínua Sólida"></div>
+                        <div class="legend-color-box" style="background:rgba(2,132,199,0.3); border:1.5px solid ${item.color}; width:11px; height:11px; border-radius:2px;" title="Polígono do Escopo Final"></div>
+                    </div>
+                `;
+            } else if (item.type === 'escopo-original') {
+                symbolHtml = `
+                    <div style="display:inline-flex; align-items:center; gap:5px; margin-right:6px;">
+                        <div class="legend-color-line" style="background:#f97316; border-top:2px dashed #ffedd5; height:4px; width:20px;" title="Rede Tracejada Laranja"></div>
+                        <div class="legend-color-box" style="background:rgba(249,115,22,0.25); border:1.5px dashed #f97316; width:11px; height:11px; border-radius:2px;" title="Polígono do Escopo Original"></div>
+                    </div>
+                `;
+            } else if (item.type === 'both') {
                 symbolHtml = `
                     <div style="display:inline-flex; align-items:center; gap:6px; margin-right:6px;">
                         <span style="display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; background:${item.color}; border:2px solid #ffffff; box-shadow:0 0 5px ${item.color}aa; font-size:8px; color:#ffffff;" title="Ícone da Frente no Mapa (Zoom Distante)">
@@ -615,6 +648,28 @@ window.GIS_LAYERS = (function() {
             `;
         });
         html += '</div>';
+
+        // Rodapé com os dois tipos de escopo sempre que outro modo estiver selecionado
+        if (mode !== 'escopo') {
+            html += `
+                <div class="legend-escopo-footer" style="margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--border-dark); font-size: 0.72rem;">
+                    <div style="font-size: 0.65rem; font-weight: 700; color: var(--engeform-light-taupe); text-transform: uppercase; margin-bottom: 3px; display: flex; align-items: center; gap: 4px;">
+                        <i class="fas fa-balance-scale" style="color: #f97316;"></i> Tipos de Escopo:
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                        <span style="display: flex; align-items: center; gap: 4px;" title="Projeto Consolidado no Geopackage">
+                            <span style="display: inline-block; width: 14px; height: 3px; background: #0284c7; border-radius: 1px;"></span>
+                            <span>Escopo Final</span>
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 4px;" title="Estudo Preliminar Conceitual">
+                            <span style="display: inline-block; width: 14px; height: 3px; background: #f97316; border-top: 1.5px dashed #ffedd5;"></span>
+                            <span>Escopo Original</span>
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
         return html;
     }
 
