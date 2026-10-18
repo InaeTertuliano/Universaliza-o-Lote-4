@@ -17,7 +17,7 @@ O WebGIS está publicado e acessível publicamente através do GitHub Pages:
    - **Obras Localizadas (EEE / Estações Elevatórias)**: Marcadores dinâmicos visíveis em zoom aproximado (≥ zoom 13).
    - **Rótulos dos Bairros com Centróides**: Identificação visual e automática no centróide de cada bairro em níveis de zoom regional (< zoom 13).
 
-2. **Painel Quantidades**:
+2. **Painel Visão Detalhada**:
    - Informações dinâmicas de obras lineares (extensão em metros e diâmetros) e obras localizadas (vazão, potência e altura manométrica).
    - Filtragem por **Frente de Obra** selecionada na lista suspensa.
 
