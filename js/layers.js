@@ -262,6 +262,9 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${(props.status || '').toLowerCase().replace(/ /g, '-')}">${props.status || '-'}</span></span></div>
                 <div class="popup-row"><span class="popup-key">Fonte / Contrato:</span><span class="popup-val">${props.fonte || '-'}</span></div>
             </div>
+        `;
+    }
+
     // =========================================================================
     // ESCOPO ORIGINAL (Comparativo Bairro / Frente de Obra) - Styles & Popups
     // =========================================================================
