@@ -11,6 +11,8 @@ window.GIS_METAS_MODULE = (function() {
     let currentTableView = 'geral'; // 'geral', 'anos', 'recorte'
 
     const MUN_BAIRRO_MAP = {
+        'ANGATUBA': 'PATEO VELHO',
+        'CAPÃO BONITO': 'TURVO DOS ALMEIDAS',
         'GUAREÍ': 'PEDRAS E VITÓRIA',
         'ITAPETININGA': 'JARDIM AEROPORTO',
         'PARANAPANEMA': 'SERRA DA PRATA',

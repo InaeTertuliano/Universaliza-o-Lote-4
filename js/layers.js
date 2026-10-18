@@ -56,6 +56,24 @@ window.GIS_LAYERS = (function() {
             lng: -47.982075,
             cor: '#f59e0b',
             icone: 'fa-map-marker-alt'
+        },
+        {
+            id: 'TURVO DOS ALMEIDAS',
+            nome: 'Turvo dos Almeidas',
+            municipio: 'Capão Bonito',
+            lat: -23.861787,
+            lng: -48.197851,
+            cor: '#ec4899',
+            icone: 'fa-map-marker-alt'
+        },
+        {
+            id: 'PATEO VELHO',
+            nome: 'Pateo Velho',
+            municipio: 'Angatuba',
+            lat: -23.553913,
+            lng: -48.311200,
+            cor: '#8b5cf6',
+            icone: 'fa-map-marker-alt'
         }
     ];
 

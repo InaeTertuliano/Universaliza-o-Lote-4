@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "LOCALIZADAS",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::31983" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 0, "ae_id": "171-AF-0001N", "lote": "LOTE 04", "nm_mun": "ANGATUBA", "bairro": "PATEO VELHO", "segmento": "EEE", "nome": null, "q_atual": null, "q_proj": 2.55, "q_total": null, "vol_atual": null, "vol_proj": null, "vol_total": null, "pot_cv": 15.0, "int_amb": null, "int_conces": null, "int_domin": null, "invest_obr": "Não", "obs": null, "recorte": "Formal", "unitizacao": null, "inicio_p": "2026-10-30", "termino_p": "2026-12-31", "inicio_r": null, "termino_r": null, "modalidade": "Novo", "data_atual": null, "status": "CONCLUÍDO", "coord": "ERC", "produto": "Esgoto", "energizaca": "Sim", "altura_man": 52.8, "altura_tor": null, "fonte": "BEATRIZ/ENGEFORM", "latitude": 161786.56332443387, "longitude": 7391398.5810897425 }, "geometry": { "type": "Point", "coordinates": [ 161786.56332443386782, 7391398.581089742481709 ] } }
+]
+}
