@@ -1,4 +1,4 @@
-window.GIS_METAS = {
+﻿window.GIS_METAS = {
   "lote": "Lote 4",
   "pacote": "O1L4",
   "fonte": "G:\\Meu Drive\\UNIVERSALIZAÇÃO SABESP\\00-MATERIAL VIAGEM\\Banco de Dados\\LOTE 4-ITAPETININGA\\Acompanhamento de Obras\\projeto_01\\metas_economias.xlsx",
