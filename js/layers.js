@@ -234,6 +234,12 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">Início Previsto / Real:</span><span class="popup-val">${props.inicio_p || '-'} / ${props.inicio_r || 'Não inf.'}</span></div>
                 <div class="popup-row"><span class="popup-key">Término Previsto:</span><span class="popup-val">${props.termino_p || '-'}</span></div>
                 ${props.obs ? `<div class="popup-row" style="flex-direction:column; gap:4px;"><span class="popup-key">Observações:</span><span class="popup-val" style="text-align:left; font-style:italic;">${props.obs}</span></div>` : ''}
+                ${props.bairro ? `
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
+                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                        <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
             </div>
         `;
     }
@@ -255,6 +261,12 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${(props.status || '').toLowerCase().replace(/ /g, '-')}">${props.status || '-'}</span></span></div>
                 <div class="popup-row"><span class="popup-key">Modalidade:</span><span class="popup-val">${props.modalidade || '-'}</span></div>
                 <div class="popup-row"><span class="popup-key">Datas (Início / Fim):</span><span class="popup-val">${props.inicio_p || '-'} à ${props.termino_p || '-'}</span></div>
+                ${props.bairro ? `
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
+                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                        <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
             </div>
         `;
     }
@@ -274,6 +286,12 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">Energização Prevista:</span><span class="popup-val">${props.energizaca || 'SIM'}</span></div>
                 <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${(props.status || '').toLowerCase().replace(/ /g, '-')}">${props.status || '-'}</span></span></div>
                 <div class="popup-row"><span class="popup-key">Fonte / Contrato:</span><span class="popup-val">${props.fonte || '-'}</span></div>
+                ${props.bairro ? `
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
+                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                        <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
             </div>
         `;
     }
@@ -344,6 +362,12 @@ window.GIS_LAYERS = (function() {
                 <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-dark);">
                     💡 <em>Camada do Escopo Original para confrontação territorial com o Geopackage revisado.</em>
                 </div>
+                ${props.bairro ? `
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
+                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                        <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
             </div>
         `;
     }
@@ -366,6 +390,12 @@ window.GIS_LAYERS = (function() {
                 <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-dark);">
                     💡 <em>Traçado linear do Escopo Original para confrontação com a rede revisada.</em>
                 </div>
+                ${props.bairro ? `
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
+                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                        <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
             </div>
         `;
     }
@@ -387,21 +417,32 @@ window.GIS_LAYERS = (function() {
                 <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-dark);">
                     💡 <em>Estrutura pontual do Escopo Original para confrontação com o geopackage revisado.</em>
                 </div>
+                ${props.bairro ? `
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
+                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                        <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
             </div>
         `;
     }
 
     // Highlight specific Bairro while KEEPING ALL OTHER FEATURES VISIBLE
+    function normStr(str) {
+        return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+    }
+
     function highlightBairro(bairroTarget) {
         currentHighlightedBairro = bairroTarget;
-        const normTarget = bairroTarget ? bairroTarget.toUpperCase().trim() : null;
+        const normTarget = bairroTarget ? normStr(bairroTarget) : null;
 
         const isMatchingBairro = function(props) {
             if (!normTarget) return false;
-            const b = (props.bairro || '').toUpperCase().trim();
+            const b = normStr(props.bairro || '');
             if (!b) return false;
             if (b === normTarget) return true;
-            if (normTarget.startsWith("PEDRAS E VITÓRIA") && b.startsWith(normTarget)) return true;
+            if (normTarget.startsWith("PEDRAS E VITORIA") && b.startsWith("PEDRAS E VITORIA")) return true;
+            if (normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) return true;
             return false;
         };
 
@@ -465,7 +506,7 @@ window.GIS_LAYERS = (function() {
             layerGroupLocalizada.eachLayer(function(layer) {
                 const props = layer.feature ? layer.feature.properties : {};
                 const isSelected = isMatchingBairro(props);
-                const el = layer.getElement();
+                const el = (typeof layer.getElement === 'function') ? layer.getElement() : null;
                 if (el) {
                     if (!normTarget) {
                         el.style.opacity = '1.0';
@@ -544,7 +585,7 @@ window.GIS_LAYERS = (function() {
             layerGroupOrigPontual.eachLayer(function(layer) {
                 const props = layer.feature ? layer.feature.properties : {};
                 const isSelected = isMatchingBairro(props);
-                const el = layer.getElement();
+                const el = (typeof layer.getElement === 'function') ? layer.getElement() : null;
                 if (el) {
                     if (!normTarget) {
                         el.style.opacity = '1.0';
@@ -689,7 +730,7 @@ window.GIS_LAYERS = (function() {
         layerGroupLocalizada.eachLayer(function(layer) {
             if (layer.feature && layer.feature.properties) {
                 const color = getFeatureColor(layer.feature.properties, 'localizada');
-                const el = layer.getElement();
+                const el = (typeof layer.getElement === 'function') ? layer.getElement() : null;
                 if (el) {
                     const ring = el.querySelector('.pulsing-marker-ring');
                     const icon = el.querySelector('.pulsing-marker-icon');
@@ -901,6 +942,12 @@ window.GIS_LAYERS = (function() {
                 style: styleAreas,
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(createAreasPopup(feature.properties));
+                    layer.on('click', function(e) {
+                        const b = (feature.properties && feature.properties.bairro) ? feature.properties.bairro : null;
+                        if (b && window.selectBairro) {
+                            window.selectBairro(b, false);
+                        }
+                    });
                     layer.on('mouseover', function(e) {
                         if (!currentHighlightedBairro) {
                             e.target.setStyle({ fillOpacity: 0.6, weight: 3 });
@@ -944,6 +991,12 @@ window.GIS_LAYERS = (function() {
                         style: styleOrigAreas,
                         onEachFeature: function(feature, layer) {
                             layer.bindPopup(createOrigAreasPopup(feature.properties));
+                            layer.on('click', function(e) {
+                                const b = (feature.properties && feature.properties.bairro) ? feature.properties.bairro : null;
+                                if (b && window.selectBairro) {
+                                    window.selectBairro(b, false);
+                                }
+                            });
                             layer.on('mouseover', function(e) {
                                 if (!currentHighlightedBairro) {
                                     e.target.setStyle({ fillOpacity: 0.45, weight: 3.5 });

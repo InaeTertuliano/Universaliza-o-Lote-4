@@ -775,6 +775,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const badgeFrente = document.getElementById('badge-frente-obra-quant');
     const dropdownFrente = document.getElementById('dropdown-frente-obra-quant');
 
+    function normStr(str) {
+        return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+    }
+
     function selectBairro(bairroTarget, isToggle = false) {
         if (!bairroTarget || (isToggle && activeBairroFilter === bairroTarget)) {
             // Deselect / Reset to Lote 4
@@ -790,8 +794,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             // Select new Frente de Obra
             activeBairroFilter = bairroTarget;
+            const normTarget = normStr(bairroTarget);
+
             bairroCards.forEach(c => {
-                if (c.dataset.bairro === bairroTarget) {
+                if (normStr(c.dataset.bairro) === normTarget) {
                     c.classList.add('active-bairro');
                 } else {
                     c.classList.remove('active-bairro');
@@ -805,12 +811,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (window.GIS_LAYERS) window.GIS_LAYERS.highlightBairro(bairroTarget);
 
             // Zoom map to fit matching features of the selected bairro (both current and original scope)
-            const normTarget = bairroTarget.toUpperCase().trim();
             const predicate = function(feature) {
-                const b = (feature.properties.bairro || '').toUpperCase().trim();
+                const b = normStr(feature.properties ? feature.properties.bairro : '');
                 if (!b) return false;
                 if (b === normTarget) return true;
-                if (normTarget.startsWith("PEDRAS E VITÓRIA") && b.startsWith("PEDRAS E VITÓRIA")) return true;
+                if (normTarget.startsWith("PEDRAS E VITORIA") && b.startsWith("PEDRAS E VITORIA")) return true;
                 if (normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) return true;
                 return false;
             };
@@ -839,6 +844,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const bounds = tempGroup.getBounds();
                 if (bounds.isValid()) {
                     window.GIS_MAP.fitBounds(bounds, { maxZoom: 15, padding: [60, 60] });
+                }
+            } else if (window.GIS_LAYERS && window.GIS_LAYERS.getBairroCentroids) {
+                const centroids = window.GIS_LAYERS.getBairroCentroids();
+                const matched = centroids.find(c => normStr(c.id) === normTarget || normStr(c.nome) === normTarget);
+                if (matched) {
+                    window.GIS_MAP.setView([matched.lat, matched.lng], 14);
                 }
             }
         }
