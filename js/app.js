@@ -307,28 +307,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const handleExportQuant = function() {
         const rows = [
             ["CATEGORIA", "MUNICIPIO / DESCRICAO", "BAIRRO / DIAMETRO", "EXTENSAO_METROS", "EXTENSAO_KM", "TRECHOS", "PERCENTUAL_LOTE"],
-            ["BAIRRO", "Guarei", "Pedras e Vitoria (Unificado B1-B5)", "21542.65", "21.54", "348", "62.6%"],
-            ["BAIRRO", "Paranapanema", "Serra da Prata", "6672.19", "6.67", "13", "19.4%"],
-            ["BAIRRO", "Sao Miguel Arcanjo", "Pocinho", "4140.67", "4.14", "72", "12.0%"],
-            ["BAIRRO", "Itapetininga", "Jardim Aeroporto", "2081.88", "2.08", "21", "6.0%"],
-            ["SEGMENTO", "Geral", "Rede Coletora", "24029.68", "24.03", "382", "69.8%"],
-            ["SUB_SEGMENTO_DN", "Rede Coletora", "DN 150 mm", "24029.68", "24.03", "-", "100.0% (69.8% Lote)"],
-            ["SEGMENTO", "Geral", "Linha de Recalque", "9761.02", "9.76", "71", "28.3%"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 100 mm", "4899.69", "4.90", "-", "50.2% (14.2% Lote)"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 90 mm", "3007.50", "3.01", "-", "30.8% (8.7% Lote)"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 110 mm", "850.59", "0.85", "-", "8.7% (2.5% Lote)"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 150 mm", "623.31", "0.62", "-", "6.4% (1.8% Lote)"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 200 mm", "379.93", "0.38", "-", "3.9% (1.1% Lote)"],
-            ["SEGMENTO", "Geral", "Emissario de Esgoto", "646.69", "0.65", "1", "1.9%"],
-            ["SUB_SEGMENTO_DN", "Emissario de Esgoto", "DN 200 mm", "646.69", "0.65", "-", "100.0% (1.9% Lote)"],
-            ["MATERIAL_DN", "PVC", "DN 150 mm", "24024.54", "24.02", "375", "69.8%"],
-            ["MATERIAL_DN", "FOFO (Ferro Fundido)", "DN 100 mm", "3000.31", "3.00", "1", "8.7%"],
-            ["MATERIAL_DN", "PEAD", "DN 90 mm", "2068.83", "2.07", "11", "6.0%"],
-            ["MATERIAL_DN", "PVC-O", "DN 100 mm", "1899.38", "1.90", "16", "5.5%"],
-            ["MATERIAL_DN", "PVC-O", "DN 200 mm", "1026.63", "1.03", "14", "3.0%"],
-            ["MATERIAL_DN", "PVC", "DN 90 mm", "938.67", "0.94", "15", "2.7%"],
-            ["MATERIAL_DN", "PEAD", "DN 110 mm", "850.59", "0.85", "15", "2.5%"],
-            ["MATERIAL_DN", "PEAD", "DN 150 mm", "623.31", "0.62", "6", "1.8%"]
+            ["BAIRRO", "Guarei", "Pedras e Vitoria (Unificado B1-B5)", "21542.65", "21.54", "348", "47.4%"],
+            ["BAIRRO", "Capao Bonito", "Turvo dos Almeidas", "9037.90", "9.04", "34", "19.9%"],
+            ["BAIRRO", "Paranapanema", "Serra da Prata", "6672.19", "6.67", "13", "14.7%"],
+            ["BAIRRO", "Sao Miguel Arcanjo", "Pocinho", "4140.67", "4.14", "72", "9.1%"],
+            ["BAIRRO", "Itapetininga", "Jardim Aeroporto", "2081.88", "2.08", "21", "4.6%"],
+            ["BAIRRO", "Angatuba", "Pateo Velho", "1942.82", "1.94", "17", "4.3%"],
+            ["SEGMENTO", "Geral", "Rede Coletora", "33900.57", "33.90", "490", "74.6%"],
+            ["SUB_SEGMENTO_DN", "Rede Coletora", "DN 150 mm", "33900.57", "33.90", "490", "100.0% (74.6% Lote)"],
+            ["SEGMENTO", "Geral", "Linha de Recalque", "10870.86", "10.87", "14", "23.9%"],
+            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 100 mm", "4899.69", "4.90", "3", "45.1% (10.8% Lote)"],
+            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 90 mm", "3007.50", "3.01", "2", "27.7% (6.6% Lote)"],
+            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 150 mm", "1733.15", "1.73", "5", "15.9% (3.8% Lote)"],
+            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 110 mm", "850.59", "0.85", "3", "7.8% (1.9% Lote)"],
+            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 200 mm", "379.93", "0.38", "1", "3.5% (0.8% Lote)"],
+            ["SEGMENTO", "Geral", "Emissario de Esgoto", "646.69", "0.65", "1", "1.4%"],
+            ["SUB_SEGMENTO_DN", "Emissario de Esgoto", "DN 200 mm", "646.69", "0.65", "1", "100.0% (1.4% Lote)"],
+            ["MATERIAL_DN", "PVC", "DN 150 mm", "35005.26", "35.01", "491", "77.1%"],
+            ["MATERIAL_DN", "FOFO (Ferro Fundido)", "DN 100 mm", "3000.31", "3.00", "1", "6.6%"],
+            ["MATERIAL_DN", "PEAD", "DN 90 mm", "2068.83", "2.07", "1", "4.6%"],
+            ["MATERIAL_DN", "PVC-O", "DN 100 mm", "1899.38", "1.90", "2", "4.2%"],
+            ["MATERIAL_DN", "PVC-O", "DN 200 mm", "1026.63", "1.03", "2", "2.3%"],
+            ["MATERIAL_DN", "PVC", "DN 90 mm", "938.67", "0.94", "1", "2.1%"],
+            ["MATERIAL_DN", "PEAD", "DN 110 mm", "850.59", "0.85", "3", "1.9%"],
+            ["MATERIAL_DN", "PEAD", "DN 150 mm", "623.31", "0.62", "3", "1.4%"],
+            ["MATERIAL_DN", "PVC-O", "DN 150 mm", "5.14", "0.01", "1", "0.0%"]
         ];
 
         let csvContent = rows.map(r => r.join(";")).join("\n");
@@ -695,7 +698,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Deselect / Reset to Lote 4
             activeBairroFilter = null;
             bairroCards.forEach(c => c.classList.remove('active-bairro'));
-            if (badgeFrente) badgeFrente.innerHTML = 'Ver Frentes (4) <i class="fas fa-chevron-down"></i>';
+            if (badgeFrente) badgeFrente.innerHTML = 'Ver Frentes (6) <i class="fas fa-chevron-down"></i>';
 
             updateSegmentWidget(null);
             updateLocalizadaWidget(null);
