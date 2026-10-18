@@ -1,5 +1,5 @@
 ﻿// WebGIS Data Package - UniversalizaÃ§Ã£o Sabesp Lote 4 Itapetininga
-// Atualizado automaticamente em 2026-10-18 07:39:34
+// Atualizado automaticamente em 2026-10-18 07:39:46
 window.GIS_DATA = {
     areas: {
 "type": "FeatureCollection",
