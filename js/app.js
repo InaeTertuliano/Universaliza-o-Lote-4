@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 9. Layer Checkboxes & Opacity Sliders
-    ['municipios', 'areas', 'linear', 'localizada'].forEach(layerName => {
+    ['municipios', 'areas', 'linear', 'localizada', 'orig-areas', 'orig-linear', 'orig-pontual'].forEach(layerName => {
         const chk = document.getElementById(`chk-layer-${layerName}`);
         if (chk) {
             chk.addEventListener('change', function(e) {
@@ -306,6 +306,67 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target === modalQuant) {
                 modalQuant.style.display = 'none';
             }
+        });
+    }
+
+    // Modal Confrontação de Escopo: Original vs. Atual por Bairro
+    const modalComparativo = document.getElementById('modal-comparativo-escopo');
+    const btnOpenComparativo = document.getElementById('btn-open-comparativo-escopo');
+    const btnCloseComparativo = document.getElementById('btn-close-modal-comparativo');
+    const btnCloseComparativoFooter = document.getElementById('btn-close-modal-comparativo-footer');
+
+    if (btnOpenComparativo && modalComparativo) {
+        btnOpenComparativo.addEventListener('click', function() {
+            modalComparativo.style.display = 'flex';
+        });
+    }
+
+    if (btnCloseComparativo && modalComparativo) {
+        btnCloseComparativo.addEventListener('click', function() {
+            modalComparativo.style.display = 'none';
+        });
+    }
+
+    if (btnCloseComparativoFooter && modalComparativo) {
+        btnCloseComparativoFooter.addEventListener('click', function() {
+            modalComparativo.style.display = 'none';
+        });
+    }
+
+    if (modalComparativo) {
+        modalComparativo.addEventListener('click', function(e) {
+            if (e.target === modalComparativo) {
+                modalComparativo.style.display = 'none';
+            }
+        });
+    }
+
+    // Botões "Enquadrar e Confrontar no Mapa" dentro do modal comparativo
+    document.querySelectorAll('.btn-goto-bairro').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bairro = this.dataset.bairro;
+            if (modalComparativo) modalComparativo.style.display = 'none';
+            if (window.selectBairro) window.selectBairro(bairro, false);
+        });
+    });
+
+    // Exportação CSV do Comparativo de Escopo Original vs. Atual
+    const btnExportComparativoCsv = document.getElementById('btn-export-comparativo-csv');
+    if (btnExportComparativoCsv) {
+        btnExportComparativoCsv.addEventListener('click', function() {
+            const rows = [
+                ["BAIRRO", "MUNICIPIO", "STATUS_OBRA", "EXTENSAO_ORIGINAL_M", "EXTENSAO_ATUAL_M", "VARIACAO_EXTENSAO_M", "VARIACAO_EXTENSAO_KM", "TRECHOS_ORIGINAL", "TRECHOS_ATUAL", "AREAS_ORIGINAL", "AREAS_ATUAL", "EEES_ORIGINAL", "EEES_ATUAL"],
+                ["Pedras e Vitoria", "Guarei", "Iniciado", "4200.00", "21542.64", "+17342.64", "+17.34 km (+412.9%)", "8", "348", "1", "2", "1", "5"],
+                ["Turvo dos Almeidas", "Capao Bonito", "Nao Iniciado", "12560.00", "9037.90", "-3522.10", "-3.52 km (Otimizado)", "85", "34", "3", "3", "5 (4 EEEs + 1 ETE)", "0 (Rede Prioritaria)"]
+            ];
+            let csvContent = rows.map(r => r.join(";")).join("\n");
+            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Comparativo_Escopo_Original_vs_Atual_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
         });
     }
 
@@ -726,15 +787,16 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSegmentWidget(bairroTarget);
             updateLocalizadaWidget(bairroTarget);
 
-            if (window.GIS_LAYERS) window.GIS_LAYERS.highlightBairro(null);
+            if (window.GIS_LAYERS) window.GIS_LAYERS.highlightBairro(bairroTarget);
 
-            // Zoom map to fit matching features of the selected bairro
+            // Zoom map to fit matching features of the selected bairro (both current and original scope)
             const normTarget = bairroTarget.toUpperCase().trim();
             const predicate = function(feature) {
                 const b = (feature.properties.bairro || '').toUpperCase().trim();
                 if (!b) return false;
                 if (b === normTarget) return true;
                 if (normTarget.startsWith("PEDRAS E VITÓRIA") && b.startsWith("PEDRAS E VITÓRIA")) return true;
+                if (normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) return true;
                 return false;
             };
 
@@ -742,7 +804,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const matchingAreas = window.GIS_DATA.areas.features.filter(predicate);
             const matchingLocal = window.GIS_DATA.localizada.features.filter(predicate);
 
-            const combined = [...matchingLinear, ...matchingAreas, ...matchingLocal];
+            let combined = [...matchingLinear, ...matchingAreas, ...matchingLocal];
+
+            // Include Escopo Original features in zoom bounds
+            if (window.GIS_ESCOPO_ORIGINAL) {
+                if (window.GIS_ESCOPO_ORIGINAL.linear && window.GIS_ESCOPO_ORIGINAL.linear.features) {
+                    combined = combined.concat(window.GIS_ESCOPO_ORIGINAL.linear.features.filter(predicate));
+                }
+                if (window.GIS_ESCOPO_ORIGINAL.areas && window.GIS_ESCOPO_ORIGINAL.areas.features) {
+                    combined = combined.concat(window.GIS_ESCOPO_ORIGINAL.areas.features.filter(predicate));
+                }
+                if (window.GIS_ESCOPO_ORIGINAL.pontual && window.GIS_ESCOPO_ORIGINAL.pontual.features) {
+                    combined = combined.concat(window.GIS_ESCOPO_ORIGINAL.pontual.features.filter(predicate));
+                }
+            }
+
             if (combined.length > 0) {
                 const tempGroup = L.geoJSON({ type: "FeatureCollection", features: combined });
                 const bounds = tempGroup.getBounds();

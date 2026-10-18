@@ -413,6 +413,89 @@
                         </div>
 
                     </div>
+
+                    <!-- Widget: Grupo Escopo Original (Comparativo Bairro / Frente de Obra) -->
+                    <div class="widget-card" style="border: 1px solid rgba(249, 115, 22, 0.4); background: rgba(249, 115, 22, 0.03);">
+                        <div class="widget-title" style="color: #f97316;">
+                            <span><i class="fas fa-history"></i> Grupo: Escopo Original</span>
+                            <button id="btn-open-comparativo-escopo" style="background: #f97316; color: white; border: none; border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.72rem; cursor: pointer; font-weight: 700; box-shadow: 0 2px 6px rgba(249, 115, 22, 0.4);" title="Abrir Relatório Comparativo de Escopo Original vs Atual por Bairro">
+                                <i class="fas fa-balance-scale"></i> Confrontar Escopo
+                            </button>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--text-muted-dark); margin-bottom: 0.75rem;">
+                            Camadas da pasta <code>original comp</code> para confrontação de traçado e quantitativos em relação ao campo <strong>bairro/frente de obra</strong> (Guareí e Capão Bonito).
+                        </div>
+
+                        <!-- Layer Orig 1: Áreas de Expansão Original -->
+                        <div class="layer-item" style="border-left: 3px solid #f97316; padding-left: 8px; margin-bottom: 8px;">
+                            <div class="layer-header">
+                                <label class="layer-title-box">
+                                    <input type="checkbox" id="chk-layer-orig-areas" class="layer-checkbox" checked>
+                                    <span class="layer-name" style="color: #f97316; font-weight: 600;">[Original] Áreas de Expansão</span>
+                                </label>
+                                <span class="layer-count-badge" style="background: rgba(249, 115, 22, 0.2); color: #f97316; border: 1px solid #f97316;">4 áreas</span>
+                            </div>
+                            <div class="layer-details">
+                                <div class="opacity-slider-box">
+                                    <span>Opacidade:</span>
+                                    <input type="range" id="slider-opacity-orig-areas" min="0" max="1" step="0.1" value="0.7">
+                                </div>
+                                <div class="legend-group">
+                                    <div class="legend-row">
+                                        <div class="legend-color-box" style="background: rgba(249, 115, 22, 0.2); border: 2px dashed #f97316;"></div>
+                                        <span>Polígonos Escopo Original (Bairros)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Layer Orig 2: Linear Original -->
+                        <div class="layer-item" style="border-left: 3px solid #f97316; padding-left: 8px; margin-bottom: 8px;">
+                            <div class="layer-header">
+                                <label class="layer-title-box">
+                                    <input type="checkbox" id="chk-layer-orig-linear" class="layer-checkbox" checked>
+                                    <span class="layer-name" style="color: #f97316; font-weight: 600;">[Original] Redes Lineares</span>
+                                </label>
+                                <span class="layer-count-badge" style="background: rgba(249, 115, 22, 0.2); color: #f97316; border: 1px solid #f97316;">93 trechos</span>
+                            </div>
+                            <div class="layer-details">
+                                <div class="opacity-slider-box">
+                                    <span>Opacidade:</span>
+                                    <input type="range" id="slider-opacity-orig-linear" min="0" max="1" step="0.1" value="0.9">
+                                </div>
+                                <div class="legend-group">
+                                    <div class="legend-row">
+                                        <div class="legend-color-line" style="background: #f97316; border-top: 2px dashed #ffedd5; height: 4px;"></div>
+                                        <span>Traçado Linear Original (Laranja Tracejado)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Layer Orig 3: Pontual Original -->
+                        <div class="layer-item" style="border-left: 3px solid #f97316; padding-left: 8px;">
+                            <div class="layer-header">
+                                <label class="layer-title-box">
+                                    <input type="checkbox" id="chk-layer-orig-pontual" class="layer-checkbox" checked>
+                                    <span class="layer-name" style="color: #f97316; font-weight: 600;">[Original] Obras Pontuais (EEE/ETE)</span>
+                                </label>
+                                <span class="layer-count-badge" style="background: rgba(249, 115, 22, 0.2); color: #f97316; border: 1px solid #f97316;">6 pontos</span>
+                            </div>
+                            <div class="layer-details">
+                                <div class="legend-group">
+                                    <div class="legend-row">
+                                        <div class="legend-color-circle" style="background: #ea580c; border: 2px solid #ffffff; box-shadow: 0 0 5px #ea580c;"></div>
+                                        <span>EEEs / ETEs Originais</span>
+                                    </div>
+                                </div>
+                                <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:4px; display:flex; align-items:center; gap:5px;">
+                                    <i class="fas fa-search-plus" style="font-size:0.7rem; color:#f97316;"></i>
+                                    <span>Visível em zoom aproximado (nível ≥ 13)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
                 <!-- Tab 2: Painel de Quantidade de Rede (Unified Pedras e Vitória) -->
@@ -1129,11 +1212,200 @@
         </div>
     </div>
 
+    <!-- Modal Confrontação de Escopo: Original vs. Atual por Bairro -->
+    <div id="modal-comparativo-escopo" class="modal-overlay">
+        <div class="modal-container" style="max-width: 1040px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e201d, #c2410c); border-bottom: 2px solid #f97316;">
+                <div>
+                    <h2 class="modal-title" style="display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-balance-scale" style="color:#fdba74;"></i> 
+                        Confrontação de Escopo: Original vs. Atual por Bairro / Frente de Obra
+                    </h2>
+                    <p class="modal-subtitle">Confrontação entre camadas da pasta "original comp" e projeto executivo consolidado no Geopackage</p>
+                </div>
+                <button id="btn-close-modal-comparativo" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- KPI Comparativo Geral -->
+                <div class="modal-kpi-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="modal-kpi-card" style="border-top-color: #f97316;">
+                        <div class="modal-kpi-title">ESCOPO ORIGINAL - TOTAL</div>
+                        <div class="modal-kpi-num" style="color:#f97316;">16,76 km</div>
+                        <div class="modal-kpi-sub">93 trechos • 4 polígonos • 6 pontuais</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: #0284c7;">
+                        <div class="modal-kpi-title">ESCOPO ATUAL CONSOLIDADO</div>
+                        <div class="modal-kpi-num" style="color:#38bdf8;">30,58 km</div>
+                        <div class="modal-kpi-sub">382 trechos em Guareí + Capão Bonito</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: #10b981;">
+                        <div class="modal-kpi-title">AMPLIAÇÃO LÍQUIDA REDE</div>
+                        <div class="modal-kpi-num" style="color:#10b981;">+13,82 km</div>
+                        <div class="modal-kpi-sub">+82,4% de extensão executiva</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: #a855f7;">
+                        <div class="modal-kpi-title">ESTAÇÕES ELEVATÓRIAS (EEEs)</div>
+                        <div class="modal-kpi-num" style="color:#c084fc;">5 EEEs / 1 ETE</div>
+                        <div class="modal-kpi-sub">Detalhamento operacional pleno</div>
+                    </div>
+                </div>
+
+                <!-- Cards dos Bairros Confrontados -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.25rem;">
+                    
+                    <!-- Bairro 1: Pedras e Vitória (Guareí) -->
+                    <div class="widget-card" style="border: 1px solid rgba(2, 132, 199, 0.4); background: rgba(2, 132, 199, 0.04); margin-bottom: 0;">
+                        <div class="widget-title" style="color: #38bdf8;">
+                            <span><i class="fas fa-map-marker-alt"></i> Guareí: Pedras e Vitória</span>
+                            <span class="popup-badge iniciado">Iniciado</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:var(--text-muted-dark); margin:0.25rem 0 0.75rem 0;">
+                            Apresentou forte expansão e densificação de rede coletora e recalque após consolidação executiva de campo.
+                        </p>
+                        <table class="datatable" style="font-size:0.78rem;">
+                            <thead>
+                                <tr>
+                                    <th>Item Confrontado</th>
+                                    <th>Escopo Original</th>
+                                    <th>Escopo Atual</th>
+                                    <th>Variação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Extensão Total</strong></td>
+                                    <td>4.200,00 m (4,20 km)</td>
+                                    <td><strong style="color:#38bdf8;">21.542,64 m (21,54 km)</strong></td>
+                                    <td><span style="color:#10b981; font-weight:700;">+17,34 km (+412,9%)</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Trechos de Rede</strong></td>
+                                    <td>8 trechos</td>
+                                    <td><strong>348 trechos</strong></td>
+                                    <td><span style="color:#10b981; font-weight:700;">+340 trechos</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Polígonos de Expansão</strong></td>
+                                    <td>1 polígono (31,9 ha)</td>
+                                    <td><strong>2 polígonos (46,1 ha)</strong></td>
+                                    <td><span style="color:#10b981; font-weight:700;">+14,2 ha (+44,5%)</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Estações Elevatórias (EEE)</strong></td>
+                                    <td>1 EEE original</td>
+                                    <td><strong>5 EEEs implantadas</strong></td>
+                                    <td><span style="color:#10b981; font-weight:700;">+4 EEEs</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 10px; display:flex; justify-content: flex-end;">
+                            <button class="btn-goto-bairro" data-bairro="PEDRAS E VITÓRIA" style="background:#0284c7; color:white; border:none; border-radius:6px; padding:0.35rem 0.75rem; font-size:0.75rem; font-weight:700; cursor:pointer;">
+                                <i class="fas fa-crosshairs"></i> Enquadrar e Confrontar no Mapa
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bairro 2: Turvo dos Almeidas (Capão Bonito) -->
+                    <div class="widget-card" style="border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.04); margin-bottom: 0;">
+                        <div class="widget-title" style="color: #fbbf24;">
+                            <span><i class="fas fa-map-marker-alt"></i> Capão Bonito: Turvo dos Almeidas</span>
+                            <span class="popup-badge nao-iniciado">Não Iniciado</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:var(--text-muted-dark); margin:0.25rem 0 0.75rem 0;">
+                            Apresentava estudo preliminar conceitual da Arcadis. A atual malha foi racionalizada para o traçado executivo prioritário.
+                        </p>
+                        <table class="datatable" style="font-size:0.78rem;">
+                            <thead>
+                                <tr>
+                                    <th>Item Confrontado</th>
+                                    <th>Escopo Original</th>
+                                    <th>Escopo Atual</th>
+                                    <th>Variação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Extensão Total</strong></td>
+                                    <td>12.560,00 m (~12,56 km)</td>
+                                    <td><strong style="color:#fbbf24;">9.037,90 m (9,04 km)</strong></td>
+                                    <td><span style="color:#f59e0b; font-weight:700;">-3,52 km (Otimizado)</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Trechos de Rede</strong></td>
+                                    <td>85 trechos conceituais</td>
+                                    <td><strong>34 trechos consolidados</strong></td>
+                                    <td><span style="color:#94a3b8; font-weight:700;">Consolidação geométrica</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Polígonos de Expansão</strong></td>
+                                    <td>3 polígonos (47,0 ha)</td>
+                                    <td><strong>3 polígonos (46,8 ha)</strong></td>
+                                    <td><span style="color:#38bdf8; font-weight:700;">Mesma área delimitada</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Obras Pontuais</strong></td>
+                                    <td>4 EEEs + 1 ETE Arcadis</td>
+                                    <td><strong>Rede Coletora Prioritária</strong></td>
+                                    <td><span style="color:#94a3b8; font-weight:700;">Fase de detalhamento</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 10px; display:flex; justify-content: flex-end;">
+                            <button class="btn-goto-bairro" data-bairro="TURVO DOS ALMEIDAS" style="background:#f59e0b; color:white; border:none; border-radius:6px; padding:0.35rem 0.75rem; font-size:0.75rem; font-weight:700; cursor:pointer;">
+                                <i class="fas fa-crosshairs"></i> Enquadrar e Confrontar no Mapa
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Orientações de Interpretação no Mapa -->
+                <div class="widget-card" style="margin-top: 1.25rem;">
+                    <div class="widget-title"><i class="fas fa-info-circle" style="color:#f97316;"></i> Guia de Leitura Visual no Mapa Interativo</div>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size:0.78rem;">
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-dark); border-radius:8px; padding:10px;">
+                            <div style="font-weight:700; color:#f97316; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                                <div style="width:20px; height:3px; background:#f97316; border-top:2px dashed #ffedd5;"></div>
+                                <span>Linhas Tracejadas Laranja</span>
+                            </div>
+                            <p style="margin:0; color:var(--text-muted-dark);">Representam as redes do <strong>Escopo Original</strong>. Permitem comparar desvios de traçado e novas ruas incorporadas no projeto executivo.</p>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-dark); border-radius:8px; padding:10px;">
+                            <div style="font-weight:700; color:#38bdf8; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                                <div style="width:20px; height:4px; background:#2563eb; border-radius:2px;"></div>
+                                <span>Linhas Contínuas Coloridas</span>
+                            </div>
+                            <p style="margin:0; color:var(--text-muted-dark);">Representam as redes do <strong>Escopo Atual (Geopackage)</strong>, coloridas por Status de Execução, Segmento (coletora/recalque) ou Material.</p>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-dark); border-radius:8px; padding:10px;">
+                            <div style="font-weight:700; color:#10b981; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                                <i class="fas fa-filter" style="color:#10b981;"></i>
+                                <span>Filtro de Frente de Obra</span>
+                            </div>
+                            <p style="margin:0; color:var(--text-muted-dark);">Ao selecionar uma Frente de Obra no painel ou clicar no botão acima, <strong>ambas as camadas são filtradas simultaneamente</strong> com destaque visual.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="btn-export-comparativo-csv" class="btn-header" style="background:#10b981; border:none; color:white;">
+                    <i class="fas fa-file-excel"></i> Exportar Relatório Comparativo (CSV)
+                </button>
+                <button id="btn-close-modal-comparativo-footer" class="btn-header">
+                    Fechar Painel
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Leaflet JS CDN -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <!-- Embedded GeoJSON Data Package -->
     <script src="js/data.js?v=20261018c"></script>
+    <script src="js/escopo_original_data.js?v=20261018c"></script>
     <script src="js/municipios_data.js?v=20261018c"></script>
     <script src="js/metas_data.js?v=20261018c"></script>
 

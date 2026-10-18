@@ -103,8 +103,49 @@ if (Test-Path $fMetas) {
     Write-Host "   AVISO: data/metas_economias.json não encontrado." -ForegroundColor DarkYellow
 }
 
-# 4. Git commit & push
-Write-Host "[4/4] Verificando e enviando alterações para o GitHub..." -ForegroundColor Yellow
+# 4. Atualizar js/escopo_original_data.js
+Write-Host "[4/5] Processando camadas do Escopo Original..." -ForegroundColor Yellow
+$fOrigAreas = Join-Path $dataPath "escopo_original_areas.geojson"
+$fOrigLinear = Join-Path $dataPath "escopo_original_linear.geojson"
+$fOrigPontual = Join-Path $dataPath "escopo_original_pontual.geojson"
+
+if ((Test-Path $fOrigAreas) -and (Test-Path $fOrigLinear) -and (Test-Path $fOrigPontual)) {
+    $hashOrig = (Get-FileHash $fOrigAreas, $fOrigLinear, $fOrigPontual | Select-Object -ExpandProperty Hash) -join ""
+    $outOrigJs = Join-Path $jsPath "escopo_original_data.js"
+    $currentOrigJs = if (Test-Path $outOrigJs) { [System.IO.File]::ReadAllText($outOrigJs, [System.Text.Encoding]::UTF8) } else { "" }
+
+    if ($currentOrigJs -notmatch "// HASH: $hashOrig") {
+        $origA = [System.IO.File]::ReadAllText($fOrigAreas, [System.Text.Encoding]::UTF8).Trim()
+        $origL = [System.IO.File]::ReadAllText($fOrigLinear, [System.Text.Encoding]::UTF8).Trim()
+        $origP = [System.IO.File]::ReadAllText($fOrigPontual, [System.Text.Encoding]::UTF8).Trim()
+        $today = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+
+        $sbOrig = [System.Text.StringBuilder]::new()
+        [void]$sbOrig.AppendLine('// WebGIS Data Package - Escopo Original (Comparativo Bairro/Frente de Obra)')
+        [void]$sbOrig.AppendLine("// HASH: $hashOrig")
+        [void]$sbOrig.AppendLine("// Atualizado em $today")
+        [void]$sbOrig.AppendLine('window.GIS_ESCOPO_ORIGINAL = {')
+        [void]$sbOrig.AppendLine("    areas: $origA,")
+        [void]$sbOrig.AppendLine("    linear: $origL,")
+        [void]$sbOrig.AppendLine("    pontual: $origP,")
+        [void]$sbOrig.AppendLine('    meta: {')
+        [void]$sbOrig.AppendLine('        grupo: "Escopo Original",')
+        [void]$sbOrig.AppendLine('        bairros: ["PEDRAS E VITÓRIA", "TURVO DOS ALMEIDAS"],')
+        [void]$sbOrig.AppendLine('        municipios: ["Guareí", "Capão Bonito", "Itapetininga"]')
+        [void]$sbOrig.AppendLine('    }')
+        [void]$sbOrig.AppendLine('};')
+
+        [System.IO.File]::WriteAllText($outOrigJs, $sbOrig.ToString(), [System.Text.Encoding]::UTF8)
+        Write-Host "   OK: js/escopo_original_data.js atualizado com novos dados!" -ForegroundColor Green
+    } else {
+        Write-Host "   OK: js/escopo_original_data.js já está em dia (sem alterações)." -ForegroundColor DarkGray
+    }
+} else {
+    Write-Host "   AVISO: Arquivos GeoJSON do Escopo Original não encontrados em 'data/'." -ForegroundColor DarkYellow
+}
+
+# 5. Git commit & push
+Write-Host "[5/5] Verificando e enviando alterações para o GitHub..." -ForegroundColor Yellow
 $changes = git status -s
 if ($changes) {
     git add .

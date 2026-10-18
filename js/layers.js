@@ -10,6 +10,12 @@ window.GIS_LAYERS = (function() {
     let layerGroupLocalizada = null;
     let layerGroupBairroCentroids = null;
 
+    // Grupo Escopo Original (Comparativo Bairro / Frente de Obra)
+    let layerGroupOrigAreas = null;
+    let layerGroupOrigLinear = null;
+    let layerGroupOrigPontual = null;
+    let isOrigPontualEnabled = true;
+
     let currentLegendMode = 'status'; // 'status', 'segmento', 'material'
     let currentHighlightedBairro = null;
 
@@ -256,6 +262,116 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${(props.status || '').toLowerCase().replace(/ /g, '-')}">${props.status || '-'}</span></span></div>
                 <div class="popup-row"><span class="popup-key">Fonte / Contrato:</span><span class="popup-val">${props.fonte || '-'}</span></div>
             </div>
+    // =========================================================================
+    // ESCOPO ORIGINAL (Comparativo Bairro / Frente de Obra) - Styles & Popups
+    // =========================================================================
+    function styleOrigAreas(feature) {
+        return {
+            color: '#f97316',          // Laranja distintivo do Escopo Original
+            fillColor: '#f97316',
+            weight: 2.5,
+            opacity: 0.9,
+            fillOpacity: 0.15,
+            dashArray: '5, 5'          // Contorno tracejado para contrastar com polígono sólido atual
+        };
+    }
+
+    function styleOrigLinear(feature) {
+        return {
+            color: '#f97316',          // Laranja contrastante
+            weight: 3.5,
+            opacity: 0.9,
+            dashArray: '6, 6',         // Linha tracejada para permitir sobreposição visual imediata
+            lineCap: 'round',
+            lineJoin: 'round'
+        };
+    }
+
+    function createOrigPontualMarker(latlng, feature) {
+        const props = feature.properties || {};
+        const color = '#f97316';
+        const iconHtml = `
+            <div class="pulsing-marker-wrapper" title="[Escopo Original] ${props.nome || props.subtipo || 'Estrutura'} - ${props.bairro || ''}">
+                <div class="pulsing-marker-ring" style="background: ${color}55;"></div>
+                <div class="pulsing-marker-icon" style="background: ${color}; border: 2px dashed #ffffff; border-radius: 4px;">
+                    <i class="fas fa-industry" style="color: #ffffff; font-size: 10px;"></i>
+                </div>
+            </div>
+        `;
+
+        const icon = L.divIcon({
+            className: 'custom-orig-pontual-icon',
+            html: iconHtml,
+            iconSize: [22, 22],
+            iconAnchor: [11, 11],
+            popupAnchor: [0, -10]
+        });
+
+        const marker = L.marker(latlng, { icon: icon });
+        marker.bindPopup(createOrigPontualPopup(props));
+        return marker;
+    }
+
+    function createOrigAreasPopup(props) {
+        return `
+            <div class="popup-header" style="background: linear-gradient(135deg, #c2410c, #9a3412);">
+                <div class="popup-category" style="color:#fdba74;">Escopo Original • Área de Expansão</div>
+                <div class="popup-title" style="color:#ffffff;">${props.bairro || props.nm_mun || 'Área Original'}</div>
+            </div>
+            <div class="popup-body">
+                <div class="popup-row"><span class="popup-key">Bairro / Frente:</span><span class="popup-val" style="color:#f97316; font-weight:800;">${props.bairro || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Município:</span><span class="popup-val">${props.nm_mun || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Código AE:</span><span class="popup-val">${props.ae_id || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Domicílios Previstos:</span><span class="popup-val" style="color:#0284c7; font-weight:700;">${props.qtd_domici ? props.qtd_domici : 'Não informado'}</span></div>
+                <div class="popup-row"><span class="popup-key">Recorte:</span><span class="popup-val">${props.recorte || 'Formal'}</span></div>
+                <div class="popup-row"><span class="popup-key">Camada Base:</span><span class="popup-val"><span class="popup-badge" style="background:#f9731633; color:#f97316; border:1px solid #f9731688;">ESCOPO ORIGINAL</span></span></div>
+                <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-dark);">
+                    💡 <em>Camada do Escopo Original para confrontação territorial com o Geopackage revisado.</em>
+                </div>
+            </div>
+        `;
+    }
+
+    function createOrigLinearPopup(props) {
+        const extStr = props.ext_calcul ? props.ext_calcul.toFixed(2) + ' m' : (props.extensao_c ? props.extensao_c + ' m' : 'Calculado no mapa');
+        return `
+            <div class="popup-header" style="background: linear-gradient(135deg, #c2410c, #9a3412);">
+                <div class="popup-category" style="color:#fdba74;">Escopo Original • ${props.subtipo || props.tipo || 'Rede de Esgoto'}</div>
+                <div class="popup-title" style="color:#ffffff;">${props.bairro || props.nm_mun || 'Trecho de Rede'}</div>
+            </div>
+            <div class="popup-body">
+                <div class="popup-row"><span class="popup-key">Bairro / Frente:</span><span class="popup-val" style="color:#f97316; font-weight:800;">${props.bairro || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Município:</span><span class="popup-val">${props.nm_mun || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Extensão Cadastral:</span><span class="popup-val" style="color:#10b981; font-weight:800;">${extStr}</span></div>
+                <div class="popup-row"><span class="popup-key">Material / DN:</span><span class="popup-val">${props.material || 'PVC'} ${props.diametro_n ? 'DN ' + props.diametro_n + ' mm' : ''}</span></div>
+                <div class="popup-row"><span class="popup-key">Código Objeto / AE:</span><span class="popup-val">${props.id_objeto || props.ae_id || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Fonte Cadastral:</span><span class="popup-val">${props.fonte || 'Cadastro Base Original'}</span></div>
+                <div class="popup-row"><span class="popup-key">Camada Base:</span><span class="popup-val"><span class="popup-badge" style="background:#f9731633; color:#f97316; border:1px solid #f9731688;">ESCOPO ORIGINAL</span></span></div>
+                <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-dark);">
+                    💡 <em>Traçado linear do Escopo Original para confrontação com a rede revisada.</em>
+                </div>
+            </div>
+        `;
+    }
+
+    function createOrigPontualPopup(props) {
+        return `
+            <div class="popup-header" style="background: linear-gradient(135deg, #c2410c, #9a3412);">
+                <div class="popup-category" style="color:#fdba74;">Escopo Original • Obra Pontual</div>
+                <div class="popup-title" style="color:#ffffff;">${props.nome || props.subtipo || 'Estrutura Pontual'}</div>
+            </div>
+            <div class="popup-body">
+                <div class="popup-row"><span class="popup-key">Tipo / Subtipo:</span><span class="popup-val" style="color:#f97316; font-weight:800;">${props.subtipo || props.tipo || 'EEE'}</span></div>
+                <div class="popup-row"><span class="popup-key">Bairro / Frente:</span><span class="popup-val" style="color:#f97316; font-weight:800;">${props.bairro || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Município:</span><span class="popup-val">${props.nm_mun || '-'}</span></div>
+                ${props.vazao_proj ? `<div class="popup-row"><span class="popup-key">Vazão Projetada:</span><span class="popup-val" style="color:#0284c7; font-weight:800;">${props.vazao_proj} L/s</span></div>` : ''}
+                ${props.potencia_c ? `<div class="popup-row"><span class="popup-key">Potência Instalada:</span><span class="popup-val">${props.potencia_c} CV</span></div>` : ''}
+                ${props.altura_man ? `<div class="popup-row"><span class="popup-key">Altura Manométrica:</span><span class="popup-val">${props.altura_man} mca</span></div>` : ''}
+                <div class="popup-row"><span class="popup-key">Camada Base:</span><span class="popup-val"><span class="popup-badge" style="background:#f9731633; color:#f97316; border:1px solid #f9731688;">ESCOPO ORIGINAL</span></span></div>
+                <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-dark);">
+                    💡 <em>Estrutura pontual do Escopo Original para confrontação com o geopackage revisado.</em>
+                </div>
+            </div>
         `;
     }
 
@@ -344,6 +460,85 @@ window.GIS_LAYERS = (function() {
                         el.style.zIndex = '1000';
                     } else {
                         el.style.opacity = '0.4';
+                        el.style.transform = 'scale(0.85)';
+                    }
+                }
+            });
+        }
+
+        // Escopo Original Linear Highlight
+        if (layerGroupOrigLinear) {
+            layerGroupOrigLinear.eachLayer(function(layer) {
+                const props = layer.feature ? layer.feature.properties : {};
+                const isSelected = isMatchingBairro(props);
+
+                if (!normTarget) {
+                    layerGroupOrigLinear.resetStyle(layer);
+                } else if (isSelected) {
+                    layer.setStyle({
+                        color: '#ea580c',
+                        weight: 6,
+                        opacity: 1.0,
+                        dashArray: '8, 8',
+                        lineCap: 'round',
+                        lineJoin: 'round'
+                    });
+                    if (layer.bringToFront) layer.bringToFront();
+                } else {
+                    layer.setStyle({
+                        opacity: 0.15,
+                        weight: 1.5,
+                        dashArray: '6, 6'
+                    });
+                }
+            });
+        }
+
+        // Escopo Original Areas Highlight
+        if (layerGroupOrigAreas) {
+            layerGroupOrigAreas.eachLayer(function(layer) {
+                const props = layer.feature ? layer.feature.properties : {};
+                const isSelected = isMatchingBairro(props);
+
+                if (!normTarget) {
+                    layerGroupOrigAreas.resetStyle(layer);
+                } else if (isSelected) {
+                    layer.setStyle({
+                        color: '#ea580c',
+                        fillColor: '#ea580c',
+                        weight: 4.0,
+                        opacity: 1.0,
+                        fillOpacity: 0.35,
+                        dashArray: '5, 5'
+                    });
+                    if (layer.bringToFront) layer.bringToFront();
+                } else {
+                    layer.setStyle({
+                        opacity: 0.15,
+                        fillOpacity: 0.05,
+                        weight: 1.0,
+                        dashArray: '5, 5'
+                    });
+                }
+            });
+        }
+
+        // Escopo Original Pontual Highlight
+        if (layerGroupOrigPontual) {
+            layerGroupOrigPontual.eachLayer(function(layer) {
+                const props = layer.feature ? layer.feature.properties : {};
+                const isSelected = isMatchingBairro(props);
+                const el = layer.getElement();
+                if (el) {
+                    if (!normTarget) {
+                        el.style.opacity = '1.0';
+                        el.style.transform = 'scale(1)';
+                    } else if (isSelected) {
+                        el.style.opacity = '1.0';
+                        el.style.transform = 'scale(1.4)';
+                        el.style.zIndex = '1000';
+                    } else {
+                        el.style.opacity = '0.2';
                         el.style.transform = 'scale(0.85)';
                     }
                 }
@@ -540,6 +735,23 @@ window.GIS_LAYERS = (function() {
                 }
             }
         }
+
+        // 3. Escopo Original Pontual (EEE/ETE) - Visíveis em zoom aproximado (>= 13)
+        if (layerGroupOrigPontual) {
+            const shouldBeVisibleOrigPontual = isOrigPontualEnabled && (currentZoom >= MIN_ZOOM_LOCALIZADA);
+            if (shouldBeVisibleOrigPontual) {
+                if (!map.hasLayer(layerGroupOrigPontual)) {
+                    map.addLayer(layerGroupOrigPontual);
+                    if (currentHighlightedBairro) {
+                        highlightBairro(currentHighlightedBairro);
+                    }
+                }
+            } else {
+                if (map.hasLayer(layerGroupOrigPontual)) {
+                    map.removeLayer(layerGroupOrigPontual);
+                }
+            }
+        }
     }
 
     return {
@@ -640,6 +852,55 @@ window.GIS_LAYERS = (function() {
                 }
             });
 
+            // Camadas do Escopo Original (Comparativo Bairro / Frente de Obra)
+            if (window.GIS_ESCOPO_ORIGINAL) {
+                if (window.GIS_ESCOPO_ORIGINAL.areas) {
+                    layerGroupOrigAreas = L.geoJSON(window.GIS_ESCOPO_ORIGINAL.areas, {
+                        style: styleOrigAreas,
+                        onEachFeature: function(feature, layer) {
+                            layer.bindPopup(createOrigAreasPopup(feature.properties));
+                            layer.on('mouseover', function(e) {
+                                if (!currentHighlightedBairro) {
+                                    e.target.setStyle({ fillOpacity: 0.45, weight: 3.5 });
+                                }
+                            });
+                            layer.on('mouseout', function(e) {
+                                if (!currentHighlightedBairro) {
+                                    layerGroupOrigAreas.resetStyle(e.target);
+                                }
+                            });
+                        }
+                    }).addTo(map);
+                }
+
+                if (window.GIS_ESCOPO_ORIGINAL.linear) {
+                    layerGroupOrigLinear = L.geoJSON(window.GIS_ESCOPO_ORIGINAL.linear, {
+                        style: styleOrigLinear,
+                        onEachFeature: function(feature, layer) {
+                            layer.bindPopup(createOrigLinearPopup(feature.properties));
+                            layer.on('mouseover', function(e) {
+                                if (!currentHighlightedBairro) {
+                                    e.target.setStyle({ weight: 5.5, opacity: 1.0 });
+                                }
+                            });
+                            layer.on('mouseout', function(e) {
+                                if (!currentHighlightedBairro) {
+                                    layerGroupOrigLinear.resetStyle(e.target);
+                                }
+                            });
+                        }
+                    }).addTo(map);
+                }
+
+                if (window.GIS_ESCOPO_ORIGINAL.pontual) {
+                    layerGroupOrigPontual = L.geoJSON(window.GIS_ESCOPO_ORIGINAL.pontual, {
+                        pointToLayer: function(feature, latlng) {
+                            return createOrigPontualMarker(latlng, feature);
+                        }
+                    });
+                }
+            }
+
             // Criar camada de centróides dos bairros com ícone e rótulo
             layerGroupBairroCentroids = L.layerGroup();
             BAIRRO_CENTROIDS.forEach(b => {
@@ -670,6 +931,19 @@ window.GIS_LAYERS = (function() {
             } else if (layerName === 'localizada') {
                 isLocalizadaEnabled = visible;
                 updateZoomVisibility();
+            } else if (layerName === 'orig-areas') {
+                if (layerGroupOrigAreas) {
+                    if (visible) map.addLayer(layerGroupOrigAreas);
+                    else map.removeLayer(layerGroupOrigAreas);
+                }
+            } else if (layerName === 'orig-linear') {
+                if (layerGroupOrigLinear) {
+                    if (visible) map.addLayer(layerGroupOrigLinear);
+                    else map.removeLayer(layerGroupOrigLinear);
+                }
+            } else if (layerName === 'orig-pontual') {
+                isOrigPontualEnabled = visible;
+                updateZoomVisibility();
             }
         },
 
@@ -680,6 +954,10 @@ window.GIS_LAYERS = (function() {
                 layerGroupAreas.setStyle({ fillOpacity: opacity * 0.5, opacity: opacity });
             } else if (layerName === 'linear' && layerGroupLinear) {
                 layerGroupLinear.setStyle({ opacity: opacity });
+            } else if (layerName === 'orig-areas' && layerGroupOrigAreas) {
+                layerGroupOrigAreas.setStyle({ fillOpacity: opacity * 0.25, opacity: opacity });
+            } else if (layerName === 'orig-linear' && layerGroupOrigLinear) {
+                layerGroupOrigLinear.setStyle({ opacity: opacity });
             }
         },
 
@@ -723,6 +1001,9 @@ window.GIS_LAYERS = (function() {
             if (name === 'linear') return layerGroupLinear;
             if (name === 'localizada') return layerGroupLocalizada;
             if (name === 'centroids') return layerGroupBairroCentroids;
+            if (name === 'orig-areas') return layerGroupOrigAreas;
+            if (name === 'orig-linear') return layerGroupOrigLinear;
+            if (name === 'orig-pontual') return layerGroupOrigPontual;
             return null;
         },
 
