@@ -28,29 +28,37 @@ $fLinear = Join-Path $dataPath "camada_linear.geojson"
 $fLocal = Join-Path $dataPath "camada_localizada.geojson"
 
 if ((Test-Path $fAreas) -and (Test-Path $fLinear) -and (Test-Path $fLocal)) {
-    $areas = [System.IO.File]::ReadAllText($fAreas, [System.Text.Encoding]::UTF8).Trim()
-    $linear = [System.IO.File]::ReadAllText($fLinear, [System.Text.Encoding]::UTF8).Trim()
-    $localizada = [System.IO.File]::ReadAllText($fLocal, [System.Text.Encoding]::UTF8).Trim()
-    $today = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-
-    $sb = [System.Text.StringBuilder]::new()
-    [void]$sb.AppendLine("// WebGIS Data Package - Universalização Sabesp Lote 4 Itapetininga")
-    [void]$sb.AppendLine("// Atualizado automaticamente em $today")
-    [void]$sb.AppendLine("window.GIS_DATA = {")
-    [void]$sb.AppendLine("    areas: $areas,")
-    [void]$sb.AppendLine("    linear: $linear,")
-    [void]$sb.AppendLine("    localizada: $localizada,")
-    [void]$sb.AppendLine("    meta: {")
-    [void]$sb.AppendLine("        lote: `"LOTE 04 - ITAPETININGA`",")
-    [void]$sb.AppendLine("        data_atualizacao: `"$((Get-Date).ToString("yyyy-MM-dd"))`",")
-    [void]$sb.AppendLine("        bounds: [[-23.859038, -48.917271], [-23.358829, -47.978981]],")
-    [void]$sb.AppendLine("        center: [-23.608933, -48.448126]")
-    [void]$sb.AppendLine("    }")
-    [void]$sb.AppendLine("};")
-
+    $hashPayload = (Get-FileHash $fAreas, $fLinear, $fLocal | Select-Object -ExpandProperty Hash) -join ""
     $outDataJs = Join-Path $jsPath "data.js"
-    [System.IO.File]::WriteAllText($outDataJs, $sb.ToString(), [System.Text.Encoding]::UTF8)
-    Write-Host "   OK: js/data.js atualizado com sucesso!" -ForegroundColor Green
+    $currentDataJs = if (Test-Path $outDataJs) { [System.IO.File]::ReadAllText($outDataJs, [System.Text.Encoding]::UTF8) } else { "" }
+
+    if ($currentDataJs -notmatch "// HASH: $hashPayload") {
+        $areas = [System.IO.File]::ReadAllText($fAreas, [System.Text.Encoding]::UTF8).Trim()
+        $linear = [System.IO.File]::ReadAllText($fLinear, [System.Text.Encoding]::UTF8).Trim()
+        $localizada = [System.IO.File]::ReadAllText($fLocal, [System.Text.Encoding]::UTF8).Trim()
+        $today = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+
+        $sb = [System.Text.StringBuilder]::new()
+        [void]$sb.AppendLine("// WebGIS Data Package - Universalização Sabesp Lote 4 Itapetininga")
+        [void]$sb.AppendLine("// HASH: $hashPayload")
+        [void]$sb.AppendLine("// Atualizado em $today")
+        [void]$sb.AppendLine("window.GIS_DATA = {")
+        [void]$sb.AppendLine("    areas: $areas,")
+        [void]$sb.AppendLine("    linear: $linear,")
+        [void]$sb.AppendLine("    localizada: $localizada,")
+        [void]$sb.AppendLine("    meta: {")
+        [void]$sb.AppendLine("        lote: `"LOTE 04 - ITAPETININGA`",")
+        [void]$sb.AppendLine("        data_atualizacao: `"$((Get-Date).ToString("yyyy-MM-dd"))`",")
+        [void]$sb.AppendLine("        bounds: [[-23.859038, -48.917271], [-23.358829, -47.978981]],")
+        [void]$sb.AppendLine("        center: [-23.608933, -48.448126]")
+        [void]$sb.AppendLine("    }")
+        [void]$sb.AppendLine("};")
+
+        [System.IO.File]::WriteAllText($outDataJs, $sb.ToString(), [System.Text.Encoding]::UTF8)
+        Write-Host "   OK: js/data.js atualizado com novos dados!" -ForegroundColor Green
+    } else {
+        Write-Host "   OK: js/data.js já está em dia com os arquivos GeoJSON (sem alterações)." -ForegroundColor DarkGray
+    }
 } else {
     Write-Host "   AVISO: Arquivos GeoJSON de áreas/linear/localizada não encontrados em 'data/'." -ForegroundColor DarkYellow
 }
@@ -59,11 +67,18 @@ if ((Test-Path $fAreas) -and (Test-Path $fLinear) -and (Test-Path $fLocal)) {
 Write-Host "[2/4] Processando limites municipais..." -ForegroundColor Yellow
 $fMun = Join-Path $dataPath "limite_municipios.geojson"
 if (Test-Path $fMun) {
-    $mun = [System.IO.File]::ReadAllText($fMun, [System.Text.Encoding]::UTF8).Trim()
+    $hashMun = (Get-FileHash $fMun).Hash
     $outMunJs = Join-Path $jsPath "municipios_data.js"
-    $contentMun = "// Limites Municipais - Apenas delimitação territorial e nome do município`r`nwindow.GIS_MUNICIPIOS = $mun;`r`n"
-    [System.IO.File]::WriteAllText($outMunJs, $contentMun, [System.Text.Encoding]::UTF8)
-    Write-Host "   OK: js/municipios_data.js atualizado com sucesso!" -ForegroundColor Green
+    $currentMunJs = if (Test-Path $outMunJs) { [System.IO.File]::ReadAllText($outMunJs, [System.Text.Encoding]::UTF8) } else { "" }
+
+    if ($currentMunJs -notmatch "// HASH: $hashMun") {
+        $mun = [System.IO.File]::ReadAllText($fMun, [System.Text.Encoding]::UTF8).Trim()
+        $contentMun = "// Limites Municipais - Apenas delimitação territorial e nome do município`r`n// HASH: $hashMun`r`nwindow.GIS_MUNICIPIOS = $mun;`r`n"
+        [System.IO.File]::WriteAllText($outMunJs, $contentMun, [System.Text.Encoding]::UTF8)
+        Write-Host "   OK: js/municipios_data.js atualizado com novos dados!" -ForegroundColor Green
+    } else {
+        Write-Host "   OK: js/municipios_data.js já está em dia (sem alterações)." -ForegroundColor DarkGray
+    }
 } else {
     Write-Host "   AVISO: data/limite_municipios.geojson não encontrado." -ForegroundColor DarkYellow
 }
@@ -72,11 +87,18 @@ if (Test-Path $fMun) {
 Write-Host "[3/4] Processando metas e indicadores..." -ForegroundColor Yellow
 $fMetas = Join-Path $dataPath "metas_economias.json"
 if (Test-Path $fMetas) {
-    $metas = [System.IO.File]::ReadAllText($fMetas, [System.Text.Encoding]::UTF8).Trim()
+    $hashMetas = (Get-FileHash $fMetas).Hash
     $outMetasJs = Join-Path $jsPath "metas_data.js"
-    $contentMetas = "window.GIS_METAS = $metas;`r`n"
-    [System.IO.File]::WriteAllText($outMetasJs, $contentMetas, [System.Text.Encoding]::UTF8)
-    Write-Host "   OK: js/metas_data.js atualizado com sucesso!" -ForegroundColor Green
+    $currentMetasJs = if (Test-Path $outMetasJs) { [System.IO.File]::ReadAllText($outMetasJs, [System.Text.Encoding]::UTF8) } else { "" }
+
+    if ($currentMetasJs -notmatch "// HASH: $hashMetas") {
+        $metas = [System.IO.File]::ReadAllText($fMetas, [System.Text.Encoding]::UTF8).Trim()
+        $contentMetas = "// Metas e Indicadores`r`n// HASH: $hashMetas`r`nwindow.GIS_METAS = $metas;`r`n"
+        [System.IO.File]::WriteAllText($outMetasJs, $contentMetas, [System.Text.Encoding]::UTF8)
+        Write-Host "   OK: js/metas_data.js atualizado com novos dados!" -ForegroundColor Green
+    } else {
+        Write-Host "   OK: js/metas_data.js já está em dia (sem alterações)." -ForegroundColor DarkGray
+    }
 } else {
     Write-Host "   AVISO: data/metas_economias.json não encontrado." -ForegroundColor DarkYellow
 }
@@ -97,5 +119,7 @@ if ($changes) {
     Write-Host "============================================================" -ForegroundColor Green
 } else {
     Write-Host ""
-    Write-Host "Nenhuma alteração foi detectada nos arquivos. Tudo já está atualizado!" -ForegroundColor Green
+    Write-Host "============================================================" -ForegroundColor Green
+    Write-Host "   Nenhuma alteração foi detectada. Tudo já está atualizado!" -ForegroundColor Green
+    Write-Host "============================================================" -ForegroundColor Green
 }

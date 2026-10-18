@@ -1,4 +1,6 @@
-﻿window.GIS_METAS = {
+﻿// Metas e Indicadores
+// HASH: 7B850395BB0B93FC9D9DAD0F33E1D9CFCF8314D834BEBDB0692D5F6B746210F7
+window.GIS_METAS = {
   "lote": "Lote 4",
   "pacote": "O1L4",
   "fonte": "G:\\Meu Drive\\UNIVERSALIZAÇÃO SABESP\\00-MATERIAL VIAGEM\\Banco de Dados\\LOTE 4-ITAPETININGA\\Acompanhamento de Obras\\projeto_01\\metas_economias.xlsx",
