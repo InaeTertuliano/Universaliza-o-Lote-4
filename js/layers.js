@@ -174,7 +174,17 @@ window.GIS_LAYERS = (function() {
         });
 
         const marker = L.marker(latlng, { icon: customIcon });
-        marker.bindPopup(createLocalizadaPopup(props));
+        marker.bindPopup(function() {
+            if (window.GIS_EDITOR && typeof window.GIS_EDITOR.setActiveFeature === 'function') {
+                window.GIS_EDITOR.setActiveFeature('localizada', feature, marker);
+            }
+            return createLocalizadaPopup(props);
+        });
+        marker.on('click', function() {
+            if (window.GIS_EDITOR && typeof window.GIS_EDITOR.setActiveFeature === 'function') {
+                window.GIS_EDITOR.setActiveFeature('localizada', feature, marker);
+            }
+        });
         return marker;
     }
 
@@ -217,8 +227,18 @@ window.GIS_LAYERS = (function() {
         };
     }
 
+    function formatPopupDate(val) {
+        if (!val || val === 'NaT' || val === '-' || val === 'null') return '-';
+        if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+            const parts = val.split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return val;
+    }
+
     // Popups HTML Builders
     function createAreasPopup(props) {
+        const isEditor = window.GIS_AUTH && typeof window.GIS_AUTH.isEditor === 'function' && window.GIS_AUTH.isEditor();
         return `
             <div class="popup-header">
                 <div class="popup-category">Área de Expansão (${props.recorte || 'FORMAL'})</div>
@@ -228,16 +248,22 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">ID Área:</span><span class="popup-val">${props.ae_id || '-'}</span></div>
                 <div class="popup-row"><span class="popup-key">Município:</span><span class="popup-val">${props.nm_mun || '-'}</span></div>
                 <div class="popup-row"><span class="popup-key">Situação Atendimento:</span><span class="popup-val"><span class="popup-badge ${(props.SIT_ATEND || '').toLowerCase().replace(/ /g, '-')}">${props.SIT_ATEND || '-'}</span></span></div>
-                <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val">${props.status || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${(props.status || '').toLowerCase().replace(/ /g, '-')}">${props.status || '-'}</span></span></div>
                 <div class="popup-row"><span class="popup-key">Domicílios Impactados:</span><span class="popup-val" style="color:#00a8cc; font-weight:800;">${props.qtd_domici || '0'} dom.</span></div>
                 <div class="popup-row"><span class="popup-key">Índice ICE / IEC:</span><span class="popup-val">${props.ice || props.iec || '-'} %</span></div>
-                <div class="popup-row"><span class="popup-key">Início Previsto / Real:</span><span class="popup-val">${props.inicio_p || '-'} / ${props.inicio_r || 'Não inf.'}</span></div>
-                <div class="popup-row"><span class="popup-key">Término Previsto:</span><span class="popup-val">${props.termino_p || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Início Previsto / Real:</span><span class="popup-val">${props.inicio_p || '-'} / <strong style="color:#38bdf8;">${formatPopupDate(props.inicio_r)}</strong></span></div>
+                <div class="popup-row"><span class="popup-key">Término Previsto / Real:</span><span class="popup-val">${props.termino_p || '-'} / <strong style="color:#10b981;">${formatPopupDate(props.termino_r)}</strong></span></div>
                 ${props.obs ? `<div class="popup-row" style="flex-direction:column; gap:4px;"><span class="popup-key">Observações:</span><span class="popup-val" style="text-align:left; font-style:italic;">${props.obs}</span></div>` : ''}
                 ${props.bairro ? `
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
                     <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
                         <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
+                ${isEditor ? `
+                <div style="margin-top: 6px;">
+                    <button type="button" class="btn-popup-edit" style="width:100%; background: linear-gradient(135deg, #f59e0b, #d97706); color:#1e201d; border:none; border-radius:6px; padding:7px 10px; font-size:0.75rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 8px rgba(245,158,11,0.35); transition:all 0.2s;" onclick="if(window.GIS_EDITOR) window.GIS_EDITOR.openModal();">
+                        <i class="fas fa-edit"></i> Editar Atributos da Feição
                     </button>
                 </div>` : ''}
             </div>
@@ -246,6 +272,7 @@ window.GIS_LAYERS = (function() {
 
     function createLinearPopup(props) {
         const ext = parseFloat(props.ext_calcul || 0).toFixed(2);
+        const isEditor = window.GIS_AUTH && typeof window.GIS_AUTH.isEditor === 'function' && window.GIS_AUTH.isEditor();
         return `
             <div class="popup-header" style="background: linear-gradient(135deg, #383a35, #919389);">
                 <div class="popup-category">${props.segmento || 'REDE COLETORA'} (${props.produto || 'ESGOTO'})</div>
@@ -260,11 +287,18 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">Método Construtivo:</span><span class="popup-val">${props.met_constr || 'VCA'}</span></div>
                 <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${(props.status || '').toLowerCase().replace(/ /g, '-')}">${props.status || '-'}</span></span></div>
                 <div class="popup-row"><span class="popup-key">Modalidade:</span><span class="popup-val">${props.modalidade || '-'}</span></div>
-                <div class="popup-row"><span class="popup-key">Datas (Início / Fim):</span><span class="popup-val">${props.inicio_p || '-'} à ${props.termino_p || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Datas Previstas:</span><span class="popup-val">${props.inicio_p || '-'} à ${props.termino_p || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Início Real / Fim Real:</span><span class="popup-val" style="color:#38bdf8; font-weight:700;">${formatPopupDate(props.inicio_r)} à ${formatPopupDate(props.termino_r)}</span></div>
                 ${props.bairro ? `
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
                     <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
                         <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
+                ${isEditor ? `
+                <div style="margin-top: 6px;">
+                    <button type="button" class="btn-popup-edit" style="width:100%; background: linear-gradient(135deg, #f59e0b, #d97706); color:#1e201d; border:none; border-radius:6px; padding:7px 10px; font-size:0.75rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 8px rgba(245,158,11,0.35); transition:all 0.2s;" onclick="if(window.GIS_EDITOR) window.GIS_EDITOR.openModal();">
+                        <i class="fas fa-edit"></i> Editar Atributos da Feição
                     </button>
                 </div>` : ''}
             </div>
@@ -272,6 +306,7 @@ window.GIS_LAYERS = (function() {
     }
 
     function createLocalizadaPopup(props) {
+        const isEditor = window.GIS_AUTH && typeof window.GIS_AUTH.isEditor === 'function' && window.GIS_AUTH.isEditor();
         return `
             <div class="popup-header" style="background: linear-gradient(135deg, #8b5cf6, #353733);">
                 <div class="popup-category">Infraestrutura Localizada (${props.segmento || 'EEE'})</div>
@@ -286,10 +321,17 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">Energização Prevista:</span><span class="popup-val">${props.energizaca || 'SIM'}</span></div>
                 <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${(props.status || '').toLowerCase().replace(/ /g, '-')}">${props.status || '-'}</span></span></div>
                 <div class="popup-row"><span class="popup-key">Fonte / Contrato:</span><span class="popup-val">${props.fonte || '-'}</span></div>
+                <div class="popup-row"><span class="popup-key">Início Real / Fim Real:</span><span class="popup-val" style="color:#38bdf8; font-weight:700;">${formatPopupDate(props.inicio_r)} à ${formatPopupDate(props.termino_r)}</span></div>
                 ${props.bairro ? `
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
                     <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
                         <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                    </button>
+                </div>` : ''}
+                ${isEditor ? `
+                <div style="margin-top: 6px;">
+                    <button type="button" class="btn-popup-edit" style="width:100%; background: linear-gradient(135deg, #f59e0b, #d97706); color:#1e201d; border:none; border-radius:6px; padding:7px 10px; font-size:0.75rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 8px rgba(245,158,11,0.35); transition:all 0.2s;" onclick="if(window.GIS_EDITOR) window.GIS_EDITOR.openModal();">
+                        <i class="fas fa-edit"></i> Editar Atributos da Feição
                     </button>
                 </div>` : ''}
             </div>
@@ -780,8 +822,16 @@ window.GIS_LAYERS = (function() {
             layerGroupAreas = L.geoJSON(window.GIS_DATA.areas, {
                 style: styleAreas,
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(createAreasPopup(feature.properties));
+                    layer.bindPopup(function() {
+                        if (window.GIS_EDITOR && typeof window.GIS_EDITOR.setActiveFeature === 'function') {
+                            window.GIS_EDITOR.setActiveFeature('areas', feature, layer);
+                        }
+                        return createAreasPopup(feature.properties);
+                    });
                     layer.on('click', function(e) {
+                        if (window.GIS_EDITOR && typeof window.GIS_EDITOR.setActiveFeature === 'function') {
+                            window.GIS_EDITOR.setActiveFeature('areas', feature, layer);
+                        }
                         const b = (feature.properties && feature.properties.bairro) ? feature.properties.bairro : null;
                         if (b && window.selectBairro) {
                             window.selectBairro(b, false);
@@ -799,7 +849,17 @@ window.GIS_LAYERS = (function() {
             layerGroupLinear = L.geoJSON(window.GIS_DATA.linear, {
                 style: styleLinear,
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(createLinearPopup(feature.properties));
+                    layer.bindPopup(function() {
+                        if (window.GIS_EDITOR && typeof window.GIS_EDITOR.setActiveFeature === 'function') {
+                            window.GIS_EDITOR.setActiveFeature('linear', feature, layer);
+                        }
+                        return createLinearPopup(feature.properties);
+                    });
+                    layer.on('click', function(e) {
+                        if (window.GIS_EDITOR && typeof window.GIS_EDITOR.setActiveFeature === 'function') {
+                            window.GIS_EDITOR.setActiveFeature('linear', feature, layer);
+                        }
+                    });
                     layer.on('mouseover', function(e) {
                         e.target.setStyle({ weight: (e.target.options.weight || 3) + 2 });
                     });
@@ -952,6 +1012,10 @@ window.GIS_LAYERS = (function() {
         },
 
         highlightBairro: highlightBairro,
+        refreshStyles: function() {
+            highlightBairro(currentHighlightedBairro);
+            updateLocalizadaMarkers();
+        },
 
         getLayerGroup: function(name) {
             if (name === 'municipios') return layerGroupMunicipios;
