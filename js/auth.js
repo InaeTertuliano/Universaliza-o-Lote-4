@@ -6,11 +6,29 @@
 (function() {
     'use strict';
 
-    // Hash SHA-256 for 'lote4'
-    const VALID_USER_HASH = '791180c8801b55ba578fc5b9cbdc7cb4cb67d952d3b4fc1b0ef33e71e71c3cc1';
-    const VALID_PASS_HASH = '791180c8801b55ba578fc5b9cbdc7cb4cb67d952d3b4fc1b0ef33e71e71c3cc1';
+    // Multi-user configuration (Viewer vs Editor roles)
+    const USERS = [
+        {
+            username: 'lote4',
+            password: 'lote4',
+            userHash: '791180c8801b55ba578fc5b9cbdc7cb4cb67d952d3b4fc1b0ef33e71e71c3cc1',
+            passHash: '791180c8801b55ba578fc5b9cbdc7cb4cb67d952d3b4fc1b0ef33e71e71c3cc1',
+            role: 'viewer',
+            label: 'Visualizador'
+        },
+        {
+            username: 'lote4ed',
+            password: 'lote4ed',
+            userHash: '0c34788f0318544b49eb02bbe323c0548cee442869ebae370645d4eca91f5a5e',
+            passHash: '0c34788f0318544b49eb02bbe323c0548cee442869ebae370645d4eca91f5a5e',
+            role: 'editor',
+            label: 'Editor'
+        }
+    ];
 
     const STORAGE_KEY = 'sabesp_lote4_auth_token';
+    const STORAGE_USER_KEY = 'sabesp_lote4_auth_user';
+    const STORAGE_ROLE_KEY = 'sabesp_lote4_auth_role';
     const AUTH_SUCCESS_VALUE = 'authenticated_lote4_sec';
 
     // Fast SHA-256 digest using Browser Crypto API
@@ -35,6 +53,25 @@
         );
     }
 
+    function updateAuthBadge() {
+        const userLabel = document.getElementById('auth-user-label');
+        const userIcon = document.getElementById('auth-user-icon');
+        const role = localStorage.getItem(STORAGE_ROLE_KEY) || sessionStorage.getItem(STORAGE_ROLE_KEY) || 'viewer';
+        const user = localStorage.getItem(STORAGE_USER_KEY) || sessionStorage.getItem(STORAGE_USER_KEY) || 'lote4';
+
+        if (userLabel) {
+            if (role === 'editor') {
+                userLabel.innerHTML = `<strong>${user}</strong> <span style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; margin-left: 4px; font-weight:700;">Editor</span>`;
+            } else {
+                userLabel.innerHTML = `<strong>${user}</strong> <span style="background: rgba(2, 132, 199, 0.2); color: #38bdf8; border: 1px solid rgba(2, 132, 199, 0.4); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; margin-left: 4px; font-weight:700;">Visualizador</span>`;
+            }
+        }
+        if (userIcon) {
+            userIcon.className = (role === 'editor') ? 'fas fa-user-shield' : 'fas fa-user-circle';
+            userIcon.style.color = (role === 'editor') ? '#f59e0b' : '#38bdf8';
+        }
+    }
+
     function unlockPortal() {
         const overlay = document.getElementById('auth-overlay');
         document.body.classList.remove('auth-locked');
@@ -44,6 +81,8 @@
                 overlay.style.display = 'none';
             }, 300);
         }
+
+        updateAuthBadge();
 
         // If map exists, refresh size
         if (window.GIS_MAP) {
@@ -64,7 +103,11 @@
 
     function logout() {
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_USER_KEY);
+        localStorage.removeItem(STORAGE_ROLE_KEY);
         sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(STORAGE_USER_KEY);
+        sessionStorage.removeItem(STORAGE_ROLE_KEY);
         window.location.reload();
     }
 
@@ -155,23 +198,25 @@
             const uHash = await hashString(u);
             const pHash = await hashString(p);
 
-            // Valid if SHA matches or direct match (lote4 / lote4)
-            const isValidUser = (uHash === VALID_USER_HASH) || (u.toLowerCase() === 'lote4');
-            const isValidPass = (pHash === VALID_PASS_HASH) || (p === 'lote4');
+            // Find matching user from USERS array
+            const matchedUser = USERS.find(user => {
+                const uMatch = (uHash === user.userHash) || (u.toLowerCase() === user.username.toLowerCase());
+                const pMatch = (pHash === user.passHash) || (p === user.password);
+                return uMatch && pMatch;
+            });
 
             // Small delay for smooth feedback
             await new Promise(r => setTimeout(r, 350));
 
-            if (isValidUser && isValidPass) {
+            if (matchedUser) {
                 // Success!
                 hideError();
 
                 const remember = rememberChk ? rememberChk.checked : true;
-                if (remember) {
-                    localStorage.setItem(STORAGE_KEY, AUTH_SUCCESS_VALUE);
-                } else {
-                    sessionStorage.setItem(STORAGE_KEY, AUTH_SUCCESS_VALUE);
-                }
+                const storage = remember ? localStorage : sessionStorage;
+                storage.setItem(STORAGE_KEY, AUTH_SUCCESS_VALUE);
+                storage.setItem(STORAGE_USER_KEY, matchedUser.username);
+                storage.setItem(STORAGE_ROLE_KEY, matchedUser.role);
 
                 unlockPortal();
             } else {
@@ -215,7 +260,17 @@
     // Export module for global use if needed
     window.GIS_AUTH = {
         logout: logout,
-        isAuth: isAlreadyAuthenticated
+        isAuth: isAlreadyAuthenticated,
+        getUserRole: function() {
+            return localStorage.getItem(STORAGE_ROLE_KEY) || sessionStorage.getItem(STORAGE_ROLE_KEY) || 'viewer';
+        },
+        getUsername: function() {
+            return localStorage.getItem(STORAGE_USER_KEY) || sessionStorage.getItem(STORAGE_USER_KEY) || 'lote4';
+        },
+        isEditor: function() {
+            return this.getUserRole() === 'editor';
+        },
+        updateBadge: updateAuthBadge
     };
 
 })();
