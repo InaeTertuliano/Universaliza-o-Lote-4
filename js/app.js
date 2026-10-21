@@ -458,7 +458,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnExportCSV = document.getElementById('btn-export-csv');
     if (btnExportCSV) {
         btnExportCSV.addEventListener('click', function() {
-            window.GIS_FILTERS.exportCSV();
+            if (window.GIS_EXPORTER && typeof window.GIS_EXPORTER.openModal === 'function') {
+                window.GIS_EXPORTER.openModal('linear');
+            } else if (window.GIS_FILTERS) {
+                window.GIS_FILTERS.exportCSV();
+            }
         });
     }
 
@@ -868,6 +872,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Expose selectBairro globally for centroid markers and external integrations
     window.selectBairro = selectBairro;
+    window.getActiveBairro = function() {
+        return activeBairroFilter;
+    };
 
     bairroCards.forEach(card => {
         card.addEventListener('click', function(e) {

@@ -262,6 +262,11 @@ window.GIS_FILTERS = (function() {
         },
 
         exportCSV: function() {
+            if (window.GIS_EXPORTER && typeof window.GIS_EXPORTER.openModal === 'function') {
+                window.GIS_EXPORTER.openModal('linear');
+                return;
+            }
+
             if (!currentFilteredLinear || currentFilteredLinear.length === 0) {
                 alert('Nenhum dado selecionado para exportar.');
                 return;
