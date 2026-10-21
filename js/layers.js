@@ -273,6 +273,17 @@ window.GIS_LAYERS = (function() {
     function createLinearPopup(props) {
         const ext = parseFloat(props.ext_calcul || 0).toFixed(2);
         const isEditor = window.GIS_AUTH && typeof window.GIS_AUTH.isEditor === 'function' && window.GIS_AUTH.isEditor();
+        let custoRowHtml = '';
+        if (window.GIS_CUSTOS_HELPER && typeof window.GIS_CUSTOS_HELPER.getPrecoMetro === 'function') {
+            const preco = window.GIS_CUSTOS_HELPER.getPrecoMetro(props.segmento, props.dn_nominal);
+            if (preco !== null) {
+                const totalCusto = (parseFloat(props.ext_calcul || 0) * preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                custoRowHtml = `
+                    <div class="popup-row"><span class="popup-key">Preço Unitário:</span><span class="popup-val" style="color:#10b981; font-weight:700;">R$ ${preco.toFixed(2)} / m</span></div>
+                    <div class="popup-row"><span class="popup-key">Custo Estimado Trecho:</span><span class="popup-val" style="color:#10b981; font-weight:800;">${totalCusto}</span></div>
+                `;
+            }
+        }
         return `
             <div class="popup-header" style="background: linear-gradient(135deg, #383a35, #919389);">
                 <div class="popup-category">${props.segmento || 'REDE COLETORA'} (${props.produto || 'ESGOTO'})</div>
@@ -282,6 +293,7 @@ window.GIS_LAYERS = (function() {
                 <div class="popup-row"><span class="popup-key">FID / ID:</span><span class="popup-val">#${props.fid || '-'}</span></div>
                 <div class="popup-row"><span class="popup-key">Município:</span><span class="popup-val">${props.nm_mun || '-'}</span></div>
                 <div class="popup-row"><span class="popup-key">Extensão Calculada:</span><span class="popup-val" style="color:#10b981; font-weight:800;">${ext} m</span></div>
+                ${custoRowHtml}
                 <div class="popup-row"><span class="popup-key">Material / DN:</span><span class="popup-val">${props.material || '-'} DN ${props.dn_nominal || '-'} mm</span></div>
                 <div class="popup-row"><span class="popup-key">Profundidade Média:</span><span class="popup-val">${props.prof_media || '-'} m</span></div>
                 <div class="popup-row"><span class="popup-key">Método Construtivo:</span><span class="popup-val">${props.met_constr || 'VCA'}</span></div>

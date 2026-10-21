@@ -1,0 +1,13 @@
+﻿{
+    "origem_arquivo":  "PREÃ‡O.xlsx",
+    "data_atualizacao":  "2026-10-21 00:25:40",
+    "tabela_precos":  [
+                          {
+                              "segmento":  "REDE COLETORA",
+                              "diametro":  150,
+                              "preco_metro":  600,
+                              "unidade":  "m",
+                              "moeda":  "BRL"
+                          }
+                      ]
+}

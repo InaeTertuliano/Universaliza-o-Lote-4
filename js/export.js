@@ -23,6 +23,8 @@ window.GIS_EXPORTER = (function() {
                 { key: 'ext_calcul', label: 'Extensão Calculada (m)', default: true },
                 { key: 'prof_media', label: 'Profundidade Média (m)', default: true },
                 { key: 'status', label: 'Status da Obra', default: true },
+                { key: 'preco_m', label: 'Preço Unitário (R$/m)', default: true },
+                { key: 'custo_est', label: 'Custo Estimado (R$)', default: true },
                 { key: 'inicio_p', label: 'Data Início Previsto', default: true },
                 { key: 'termino_p', label: 'Data Término Previsto', default: true },
                 { key: 'inicio_r', label: 'Data Início Real', default: true },
@@ -56,6 +58,8 @@ window.GIS_EXPORTER = (function() {
                 { key: 'qtd_domici', label: 'Quantidade de Domicílios', default: true },
                 { key: 'SIT_ATEND', label: 'Situação de Atendimento', default: true },
                 { key: 'status', label: 'Status da Obra', default: true },
+                { key: 'preco_m', label: 'Preço Unitário (R$/m)', default: true },
+                { key: 'custo_est', label: 'Custo Estimado (R$)', default: true },
                 { key: 'inicio_p', label: 'Data Início Previsto', default: true },
                 { key: 'termino_p', label: 'Data Término Previsto', default: true },
                 { key: 'inicio_r', label: 'Data Início Real', default: true },
@@ -345,6 +349,12 @@ window.GIS_EXPORTER = (function() {
                 // Formatações amigáveis
                 if (k === 'ext_calcul' && val !== null && val !== undefined) {
                     val = parseFloat(val).toFixed(2);
+                } else if (k === 'preco_m') {
+                    const preco = window.GIS_CUSTOS_HELPER ? window.GIS_CUSTOS_HELPER.getPrecoMetro(p.segmento, p.dn_nominal) : null;
+                    val = preco !== null ? preco.toFixed(2) : '';
+                } else if (k === 'custo_est') {
+                    const preco = window.GIS_CUSTOS_HELPER ? window.GIS_CUSTOS_HELPER.getPrecoMetro(p.segmento, p.dn_nominal) : null;
+                    val = preco !== null ? (parseFloat(p.ext_calcul || 0) * preco).toFixed(2) : '';
                 }
                 return formatCsvValue(val);
             });

@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom Portal Stylesheet -->
-    <link rel="stylesheet" href="css/style.css?v=20261020a">
+    <link rel="stylesheet" href="css/style.css?v=20261021a">
 </head>
 <body class="auth-locked">
 
@@ -122,6 +122,10 @@
                 <i class="fas fa-ruler-combined"></i> Painel de Quantidade de Rede
             </button>
 
+            <button id="btn-open-custos-header" class="btn-header" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7;">
+                <i class="fas fa-coins"></i> Custos e Preços
+            </button>
+
             <button id="btn-theme-toggle" class="btn-header">
                 <i class="fas fa-sun"></i> Light Mode
             </button>
@@ -197,6 +201,9 @@
                             Equivalente a <strong style="color: #c0c4b7;">45,42 km</strong> e <strong style="color: #c0c4b7;">12 EEEs</strong> distribuídos em 6 frentes de obra consolidadas.
                         </div>
                     </div>
+
+                    <!-- Card Dinâmico de Investimento e Orçamento Estimado -->
+                    <div id="widget-investimento-lateral"></div>
 
                     <!-- Quadro Frente de Obra (Apresentação Independente - Não é lista suspensa) -->
                     <div class="widget-card">
@@ -1075,7 +1082,7 @@
             <div class="modal-body">
                 
                 <!-- KPI Header Grid -->
-                <div class="modal-kpi-grid">
+                <div class="modal-kpi-grid" style="grid-template-columns: repeat(5, 1fr);">
                     <div class="modal-kpi-card">
                         <div class="modal-kpi-title">EXTENSÃO TOTAL DA REDE</div>
                         <div class="modal-kpi-num" style="color:#919389;">45.418,12 m</div>
@@ -1096,6 +1103,11 @@
                         <div class="modal-kpi-num" style="color:#10b981;">6.568,41 m</div>
                         <div class="modal-kpi-sub">14,5% de avanço físico</div>
                     </div>
+                    <div class="modal-kpi-card" style="border-top-color: #10b981;">
+                        <div class="modal-kpi-title">CUSTO REDE COLETORA 150</div>
+                        <div class="modal-kpi-num" style="color:#10b981;">R$ 20,34 M</div>
+                        <div class="modal-kpi-sub">R$ 600/m (PREÇO.xlsx)</div>
+                    </div>
                 </div>
 
                 <!-- Quantitativos por Bairro Unificado Table -->
@@ -1110,16 +1122,17 @@
                                 <th>Extensão (km)</th>
                                 <th>Trechos</th>
                                 <th>% Lote</th>
+                                <th style="color:#10b981;">Custo Est. (RC 150)</th>
                                 <th>Status Dominante</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td><strong>Pedras e Vitória</strong></td><td>Guareí</td><td>21.542,65 m</td><td>21,54 km</td><td>348</td><td><span class="popup-badge nao-iniciado">47.4%</span></td><td>Não Iniciado (20,09 km) / Concluído (1,41 km) / Iniciado (0,04 km)</td></tr>
-                            <tr><td><strong>Turvo dos Almeidas</strong></td><td>Capão Bonito</td><td>9.037,90 m</td><td>9,04 km</td><td>34</td><td><span class="popup-badge nao-iniciado">19.9%</span></td><td>Não Iniciado (9,04 km)</td></tr>
-                            <tr><td><strong>Serra da Prata</strong></td><td>Paranapanema</td><td>6.672,19 m</td><td>6,67 km</td><td>13</td><td><span class="popup-badge iniciado">14.7%</span></td><td>Não Iniciado (3,47 km) / Iniciado (3,00 km) / Concluído (0,20 km)</td></tr>
-                            <tr><td><strong>Pocinho</strong></td><td>São Miguel Arcanjo</td><td>4.140,67 m</td><td>4,14 km</td><td>72</td><td><span class="popup-badge concluido">9.1%</span></td><td>Concluído (2,24 km) / Não Iniciado (1,84 km) / Iniciado (0,06 km)</td></tr>
-                            <tr><td><strong>Jardim Aeroporto</strong></td><td>Itapetininga</td><td>2.081,88 m</td><td>2,08 km</td><td>21</td><td><span class="popup-badge concluido">4.6%</span></td><td>Concluído (0,78 km) / Iniciado (0,70 km) / Não Iniciado (0,60 km)</td></tr>
-                            <tr><td><strong>Pateo Velho</strong></td><td>Angatuba</td><td>1.942,82 m</td><td>1,94 km</td><td>17</td><td><span class="popup-badge concluido">4.3%</span></td><td>Concluído (1,94 km)</td></tr>
+                            <tr><td><strong>Pedras e Vitória</strong></td><td>Guareí</td><td>21.542,65 m</td><td>21,54 km</td><td>348</td><td><span class="popup-badge nao-iniciado">47.4%</span></td><td style="color:#10b981; font-weight:700;">R$ 11.438.930,63</td><td>Não Iniciado (20,09 km) / Concluído (1,41 km) / Iniciado (0,04 km)</td></tr>
+                            <tr><td><strong>Turvo dos Almeidas</strong></td><td>Capão Bonito</td><td>9.037,90 m</td><td>9,04 km</td><td>34</td><td><span class="popup-badge nao-iniciado">19.9%</span></td><td style="color:#10b981; font-weight:700;">R$ 5.422.740,74</td><td>Não Iniciado (9,04 km)</td></tr>
+                            <tr><td><strong>Serra da Prata</strong></td><td>Paranapanema</td><td>6.672,19 m</td><td>6,67 km</td><td>13</td><td><span class="popup-badge iniciado">14.7%</span></td><td style="color:#10b981; font-weight:700;">R$ 182.535,11</td><td>Não Iniciado (3,47 km) / Iniciado (3,00 km) / Concluído (0,20 km)</td></tr>
+                            <tr><td><strong>Pocinho</strong></td><td>São Miguel Arcanjo</td><td>4.140,67 m</td><td>4,14 km</td><td>72</td><td><span class="popup-badge concluido">9.1%</span></td><td style="color:#10b981; font-weight:700;">R$ 1.921.200,53</td><td>Concluído (2,24 km) / Não Iniciado (1,84 km) / Iniciado (0,06 km)</td></tr>
+                            <tr><td><strong>Jardim Aeroporto</strong></td><td>Itapetininga</td><td>2.081,88 m</td><td>2,08 km</td><td>21</td><td><span class="popup-badge concluido">4.6%</span></td><td style="color:#10b981; font-weight:700;">R$ 875.141,56</td><td>Concluído (0,78 km) / Iniciado (0,70 km) / Não Iniciado (0,60 km)</td></tr>
+                            <tr><td><strong>Pateo Velho</strong></td><td>Angatuba</td><td>1.942,82 m</td><td>1,94 km</td><td>17</td><td><span class="popup-badge concluido">4.3%</span></td><td style="color:#10b981; font-weight:700;">R$ 499.794,96</td><td>Concluído (1,94 km)</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1591,24 +1604,134 @@
         </div>
     </div>
 
+    <!-- Modal Custos e Orçamento de Obras (Fonte: PREÇO.xlsx) -->
+    <div id="modal-custos-orcamento" class="modal-overlay">
+        <div class="modal-container" style="max-width: 980px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e201d, #064e3b); border-bottom: 2px solid #10b981;">
+                <div>
+                    <h2 class="modal-title" style="display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-coins" style="color:#10b981;"></i> 
+                        Tabela de Custos Unitários e Orçamento Executivo
+                    </h2>
+                    <p class="modal-subtitle">Parametrização orçamentária integrada da planilha <code>PREÇO.xlsx</code> (Lote 4 - Itapetininga)</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <a href="data/PRECO.xlsx" download="PRECO.xlsx" class="btn-header" style="background: rgba(16, 185, 129, 0.25); border-color: #10b981; color: #6ee7b7; text-decoration: none; font-size: 0.75rem; padding: 5px 10px;">
+                        <i class="fas fa-file-excel"></i> Baixar Planilha Original (PREÇO.xlsx)
+                    </a>
+                    <button id="btn-close-modal-custos" class="modal-close-btn">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body" style="padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+
+                <!-- 1. Tabela de Preços Unitários Parametrizados -->
+                <div class="widget-card" style="margin-bottom: 0;">
+                    <div class="widget-title" style="color: #6ee7b7;">
+                        <span><i class="fas fa-tags" style="color: #10b981;"></i> Tabela de Preços Unitários Cadastrados</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted-dark);">Origem: <code>C:\Users\Administrador\Desktop\0-teste\CUSTO\PREÇO.xlsx</code></span>
+                    </div>
+                    <table class="datatable" style="font-size: 0.82rem;">
+                        <thead>
+                            <tr>
+                                <th>Segmento</th>
+                                <th>Diâmetro (DN)</th>
+                                <th>Preço Unitário / Metro</th>
+                                <th>Origem / Referência</th>
+                            </tr>
+                        </thead>
+                        <tbody id="custos-tabela-precos">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 2. KPIs de Orçamento Executivo -->
+                <div class="modal-kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin: 0;">
+                    <div class="modal-kpi-card" style="border-top-color: #10b981;">
+                        <div class="modal-kpi-title">ORÇAMENTO TOTAL PREVISTO</div>
+                        <div id="custos-kpi-total" class="modal-kpi-num" style="color:#10b981;">R$ 0,00</div>
+                        <div id="custos-kpi-extensao" class="modal-kpi-sub">33,90 km parametrizados</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: #38bdf8;">
+                        <div class="modal-kpi-title">VALOR EXECUTADO (CONCLUÍDO)</div>
+                        <div id="custos-kpi-concluido" class="modal-kpi-num" style="color:#38bdf8;">R$ 0,00</div>
+                        <div class="modal-kpi-sub">Rede executada e concluída</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: #f59e0b;">
+                        <div class="modal-kpi-title">SALDO A EXECUTAR</div>
+                        <div id="custos-kpi-nao-iniciado" class="modal-kpi-num" style="color:#fbbf24;">R$ 0,00</div>
+                        <div class="modal-kpi-sub">Redes não iniciadas</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: #a855f7;">
+                        <div class="modal-kpi-title">PREÇO MÉDIO / KM</div>
+                        <div class="modal-kpi-num" style="color:#c084fc;">R$ 600.000</div>
+                        <div class="modal-kpi-sub">Equivalente a R$ 600,00/m</div>
+                    </div>
+                </div>
+
+                <!-- 3. Tabela Detalhada por Frente de Obra / Bairro -->
+                <div class="widget-card" style="margin-bottom: 0;">
+                    <div class="widget-title" style="color: #6ee7b7;">
+                        <span><i class="fas fa-hard-hat" style="color: #10b981;"></i> Orçamento e Execução Financeira por Frente de Obra</span>
+                    </div>
+                    <div class="datatable-wrapper" style="max-height: 280px; overflow-y: auto;">
+                        <table class="datatable" style="font-size: 0.8rem;">
+                            <thead>
+                                <tr>
+                                    <th>Frente de Obra</th>
+                                    <th>Município</th>
+                                    <th style="text-align:right;">Extensão RC 150 (m)</th>
+                                    <th style="text-align:right;">Preço / m</th>
+                                    <th style="text-align:right;">Custo Previsto (R$)</th>
+                                    <th style="text-align:right;">Custo Executado (R$)</th>
+                                    <th style="text-align:right;">Saldo a Executar (R$)</th>
+                                    <th style="text-align:center;">% Concluído</th>
+                                </tr>
+                            </thead>
+                            <tbody id="custos-tabela-bairros">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:0.75rem; color:var(--text-muted-dark);">
+                    💡 <em>Os custos são calculados dinamicamente cruzando a malha vetorial com a tabela de preços unitários.</em>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button id="btn-export-custos-csv" class="btn-header" style="background:#10b981; border:none; color:white;">
+                        <i class="fas fa-file-excel"></i> Exportar Relatório Financeiro (CSV)
+                    </button>
+                    <button id="btn-close-modal-custos-footer" class="btn-header">
+                        Fechar Painel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Leaflet JS CDN -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <!-- Embedded GeoJSON Data Package -->
-    <script src="js/data.js?v=20261020a"></script>
-    <script src="js/escopo_original_data.js?v=20261020a"></script>
-    <script src="js/municipios_data.js?v=20261020a"></script>
-    <script src="js/metas_data.js?v=20261020a"></script>
+    <script src="js/data.js?v=20261021a"></script>
+    <script src="js/custos_data.js?v=20261021a"></script>
+    <script src="js/escopo_original_data.js?v=20261021a"></script>
+    <script src="js/municipios_data.js?v=20261021a"></script>
+    <script src="js/metas_data.js?v=20261021a"></script>
 
     <!-- WebGIS Modules -->
-    <script src="js/auth.js?v=20261020a"></script>
-    <script src="js/editor.js?v=20261020a"></script>
-    <script src="js/export.js?v=20261020a"></script>
-    <script src="js/layers.js?v=20261020a"></script>
-    <script src="js/charts.js?v=20261020a"></script>
-    <script src="js/filters.js?v=20261020a"></script>
-    <script src="js/metas.js?v=20261020a"></script>
-    <script src="js/app.js?v=20261020a"></script>
+    <script src="js/auth.js?v=20261021a"></script>
+    <script src="js/editor.js?v=20261021a"></script>
+    <script src="js/custos.js?v=20261021a"></script>
+    <script src="js/export.js?v=20261021a"></script>
+    <script src="js/layers.js?v=20261021a"></script>
+    <script src="js/charts.js?v=20261021a"></script>
+    <script src="js/filters.js?v=20261021a"></script>
+    <script src="js/metas.js?v=20261021a"></script>
+    <script src="js/app.js?v=20261021a"></script>
 
 </body>
 </html>

@@ -104,7 +104,7 @@ if (Test-Path $fMetas) {
 }
 
 # 4. Atualizar js/escopo_original_data.js
-Write-Host "[4/5] Processando camadas do Escopo Original..." -ForegroundColor Yellow
+Write-Host "[4/6] Processando camadas do Escopo Original..." -ForegroundColor Yellow
 $fOrigAreas = Join-Path $dataPath "escopo_original_areas.geojson"
 $fOrigLinear = Join-Path $dataPath "escopo_original_linear.geojson"
 $fOrigPontual = Join-Path $dataPath "escopo_original_pontual.geojson"
@@ -144,8 +144,119 @@ if ((Test-Path $fOrigAreas) -and (Test-Path $fOrigLinear) -and (Test-Path $fOrig
     Write-Host "   AVISO: Arquivos GeoJSON do Escopo Original não encontrados em 'data/'." -ForegroundColor DarkYellow
 }
 
-# 5. Git commit & push
-Write-Host "[5/5] Verificando e enviando alterações para o GitHub..." -ForegroundColor Yellow
+# 5. Atualizar js/custos_data.js a partir da Planilha de Custos (PREÇO.xlsx)
+Write-Host "[5/6] Processando planilha de custos e preços unitários..." -ForegroundColor Yellow
+$fPrecoDesktop = "C:\Users\Administrador\Desktop\0-teste\CUSTO\PREÇO.xlsx"
+$fPrecoData = Join-Path $dataPath "PRECO.xlsx"
+
+if (Test-Path $fPrecoDesktop) {
+    try {
+        Copy-Item -Path $fPrecoDesktop -Destination $fPrecoData -Force -ErrorAction SilentlyContinue
+    } catch {}
+}
+
+if (Test-Path $fPrecoData) {
+    $hashPreco = (Get-FileHash $fPrecoData).Hash
+    $outCustosJs = Join-Path $jsPath "custos_data.js"
+    $currentCustosJs = if (Test-Path $outCustosJs) { [System.IO.File]::ReadAllText($outCustosJs, [System.Text.Encoding]::UTF8) } else { "" }
+
+    if ($currentCustosJs -notmatch "// HASH: $hashPreco") {
+        try {
+            $tempPreco = Join-Path $env:TEMP "preco_act_temp.xlsx"
+            $fsIn = [System.IO.File]::Open($fPrecoData, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
+            $fsOut = [System.IO.File]::Create($tempPreco)
+            $fsIn.CopyTo($fsOut)
+            $fsIn.Close()
+            $fsOut.Close()
+
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            $zip = [System.IO.Compression.ZipFile]::OpenRead($tempPreco)
+
+            $sharedStringsEntry = $zip.GetEntry("xl/sharedStrings.xml")
+            $sharedStrings = @()
+            if ($sharedStringsEntry) {
+                $stream = $sharedStringsEntry.Open()
+                $reader = New-Object System.IO.StreamReader($stream)
+                [xml]$ssXml = $reader.ReadToEnd()
+                $reader.Close()
+                $stream.Close()
+                $sharedStrings = $ssXml.sst.si | ForEach-Object {
+                    if ($_.t) { $_.t } elseif ($_.r) { ($_.r.t) -join "" } else { "" }
+                }
+            }
+
+            $sheetEntry = $zip.GetEntry("xl/worksheets/sheet1.xml")
+            $stream = $sheetEntry.Open()
+            $reader = New-Object System.IO.StreamReader($stream)
+            [xml]$sheetXml = $reader.ReadToEnd()
+            $reader.Close()
+            $stream.Close()
+            $zip.Dispose()
+            Remove-Item $tempPreco -Force -ErrorAction SilentlyContinue
+
+            $rows = $sheetXml.worksheet.sheetData.row
+            $header = @{}
+            $items = @()
+
+            foreach ($r in $rows) {
+                $rowNum = [int]$r.r
+                if ($rowNum -eq 1) {
+                    foreach ($c in $r.c) {
+                        $col = $c.r -replace '\d', ''
+                        $val = if ($c.t -eq "s") { $sharedStrings[[int]$c.v] } else { $c.v }
+                        $header[$col] = $val.Trim().ToUpper()
+                    }
+                } else {
+                    $rowObj = @{}
+                    foreach ($c in $r.c) {
+                        $col = $c.r -replace '\d', ''
+                        $val = if ($c.t -eq "s") { $sharedStrings[[int]$c.v] } else { $c.v }
+                        $hName = $header[$col]
+                        if ($hName) { $rowObj[$hName] = $val }
+                    }
+                    if ($rowObj.Count -gt 0) {
+                        $segKey = $rowObj.Keys | Where-Object { $_ -like "*SEGMENTO*" } | Select-Object -First 1
+                        $dnKey = $rowObj.Keys | Where-Object { $_ -like "*DI*METRO*" -or $_ -like "*DN*" } | Select-Object -First 1
+                        $precoKey = $rowObj.Keys | Where-Object { $_ -like "*PRE*O*" -or $_ -like "*CUSTO*" -or $_ -like "*VALOR*" } | Select-Object -First 1
+
+                        $seg = if ($segKey) { $rowObj[$segKey].Trim().ToUpper() } else { "REDE COLETORA" }
+                        $dn = if ($dnKey) { [int]$rowObj[$dnKey] } else { 150 }
+                        $preco = if ($precoKey) { [double]($rowObj[$precoKey] -replace ',', '.') } else { 600.0 }
+
+                        $items += [PSCustomObject]@{
+                            segmento = $seg
+                            diametro = $dn
+                            preco_metro = $preco
+                            unidade = "m"
+                            moeda = "BRL"
+                        }
+                    }
+                }
+            }
+
+            $custosObj = [PSCustomObject]@{
+                origem_arquivo = "PREÇO.xlsx"
+                data_atualizacao = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+                tabela_precos = $items
+            }
+            $custosJson = $custosObj | ConvertTo-Json -Depth 5
+            [System.IO.File]::WriteAllText((Join-Path $dataPath "custos.json"), $custosJson, [System.Text.Encoding]::UTF8)
+
+            $sbCustos = "// WebGIS Data Package - Tabela de Preços e Custos Unitários`r`n// HASH: $hashPreco`r`n// Fonte: PREÇO.xlsx`r`nwindow.GIS_CUSTOS = $custosJson;`r`n"
+            [System.IO.File]::WriteAllText($outCustosJs, $sbCustos, [System.Text.Encoding]::UTF8)
+            Write-Host "   OK: js/custos_data.js atualizado com sucesso!" -ForegroundColor Green
+        } catch {
+            Write-Host "   AVISO: Falha ao processar PREÇO.xlsx: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        }
+    } else {
+        Write-Host "   OK: js/custos_data.js já está em dia (sem alterações)." -ForegroundColor DarkGray
+    }
+} else {
+    Write-Host "   AVISO: Planilha PREÇO.xlsx não encontrada." -ForegroundColor DarkYellow
+}
+
+# 6. Git commit & push
+Write-Host "[6/6] Verificando e enviando alterações para o GitHub..." -ForegroundColor Yellow
 $changes = git status -s
 if ($changes) {
     git add .
