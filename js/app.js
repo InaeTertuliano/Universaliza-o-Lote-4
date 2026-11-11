@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.download = `Caderno_Quantitativos_Bairros_Engeform_Sabesp_${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
-    };    };
+    };
 
     const btnExportQuantCsv = document.getElementById('btn-export-quant-csv');
     const btnExportGeralCsv = document.getElementById('btn-export-geral-csv');
@@ -838,7 +838,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Deselect / Reset to Lote 4
             activeBairroFilter = null;
             bairroCards.forEach(c => c.classList.remove('active-bairro'));
-            if (badgeFrente) const totalFrentes = (window.GIS_LAYERS && window.GIS_LAYERS.getBairroCentroids) ? window.GIS_LAYERS.getBairroCentroids().length : 28;
+            const totalFrentes = (window.GIS_LAYERS && window.GIS_LAYERS.getBairroCentroids) ? window.GIS_LAYERS.getBairroCentroids().length : 28;
             if (badgeFrente) badgeFrente.innerHTML = `Ver Frentes (${totalFrentes}) <i class="fas fa-chevron-down"></i>`;
 
             updateSegmentWidget(null);
