@@ -782,13 +782,19 @@ const BAIRRO_CENTROIDS = [
         const customIcon = L.divIcon({
             className: 'bairro-centroid-leaflet-icon',
             html: iconHtml,
-            iconSize: [180, 80],
-            iconAnchor: [90, 19]
+            iconSize: [26, 26],
+            iconAnchor: [13, 13]
         });
 
         const marker = L.marker([bairro.lat, bairro.lng], {
             icon: customIcon,
             zIndexOffset: 500
+        });
+
+        marker.bindTooltip(`<strong>${bairro.nome}</strong><br><span style="font-size:0.75rem; opacity:0.85;">${bairro.municipio} • <span style="color:${bairro.cor}; font-weight:700;">${bairro.statusLabel}</span></span>`, {
+            direction: 'top',
+            offset: [0, -10],
+            className: 'ae-frente-tooltip'
         });
 
         marker.on('click', function() {
@@ -806,6 +812,21 @@ const BAIRRO_CENTROIDS = [
     function updateZoomVisibility() {
         if (!map) return;
         const currentZoom = map.getZoom();
+
+        // Atualizar classes responsivas de zoom no elemento do mapa para dimensionamento escalável dos ícones
+        const mapEl = map.getContainer();
+        if (mapEl) {
+            mapEl.classList.remove('map-zoom-ultralow', 'map-zoom-low', 'map-zoom-mid', 'map-zoom-high');
+            if (currentZoom <= 9) {
+                mapEl.classList.add('map-zoom-ultralow');
+            } else if (currentZoom <= 10) {
+                mapEl.classList.add('map-zoom-low');
+            } else if (currentZoom <= 12) {
+                mapEl.classList.add('map-zoom-mid');
+            } else {
+                mapEl.classList.add('map-zoom-high');
+            }
+        }
 
         // 1. Obras Localizadas (EEE) - Visíveis em zoom aproximado (>= 13)
         if (layerGroupLocalizada) {
