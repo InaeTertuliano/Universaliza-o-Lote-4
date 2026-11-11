@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom Portal Stylesheet -->
-    <link rel="stylesheet" href="css/style.css?v=20261111x">
+    <link rel="stylesheet" href="css/style.css?v=20261111y">
 </head>
 <body class="auth-locked">
 
@@ -114,24 +114,8 @@
 
         <!-- Header Action Controls -->
         <div class="header-actions">
-            <button id="btn-open-metas-header" class="btn-header" style="background: rgba(2, 132, 199, 0.2); border-color: #0284c7; color: #38bdf8;">
-                <i class="fas fa-bullseye"></i> Metas de Economias
-            </button>
-
-            <button id="btn-open-quant-modal" class="btn-header btn-engeform">
-                <i class="fas fa-ruler-combined"></i> Painel de Quantidade de Rede
-            </button>
-
-            <button id="btn-theme-toggle" class="btn-header">
-                <i class="fas fa-sun"></i> Light Mode
-            </button>
-
             <button id="btn-export-csv" class="btn-header" style="background: rgba(16, 185, 129, 0.25); border-color: #10b981;">
                 <i class="fas fa-file-csv"></i> Exportar CSV
-            </button>
-
-            <button id="btn-print-map" class="btn-header">
-                <i class="fas fa-print"></i> Imprimir Mapas
             </button>
 
             <!-- User Auth Badge -->
@@ -154,13 +138,13 @@
 
             <!-- Sidebar Navigation Tabs -->
             <nav class="sidebar-tabs">
-                <button class="nav-tab-btn" data-tab="geral">
+                <button class="nav-tab-btn active" data-tab="geral">
                     <i class="fas fa-th-large"></i> Visão Geral
                 </button>
                 <button class="nav-tab-btn" data-tab="quantitativos">
                     <i class="fas fa-ruler-combined"></i> Visão Detalhada
                 </button>
-                <button class="nav-tab-btn active" data-tab="camadas">
+                <button class="nav-tab-btn" data-tab="camadas">
                     <i class="fas fa-balance-scale"></i> Comparação Escopo
                 </button>
                 <button class="nav-tab-btn" data-tab="metas">
@@ -173,7 +157,7 @@
             <div class="sidebar-content">
 
                 <!-- Tab 0: Painel Visão Geral (Visão Geral & Frentes de Obra) -->
-                <div id="tab-geral" class="tab-pane">
+                <div id="tab-geral" class="tab-pane active">
 
                     <div class="widget-card engeform-card">
                         <div class="widget-title" style="color: white;">
@@ -2976,7 +2960,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                 </div>
 
                 <!-- Tab 1: Comparação Escopo (Camadas & Legendas) -->
-                <div id="tab-camadas" class="tab-pane active">
+                <div id="tab-camadas" class="tab-pane">
 
                     <!-- Quadro Dedicado: Confrontar Escopo (Original vs. Consolidado) -->
                     <div class="widget-card" id="card-confrontar-escopo" style="border: 1.5px solid rgba(249, 115, 22, 0.45); background: linear-gradient(135deg, rgba(249, 115, 22, 0.09), rgba(2, 132, 199, 0.05)); margin-bottom: 1.1rem; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);">
@@ -5513,20 +5497,20 @@ da Cidade) <span style="font-size:0.7rem; opacity:0.75; font-weight:400;">(Paran
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <!-- Embedded GeoJSON Data Package -->
-    <script src="js/data.js?v=20261111x"></script>
-    <script src="js/escopo_original_data.js?v=20261111x"></script>
-    <script src="js/municipios_data.js?v=20261111x"></script>
-    <script src="js/metas_data.js?v=20261111x"></script>
+    <script src="js/data.js?v=20261111y"></script>
+    <script src="js/escopo_original_data.js?v=20261111y"></script>
+    <script src="js/municipios_data.js?v=20261111y"></script>
+    <script src="js/metas_data.js?v=20261111y"></script>
 
     <!-- WebGIS Modules -->
-    <script src="js/auth.js?v=20261111x"></script>
-    <script src="js/editor.js?v=20261111x"></script>
-    <script src="js/export.js?v=20261111x"></script>
-    <script src="js/layers.js?v=20261111x"></script>
-    <script src="js/charts.js?v=20261111x"></script>
-    <script src="js/filters.js?v=20261111x"></script>
-    <script src="js/metas.js?v=20261111x"></script>
-    <script src="js/app.js?v=20261111x"></script>
+    <script src="js/auth.js?v=20261111y"></script>
+    <script src="js/editor.js?v=20261111y"></script>
+    <script src="js/export.js?v=20261111y"></script>
+    <script src="js/layers.js?v=20261111y"></script>
+    <script src="js/charts.js?v=20261111y"></script>
+    <script src="js/filters.js?v=20261111y"></script>
+    <script src="js/metas.js?v=20261111y"></script>
+    <script src="js/app.js?v=20261111y"></script>
 
 </body>
 </html>
