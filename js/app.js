@@ -1122,35 +1122,52 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
-    // 17. Search, Municipality & Status Filters for 169 Frentes de Obra (Camada AE - Painel Visão Geral)
+    // 17. Search, Municipality & Status Filters for 169 Frentes de Obra (Painéis Visão Geral e Visão Detalhada)
     const searchFrentesInput = document.getElementById('search-frentes-input');
     const selectMunFrentes = document.getElementById('select-mun-frentes');
     const selectStatusFrentes = document.getElementById('select-status-frentes');
     const titleFrentesEl = document.getElementById('frentes-card-title-count');
 
-    function filterFrentesUI() {
-        const term = (searchFrentesInput ? searchFrentesInput.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-        const selMun = (selectMunFrentes ? selectMunFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-        const selStatus = (selectStatusFrentes ? selectStatusFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+    const searchFrentesQuantInput = document.getElementById('search-frentes-quant-input');
+    const selectMunQuant = document.getElementById('select-mun-quant');
+    const selectStatusQuant = document.getElementById('select-status-quant');
+    const badgeFrenteQuant = document.getElementById('badge-frente-obra-quant');
 
-        let visibleCount = 0;
-        const cards = document.querySelectorAll('.frentes-scroll-container .bairro-card');
+    let isSyncingFilters = false;
 
-        cards.forEach(card => {
+    function filterFrentesUI(source = 'geral') {
+        if (isSyncingFilters) return;
+        isSyncingFilters = true;
+
+        let term, selMun, selStatus;
+
+        if (source === 'quant') {
+            term = (searchFrentesQuantInput ? searchFrentesQuantInput.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+            selMun = (selectMunQuant ? selectMunQuant.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+            selStatus = (selectStatusQuant ? selectStatusQuant.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+
+            // Sync with Geral
+            if (searchFrentesInput) searchFrentesInput.value = searchFrentesQuantInput ? searchFrentesQuantInput.value : '';
+            if (selectMunFrentes) selectMunFrentes.value = selectMunQuant ? selectMunQuant.value : '';
+            if (selectStatusFrentes) selectStatusFrentes.value = selectStatusQuant ? selectStatusQuant.value : '';
+        } else {
+            term = (searchFrentesInput ? searchFrentesInput.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+            selMun = (selectMunFrentes ? selectMunFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+            selStatus = (selectStatusFrentes ? selectStatusFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+
+            // Sync with Quant
+            if (searchFrentesQuantInput) searchFrentesQuantInput.value = searchFrentesInput ? searchFrentesInput.value : '';
+            if (selectMunQuant) selectMunQuant.value = selectMunFrentes ? selectMunFrentes.value : '';
+            if (selectStatusQuant) selectStatusQuant.value = selectStatusFrentes ? selectStatusFrentes.value : '';
+        }
+
+        // 1. Filter Visão Geral cards (.frentes-scroll-container)
+        let visibleGeral = 0;
+        const cardsGeral = document.querySelectorAll('.frentes-scroll-container .bairro-card');
+        cardsGeral.forEach(card => {
             const b = (card.dataset.bairro || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
             const m = (card.dataset.mun || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-            let st = (card.dataset.status || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-
-            // Fallback for status from badge if data-status is not yet set
-            if (!st) {
-                const badge = card.querySelector('.popup-badge');
-                if (badge) {
-                    const bText = badge.textContent.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-                    if (bText.includes('CONCLUIDO')) st = 'CONCLUIDO';
-                    else if (bText.includes('NAO INICIADO')) st = 'NAO INICIADO';
-                    else if (bText.includes('INICIADO')) st = 'INICIADO';
-                }
-            }
+            const st = (card.dataset.status || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 
             const matchTerm = !term || b.includes(term) || m.includes(term) || st.includes(term);
             const matchMun = !selMun || m === selMun;
@@ -1158,21 +1175,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const isVisible = matchTerm && matchMun && matchStatus;
             card.style.display = isVisible ? '' : 'none';
-            if (isVisible) visibleCount++;
+            if (isVisible) visibleGeral++;
         });
 
         if (titleFrentesEl) {
-            if (visibleCount === cards.length) {
-                titleFrentesEl.textContent = `(${cards.length} — Camada AE)`;
+            if (visibleGeral === cardsGeral.length) {
+                titleFrentesEl.textContent = `(${cardsGeral.length} — Camada AE)`;
             } else {
-                titleFrentesEl.textContent = `(${visibleCount} de ${cards.length} — Camada AE)`;
+                titleFrentesEl.textContent = `(${visibleGeral} de ${cardsGeral.length} — Camada AE)`;
             }
         }
+
+        // 2. Filter Visão Detalhada cards (#dropdown-frente-obra-quant)
+        let visibleQuant = 0;
+        const cardsQuant = document.querySelectorAll('#dropdown-frente-obra-quant .bairro-card');
+        cardsQuant.forEach(card => {
+            const b = (card.dataset.bairro || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+            const m = (card.dataset.mun || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+            const st = (card.dataset.status || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+
+            const matchTerm = !term || b.includes(term) || m.includes(term) || st.includes(term);
+            const matchMun = !selMun || m === selMun;
+            const matchStatus = !selStatus || st === selStatus || (selStatus === 'INICIADO' && st.startsWith('INICIADO'));
+
+            const isVisible = matchTerm && matchMun && matchStatus;
+            card.style.display = isVisible ? '' : 'none';
+            if (isVisible) visibleQuant++;
+        });
+
+        // Update accordion badge if no active single frente filter
+        if (badgeFrenteQuant && (!window.getActiveBairro || !window.getActiveBairro())) {
+            badgeFrenteQuant.innerHTML = `Ver Frentes (${visibleQuant}) <i class="fas fa-chevron-down"></i>`;
+        }
+
+        isSyncingFilters = false;
     }
 
-    if (searchFrentesInput) searchFrentesInput.addEventListener('input', filterFrentesUI);
-    if (selectMunFrentes) selectMunFrentes.addEventListener('change', filterFrentesUI);
-    if (selectStatusFrentes) selectStatusFrentes.addEventListener('change', filterFrentesUI);
+    // Event listeners for Visão Geral filters
+    if (searchFrentesInput) searchFrentesInput.addEventListener('input', () => filterFrentesUI('geral'));
+    if (selectMunFrentes) selectMunFrentes.addEventListener('change', () => filterFrentesUI('geral'));
+    if (selectStatusFrentes) selectStatusFrentes.addEventListener('change', () => filterFrentesUI('geral'));
+
+    // Event listeners for Visão Detalhada filters
+    if (searchFrentesQuantInput) searchFrentesQuantInput.addEventListener('input', () => filterFrentesUI('quant'));
+    if (selectMunQuant) selectMunQuant.addEventListener('change', () => filterFrentesUI('quant'));
+    if (selectStatusQuant) selectStatusQuant.addEventListener('change', () => filterFrentesUI('quant'));
 
     // Quick-filter clicking on legend items
     document.querySelectorAll('.quick-status-filter').forEach(item => {
@@ -1184,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     selectStatusFrentes.value = st;
                 }
-                filterFrentesUI();
+                filterFrentesUI('geral');
             }
         });
     });
