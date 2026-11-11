@@ -461,7 +461,7 @@ const BAIRRO_CENTROIDS = [
                 ${props.eee && props.eee !== 'NÃO' ? `<div class="popup-row"><span class="popup-key">Estação Elevatória:</span><span class="popup-val" style="color:#f59e0b; font-weight:700;"><i class="fas fa-industry"></i> Prevista (${props.eee})</span></div>` : ''}
                 ${props.obs ? `<div class="popup-row" style="flex-direction:column; gap:4px;"><span class="popup-key">Observações:</span><span class="popup-val" style="text-align:left; font-style:italic; font-size:0.75rem; color:#cbd5e1;">${props.obs}</span></div>` : ''}
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
-                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${frente}', false);">
+                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${frente}', false, '${props.nm_mun || props.municipio || ''}');">
                         <i class="fas fa-crosshairs"></i> Centralizar e Filtrar Frente (${frente})
                     </button>
                 </div>
@@ -508,7 +508,7 @@ const BAIRRO_CENTROIDS = [
                 <div class="popup-row"><span class="popup-key">Início Real / Fim Real:</span><span class="popup-val" style="color:#38bdf8; font-weight:700;">${formatPopupDate(props.inicio_r)} à ${formatPopupDate(props.termino_r)}</span></div>
                 ${props.bairro ? `
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
-                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false, '${props.nm_mun || props.municipio || ''}');">
                         <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
                     </button>
                 </div>` : ''}
@@ -549,7 +549,7 @@ const BAIRRO_CENTROIDS = [
                     ${props.material_p ? `<div class="popup-row"><span class="popup-key">Material:</span><span class="popup-val">${props.material_p}</span></div>` : ''}
                     ${props.bairro ? `
                     <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
-                        <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                        <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false, '${props.nm_mun || props.municipio || ''}');">
                             <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
                         </button>
                     </div>` : ''}
@@ -580,7 +580,7 @@ const BAIRRO_CENTROIDS = [
                     <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${statusBadgeClass}">${props.status || 'NÃO INICIADO'}</span></span></div>
                     ${props.bairro ? `
                     <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
-                        <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                        <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false, '${props.nm_mun || props.municipio || ''}');">
                             <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
                         </button>
                     </div>` : ''}
@@ -612,7 +612,7 @@ const BAIRRO_CENTROIDS = [
                 <div class="popup-row"><span class="popup-key">Início Real / Fim Real:</span><span class="popup-val" style="color:#38bdf8; font-weight:700;">${formatPopupDate(props.inicio_r)} à ${formatPopupDate(props.termino_r)}</span></div>
                 ${props.bairro ? `
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
-                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                    <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false, '${props.nm_mun || props.municipio || ''}');">
                         <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
                     </button>
                 </div>` : ''}
@@ -694,7 +694,7 @@ const BAIRRO_CENTROIDS = [
                 </div>
                 ${props.bairro ? `
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
-                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false, '${props.nm_mun || props.municipio || ''}');">
                         <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
                     </button>
                 </div>` : ''}
@@ -722,7 +722,7 @@ const BAIRRO_CENTROIDS = [
                 </div>
                 ${props.bairro ? `
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
-                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false, '${props.nm_mun || props.municipio || ''}');">
                         <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
                     </button>
                 </div>` : ''}
@@ -749,7 +749,7 @@ const BAIRRO_CENTROIDS = [
                 </div>
                 ${props.bairro ? `
                 <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
-                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                    <button type="button" style="width:100%; background: #f97316; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(249,115,22,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false, '${props.nm_mun || props.municipio || ''}');">
                         <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
                     </button>
                 </div>` : ''}
@@ -957,7 +957,7 @@ const BAIRRO_CENTROIDS = [
 
         marker.on('click', function() {
             if (window.selectBairro) {
-                window.selectBairro(bairro.id, false);
+                window.selectBairro(bairro.id, false, bairro.municipio);
             }
         });
 
@@ -1190,9 +1190,10 @@ const BAIRRO_CENTROIDS = [
                         if (window.GIS_EDITOR && typeof window.GIS_EDITOR.setActiveFeature === 'function') {
                             window.GIS_EDITOR.setActiveFeature('areas', feature, layer);
                         }
-                        const b = (feature.properties && feature.properties.bairro) ? feature.properties.bairro : null;
+                        const b = (feature.properties && (feature.properties.bairro || feature.properties.frente)) ? (feature.properties.bairro || feature.properties.frente) : null;
+                        const m = (feature.properties && (feature.properties.nm_mun || feature.properties.municipio)) ? (feature.properties.nm_mun || feature.properties.municipio) : null;
                         if (b && window.selectBairro) {
-                            window.selectBairro(b, false);
+                            window.selectBairro(b, false, m);
                         }
                     });
                     layer.on('mouseover', function(e) {
@@ -1292,9 +1293,10 @@ const BAIRRO_CENTROIDS = [
                         onEachFeature: function(feature, layer) {
                             layer.bindPopup(createOrigAreasPopup(feature.properties));
                             layer.on('click', function(e) {
-                                const b = (feature.properties && feature.properties.bairro) ? feature.properties.bairro : null;
+                                const b = (feature.properties && (feature.properties.bairro || feature.properties.frente)) ? (feature.properties.bairro || feature.properties.frente) : null;
+                                const m = (feature.properties && (feature.properties.nm_mun || feature.properties.municipio)) ? (feature.properties.nm_mun || feature.properties.municipio) : null;
                                 if (b && window.selectBairro) {
-                                    window.selectBairro(b, false);
+                                    window.selectBairro(b, false, m);
                                 }
                             });
                             layer.on('mouseover', function(e) {

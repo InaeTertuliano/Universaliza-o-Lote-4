@@ -68,7 +68,7 @@ window.GIS_METAS_MODULE = (function() {
                 badgeGis.innerHTML = `<i class="fas fa-map-marked-alt"></i> Frente Mapeada no GIS: <strong>${bairroName}</strong> (Clique para aproximar)`;
                 badgeGis.onclick = function() {
                     if (window.selectBairro) {
-                        window.selectBairro(bairroName, false);
+                        window.selectBairro(bairroName, false, munData.municipio);
                     }
                 };
             } else {
@@ -713,7 +713,7 @@ window.GIS_METAS_MODULE = (function() {
                 if (!mun) return;
                 const norm = mun.toUpperCase();
                 if (MUN_BAIRRO_MAP[norm] && window.selectBairro) {
-                    window.selectBairro(MUN_BAIRRO_MAP[norm], false);
+                    window.selectBairro(MUN_BAIRRO_MAP[norm], false, mun);
                 }
             });
         });

@@ -360,6 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.btn-goto-bairro').forEach(btn => {
         btn.addEventListener('click', function() {
             const bairro = this.dataset.bairro;
+            const mun = this.dataset.mun || null;
             if (modalComparativo) modalComparativo.style.display = 'none';
             // Ativa o modo escopo para que as camadas do escopo original fiquem visíveis no mapa
             const selLegend = document.getElementById('select-legend-mode');
@@ -367,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
                 window.GIS_LAYERS.setLegendMode('escopo');
             }
-            if (window.selectBairro) window.selectBairro(bairro, false);
+            if (window.selectBairro) window.selectBairro(bairro, false, mun);
         });
     });
 
@@ -509,27 +510,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function normStr(str) {
+        return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+    }
+
     // 14. Dynamic Extensão por Tipo de Rede Widget Updater (Status Concluído)
-    function getBairroDisplayLabel(bairroTarget) {
+    function getBairroDisplayLabel(bairroTarget, munTarget = null) {
         if (!bairroTarget) return 'Lote 4 (Geral)';
-        const normTarget = (bairroTarget || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+        const normTarget = normStr(bairroTarget);
+        const normMun = munTarget ? normStr(munTarget) : null;
         if (window.GIS_LAYERS && typeof window.GIS_LAYERS.getBairroCentroids === 'function') {
-            const found = window.GIS_LAYERS.getBairroCentroids().find(c => {
-                const nId = (c.id || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-                const nNome = (c.nome || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-                return nId === normTarget || nNome === normTarget;
-            });
+            const centroids = window.GIS_LAYERS.getBairroCentroids();
+            let found = null;
+            if (normMun) {
+                found = centroids.find(c => (normStr(c.id) === normTarget || normStr(c.nome) === normTarget) && normStr(c.municipio) === normMun);
+            }
+            if (!found) {
+                found = centroids.find(c => normStr(c.id) === normTarget || normStr(c.nome) === normTarget);
+            }
             if (found) return `${found.nome} (${found.municipio})`;
         }
         return bairroTarget;
     }
 
-    function updateSegmentWidget(bairroTarget) {
+    function updateSegmentWidget(bairroTarget, munTarget = null) {
         const titleEl = document.getElementById('segment-widget-title');
         const container = document.getElementById('segment-dropdowns-container');
         if (!container) return;
 
-        const normTarget = bairroTarget ? bairroTarget.toUpperCase().trim() : null;
+        const normTarget = bairroTarget ? normStr(bairroTarget) : null;
+        let normMun = munTarget ? normStr(munTarget) : null;
+        if (normTarget && !normMun && window.GIS_LAYERS && typeof window.GIS_LAYERS.getBairroCentroids === 'function') {
+            const centroids = window.GIS_LAYERS.getBairroCentroids();
+            const matched = centroids.find(c => normStr(c.id) === normTarget || normStr(c.nome) === normTarget);
+            if (matched && matched.municipio) normMun = normStr(matched.municipio);
+        }
 
         // Se nenhuma frente de obra estiver selecionada, manter sem informações
         if (!normTarget) {
@@ -546,13 +561,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Filter linear features by selected bairro if active
-        let filteredFeatures = window.GIS_DATA.linear.features.filter(f => {
-            const b = (f.properties.bairro || '').toUpperCase().trim();
+        let filteredFeatures = (window.GIS_DATA && window.GIS_DATA.linear && window.GIS_DATA.linear.features) ? window.GIS_DATA.linear.features.filter(f => {
+            const props = f.properties || {};
+            const b = normStr(props.bairro || props.frente || '');
             if (!b) return false;
+
+            if (normMun) {
+                const fMun = normStr(props.nm_mun || props.municipio || '');
+                if (fMun && fMun !== normMun && !normMun.includes(fMun) && !fMun.includes(normMun)) {
+                    return false;
+                }
+            }
+
             if (b === normTarget) return true;
-            if (normTarget.startsWith("PEDRAS E VITÓRIA") && b.startsWith("PEDRAS E VITÓRIA")) return true;
+            if (normTarget.startsWith("PEDRAS E VITORIA") && b.startsWith("PEDRAS E VITORIA")) return true;
+            if (normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) return true;
+            if (normMun) {
+                const fMun = normStr(props.nm_mun || props.municipio || '');
+                if (fMun === normMun && (normTarget.includes(b) || b.includes(normTarget))) return true;
+            }
             return false;
-        });
+        }) : [];
 
         // Calculate total extension and execution status metrics
         let totalExt = 0;
@@ -606,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update widget subtitle
         const totalPctConcluido = totalExt > 0 ? ((totalExtConcluido / totalExt) * 100).toFixed(1) : '0.0';
         if (titleEl) {
-            const bLabel = getBairroDisplayLabel(bairroTarget);
+            const bLabel = getBairroDisplayLabel(bairroTarget, normMun);
             titleEl.innerHTML = `<i class="fas fa-network-wired"></i> Obras lineares — <strong style="color:#ffffff;">${bLabel}</strong> (${(totalExt/1000).toFixed(2).replace('.', ',')} km • <span style="color:#10b981;">${totalPctConcluido.replace('.', ',')}% Concluído</span>)`;
         }
 
@@ -733,12 +762,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // 15. Dynamic Obras Localizadas Widget Updater (Painel Visão Detalhada)
     // REQUISITO: No quadro localizadas NÃO DEVEM APARECER poços de esgoto e nós da camada localizadas!
     // Apenas instalações de grande porte (EEE, EEAT, Reservatórios, ETAs, Boosters, Poços Profundos)
-    function updateLocalizadaWidget(bairroTarget) {
+    function updateLocalizadaWidget(bairroTarget, munTarget = null) {
         const titleEl = document.getElementById('localizada-widget-title');
         const container = document.getElementById('localizada-container');
         if (!container) return;
 
         const normTarget = bairroTarget ? normStr(bairroTarget) : null;
+        let normMun = munTarget ? normStr(munTarget) : null;
+        if (normTarget && !normMun && window.GIS_LAYERS && typeof window.GIS_LAYERS.getBairroCentroids === 'function') {
+            const centroids = window.GIS_LAYERS.getBairroCentroids();
+            const matched = centroids.find(c => normStr(c.id) === normTarget || normStr(c.nome) === normTarget);
+            if (matched && matched.municipio) normMun = normStr(matched.municipio);
+        }
 
         // Se nenhuma frente de obra estiver selecionada, exibir estado vazio
         if (!normTarget) {
@@ -760,13 +795,23 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.GIS_DATA && window.GIS_DATA.localizada && window.GIS_DATA.localizada.features) {
             filteredFeatures = window.GIS_DATA.localizada.features.filter(f => {
                 const p = f.properties || {};
-                const b = normStr(p.bairro || '');
+                const b = normStr(p.bairro || p.frente || '');
                 if (!b) return false;
+
+                if (normMun) {
+                    const fMun = normStr(p.nm_mun || p.municipio || '');
+                    if (fMun && fMun !== normMun && !normMun.includes(fMun) && !fMun.includes(normMun)) {
+                        return false;
+                    }
+                }
 
                 let matchesBairro = (b === normTarget);
                 if (!matchesBairro && normTarget.startsWith("PEDRAS E VITORIA") && b.startsWith("PEDRAS E VITORIA")) matchesBairro = true;
                 if (!matchesBairro && normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) matchesBairro = true;
-                if (!matchesBairro && (normTarget.includes(b) || b.includes(normTarget))) matchesBairro = true;
+                if (!matchesBairro && normMun) {
+                    const fMun = normStr(p.nm_mun || p.municipio || '');
+                    if (fMun === normMun && (normTarget.includes(b) || b.includes(normTarget))) matchesBairro = true;
+                }
                 if (!matchesBairro) return false;
 
                 // Classificação rigorosa: somente grandes instalações (EEE, EEAT, Reservatório, Booster, ETA, Poço Profundo)
@@ -790,7 +835,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Atualizar título do quadro com contagem de instalações
         if (titleEl) {
-            const bLabel = getBairroDisplayLabel(bairroTarget);
+            const bLabel = getBairroDisplayLabel(bairroTarget, normMun);
             const countLabel = count === 1 ? '1 Instalação' : `${count} Instalações`;
             titleEl.innerHTML = `<i class="fas fa-industry"></i> Obras Localizadas — <strong style="color:#ffffff;">${bLabel}</strong> (${countLabel})`;
         }
@@ -891,18 +936,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 16. Interactive Clickable Frente de Obra Logic (Clickable Bairro Cards & Accordion)
     let activeBairroFilter = null;
+    let activeMunFilter = null;
     const bairroCards = document.querySelectorAll('.bairro-card');
     const badgeFrente = document.getElementById('badge-frente-obra-quant');
     const dropdownFrente = document.getElementById('dropdown-frente-obra-quant');
 
-    function normStr(str) {
-        return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-    }
+    function selectBairro(bairroTarget, isToggle = false, munTarget = null) {
+        const normTarget = normStr(bairroTarget);
+        let normMun = munTarget ? normStr(munTarget) : null;
 
-    function selectBairro(bairroTarget, isToggle = false) {
-        if (!bairroTarget || (isToggle && activeBairroFilter === bairroTarget)) {
+        // Find centroid to assist with municipality and geometry bounds
+        let matchedCentroid = null;
+        if (normTarget && window.GIS_LAYERS && typeof window.GIS_LAYERS.getBairroCentroids === 'function') {
+            const centroids = window.GIS_LAYERS.getBairroCentroids();
+            if (normMun) {
+                matchedCentroid = centroids.find(c => (normStr(c.id) === normTarget || normStr(c.nome) === normTarget) && normStr(c.municipio) === normMun);
+            }
+            if (!matchedCentroid) {
+                matchedCentroid = centroids.find(c => normStr(c.id) === normTarget || normStr(c.nome) === normTarget);
+            }
+            if (matchedCentroid && !normMun && matchedCentroid.municipio) {
+                normMun = normStr(matchedCentroid.municipio);
+            }
+        }
+
+        const isSameBairro = activeBairroFilter === bairroTarget && (!normMun || !activeMunFilter || activeMunFilter === normMun);
+
+        if (!bairroTarget || (isToggle && isSameBairro)) {
             // Deselect / Reset to Lote 4
             activeBairroFilter = null;
+            activeMunFilter = null;
             bairroCards.forEach(c => c.classList.remove('active-bairro'));
             const totalFrentes = (window.GIS_LAYERS && window.GIS_LAYERS.getBairroCentroids) ? window.GIS_LAYERS.getBairroCentroids().length : 28;
             if (badgeFrente) badgeFrente.innerHTML = `Ver Frentes (${totalFrentes}) <i class="fas fa-chevron-down"></i>`;
@@ -915,37 +978,56 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             // Select new Frente de Obra
             activeBairroFilter = bairroTarget;
-            const normTarget = normStr(bairroTarget);
+            activeMunFilter = normMun;
 
             bairroCards.forEach(c => {
-                if (normStr(c.dataset.bairro) === normTarget) {
+                const cardB = normStr(c.dataset.bairro);
+                const cardM = normStr(c.dataset.mun);
+                const matchB = (cardB === normTarget);
+                const matchM = !normMun || (cardM === normMun);
+                if (matchB && matchM) {
                     c.classList.add('active-bairro');
                 } else {
                     c.classList.remove('active-bairro');
                 }
             });
-            if (badgeFrente) badgeFrente.innerHTML = `${bairroTarget} <i class="fas fa-chevron-down" style="font-size:0.75rem; margin-left:3px;"></i>`;
 
-            updateSegmentWidget(bairroTarget);
-            updateLocalizadaWidget(bairroTarget);
+            if (badgeFrente) {
+                badgeFrente.innerHTML = `${bairroTarget} <i class="fas fa-chevron-down" style="font-size:0.75rem; margin-left:3px;"></i>`;
+            }
+
+            updateSegmentWidget(bairroTarget, normMun);
+            updateLocalizadaWidget(bairroTarget, normMun);
 
             if (window.GIS_LAYERS) window.GIS_LAYERS.highlightBairro(bairroTarget);
 
-            // Zoom map to fit matching features of the selected bairro (both current and original scope)
+            // Zoom map to fit matching features of the selected bairro
             const predicate = function(feature) {
                 const props = feature.properties || {};
                 const b = normStr(props.frente || props.bairro || '');
                 if (!b) return false;
+
+                if (normMun) {
+                    const fMun = normStr(props.nm_mun || props.municipio || '');
+                    if (fMun && fMun !== normMun && !normMun.includes(fMun) && !fMun.includes(normMun)) {
+                        return false;
+                    }
+                }
+
                 if (b === normTarget) return true;
                 if (normTarget.startsWith("PEDRAS E VITORIA") && b.startsWith("PEDRAS E VITORIA")) return true;
                 if (normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) return true;
-                if (normTarget.includes(b) || b.includes(normTarget)) return true;
+
+                if (normMun) {
+                    const fMun = normStr(props.nm_mun || props.municipio || '');
+                    if (fMun === normMun && (normTarget.includes(b) || b.includes(normTarget))) return true;
+                }
                 return false;
             };
 
-            const matchingLinear = window.GIS_DATA.linear.features.filter(predicate);
-            const matchingAreas = window.GIS_DATA.areas.features.filter(predicate);
-            const matchingLocal = window.GIS_DATA.localizada.features.filter(predicate);
+            const matchingLinear = (window.GIS_DATA && window.GIS_DATA.linear && window.GIS_DATA.linear.features) ? window.GIS_DATA.linear.features.filter(predicate) : [];
+            const matchingAreas = (window.GIS_DATA && window.GIS_DATA.areas && window.GIS_DATA.areas.features) ? window.GIS_DATA.areas.features.filter(predicate) : [];
+            const matchingLocal = (window.GIS_DATA && window.GIS_DATA.localizada && window.GIS_DATA.localizada.features) ? window.GIS_DATA.localizada.features.filter(predicate) : [];
 
             let combined = [...matchingLinear, ...matchingAreas, ...matchingLocal];
 
@@ -962,18 +1044,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
+            let zoomApplied = false;
+
             if (combined.length > 0) {
                 const tempGroup = L.geoJSON({ type: "FeatureCollection", features: combined });
                 const bounds = tempGroup.getBounds();
                 if (bounds.isValid()) {
-                    window.GIS_MAP.fitBounds(bounds, { maxZoom: 15, padding: [60, 60] });
+                    const latSpan = Math.abs(bounds.getNorth() - bounds.getSouth()) * 111;
+                    const lngSpan = Math.abs(bounds.getEast() - bounds.getWest()) * 100;
+                    // Only use combined features bounds if span is within a local neighborhood (< 15 km)
+                    if (latSpan < 15 && lngSpan < 15) {
+                        window.GIS_MAP.fitBounds(bounds, { maxZoom: 16, padding: [60, 60] });
+                        zoomApplied = true;
+                    }
                 }
-            } else if (window.GIS_LAYERS && window.GIS_LAYERS.getBairroCentroids) {
-                const centroids = window.GIS_LAYERS.getBairroCentroids();
-                const matched = centroids.find(c => normStr(c.id) === normTarget || normStr(c.nome) === normTarget);
-                if (matched) {
-                    window.GIS_MAP.setView([matched.lat, matched.lng], 14);
+            }
+
+            // Fallback 1: matchedCentroid.bounds (precalculated from AE polygon)
+            if (!zoomApplied && matchedCentroid && matchedCentroid.bounds) {
+                const b = matchedCentroid.bounds;
+                const cBounds = L.latLngBounds(b[0], b[1]);
+                if (cBounds.isValid()) {
+                    window.GIS_MAP.fitBounds(cBounds, { maxZoom: 16, padding: [60, 60] });
+                    zoomApplied = true;
                 }
+            }
+
+            // Fallback 2: matchedCentroid lat/lng
+            if (!zoomApplied && matchedCentroid && matchedCentroid.lat && matchedCentroid.lng) {
+                window.GIS_MAP.setView([matchedCentroid.lat, matchedCentroid.lng], 15);
+                zoomApplied = true;
             }
         }
 
@@ -988,14 +1088,18 @@ document.addEventListener('DOMContentLoaded', function() {
     window.getActiveBairro = function() {
         return activeBairroFilter;
     };
+    window.getActiveMun = function() {
+        return activeMunFilter;
+    };
 
     bairroCards.forEach(card => {
         card.addEventListener('click', function(e) {
             const bairroTarget = this.dataset.bairro;
+            const munTarget = this.dataset.mun || null;
             if (!bairroTarget) {
                 selectBairro(null, false);
             } else {
-                selectBairro(bairroTarget, true);
+                selectBairro(bairroTarget, true, munTarget);
             }
             if (dropdownFrente) {
                 dropdownFrente.open = false;
