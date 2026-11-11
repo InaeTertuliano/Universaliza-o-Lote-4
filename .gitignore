@@ -6,6 +6,9 @@ __pycache__/
 # Scratch and debug files
 scratch/
 
+# Geospatial binary packages
+*.gpkg
+
 # Operating System files
 .DS_Store
 Thumbs.db

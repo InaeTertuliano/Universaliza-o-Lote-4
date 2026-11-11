@@ -8,6 +8,7 @@
 #>
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$env:GIT_CONFIG_PARAMETERS = "'safe.directory=*'"
 $Host.UI.RawUI.WindowTitle = "Atualizador de Camadas - WebGIS Lote 4"
 
 Write-Host "============================================================" -ForegroundColor Cyan
@@ -49,8 +50,8 @@ if ((Test-Path $fAreas) -and (Test-Path $fLinear) -and (Test-Path $fLocal)) {
         [void]$sb.AppendLine("    meta: {")
         [void]$sb.AppendLine("        lote: `"LOTE 04 - ITAPETININGA`",")
         [void]$sb.AppendLine("        data_atualizacao: `"$((Get-Date).ToString("yyyy-MM-dd"))`",")
-        [void]$sb.AppendLine("        bounds: [[-23.859038, -48.917271], [-23.358829, -47.978981]],")
-        [void]$sb.AppendLine("        center: [-23.608933, -48.448126]")
+        [void]$sb.AppendLine("        bounds: [[-23.881597, -48.917271], [-23.353939, -47.652315]],")
+        [void]$sb.AppendLine("        center: [-23.617768, -48.284793]")
         [void]$sb.AppendLine("    }")
         [void]$sb.AppendLine("};")
 
@@ -130,8 +131,7 @@ if ((Test-Path $fOrigAreas) -and (Test-Path $fOrigLinear) -and (Test-Path $fOrig
         [void]$sbOrig.AppendLine("    pontual: $origP,")
         [void]$sbOrig.AppendLine('    meta: {')
         [void]$sbOrig.AppendLine('        grupo: "Escopo Original",')
-        [void]$sbOrig.AppendLine('        bairros: ["PEDRAS E VITÓRIA", "TURVO DOS ALMEIDAS"],')
-        [void]$sbOrig.AppendLine('        municipios: ["Guareí", "Capão Bonito", "Itapetininga"]')
+        [void]$sbOrig.AppendLine('        municipios: ["Angatuba", "Campina do Monte Alegre", "Capão Bonito", "Guareí", "Itapetininga", "Paranapanema", "Pardinho", "Pilar do Sul", "Ribeirão Grande", "São Miguel Arcanjo"]')
         [void]$sbOrig.AppendLine('    }')
         [void]$sbOrig.AppendLine('};')
 

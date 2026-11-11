@@ -391,36 +391,72 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 12. Quantitativos CSV Export (Includes Consolidated Bairros)
+    // 12. Quantitativos CSV Export (Dinamico a partir das camadas carregadas)
     const handleExportQuant = function() {
         const rows = [
-            ["CATEGORIA", "MUNICIPIO / DESCRICAO", "BAIRRO / DIAMETRO", "EXTENSAO_METROS", "EXTENSAO_KM", "TRECHOS", "PERCENTUAL_LOTE"],
-            ["BAIRRO", "Guarei", "Pedras e Vitoria (Unificado B1-B5)", "21542.65", "21.54", "348", "47.4%"],
-            ["BAIRRO", "Capao Bonito", "Turvo dos Almeidas", "9037.90", "9.04", "34", "19.9%"],
-            ["BAIRRO", "Paranapanema", "Serra da Prata", "6672.19", "6.67", "13", "14.7%"],
-            ["BAIRRO", "Sao Miguel Arcanjo", "Pocinho", "4140.67", "4.14", "72", "9.1%"],
-            ["BAIRRO", "Itapetininga", "Jardim Aeroporto", "2081.88", "2.08", "21", "4.6%"],
-            ["BAIRRO", "Angatuba", "Pateo Velho", "1942.82", "1.94", "17", "4.3%"],
-            ["SEGMENTO", "Geral", "Rede Coletora", "33900.57", "33.90", "490", "74.6%"],
-            ["SUB_SEGMENTO_DN", "Rede Coletora", "DN 150 mm", "33900.57", "33.90", "490", "100.0% (74.6% Lote)"],
-            ["SEGMENTO", "Geral", "Linha de Recalque", "10870.86", "10.87", "14", "23.9%"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 100 mm", "4899.69", "4.90", "3", "45.1% (10.8% Lote)"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 90 mm", "3007.50", "3.01", "2", "27.7% (6.6% Lote)"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 150 mm", "1733.15", "1.73", "5", "15.9% (3.8% Lote)"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 110 mm", "850.59", "0.85", "3", "7.8% (1.9% Lote)"],
-            ["SUB_SEGMENTO_DN", "Linha de Recalque", "DN 200 mm", "379.93", "0.38", "1", "3.5% (0.8% Lote)"],
-            ["SEGMENTO", "Geral", "Emissario de Esgoto", "646.69", "0.65", "1", "1.4%"],
-            ["SUB_SEGMENTO_DN", "Emissario de Esgoto", "DN 200 mm", "646.69", "0.65", "1", "100.0% (1.4% Lote)"],
-            ["MATERIAL_DN", "PVC", "DN 150 mm", "35005.26", "35.01", "491", "77.1%"],
-            ["MATERIAL_DN", "FOFO (Ferro Fundido)", "DN 100 mm", "3000.31", "3.00", "1", "6.6%"],
-            ["MATERIAL_DN", "PEAD", "DN 90 mm", "2068.83", "2.07", "1", "4.6%"],
-            ["MATERIAL_DN", "PVC-O", "DN 100 mm", "1899.38", "1.90", "2", "4.2%"],
-            ["MATERIAL_DN", "PVC-O", "DN 200 mm", "1026.63", "1.03", "2", "2.3%"],
-            ["MATERIAL_DN", "PVC", "DN 90 mm", "938.67", "0.94", "1", "2.1%"],
-            ["MATERIAL_DN", "PEAD", "DN 110 mm", "850.59", "0.85", "3", "1.9%"],
-            ["MATERIAL_DN", "PEAD", "DN 150 mm", "623.31", "0.62", "3", "1.4%"],
-            ["MATERIAL_DN", "PVC-O", "DN 150 mm", "5.14", "0.01", "1", "0.0%"]
+            ["CATEGORIA", "MUNICIPIO / DESCRICAO", "BAIRRO / DIAMETRO", "EXTENSAO_METROS", "EXTENSAO_KM", "TRECHOS", "PERCENTUAL_LOTE"]
         ];
+
+        const features = (window.GIS_DATA && window.GIS_DATA.linear && window.GIS_DATA.linear.features) ? window.GIS_DATA.linear.features : [];
+        let totalExt = 0;
+        const bairros = {};
+        const segmentos = {};
+        const subSegs = {};
+        const materiais = {};
+
+        features.forEach(f => {
+            const p = f.properties || {};
+            const ext = parseFloat(p.ext_calcul || 0);
+            const mun = (p.nm_mun || 'OUTROS').trim();
+            const b = (p.bairro || 'OUTROS').trim().toUpperCase();
+            const seg = (p.segmento || 'REDE COLETORA').trim().toUpperCase();
+            const dn = p.dn_nominal ? `DN ${parseInt(p.dn_nominal)} mm` : 'DN N/D';
+            const mat = (p.material || 'PVC').trim().toUpperCase();
+
+            totalExt += ext;
+
+            if (!bairros[b]) bairros[b] = { mun: mun, ext: 0, trechos: 0 };
+            bairros[b].ext += ext;
+            bairros[b].trechos += 1;
+
+            if (!segmentos[seg]) segmentos[seg] = { ext: 0, trechos: 0 };
+            segmentos[seg].ext += ext;
+            segmentos[seg].trechos += 1;
+
+            const subKey = `${seg}|${dn}`;
+            if (!subSegs[subKey]) subSegs[subKey] = { seg: seg, dn: dn, ext: 0, trechos: 0 };
+            subSegs[subKey].ext += ext;
+            subSegs[subKey].trechos += 1;
+
+            const matKey = `${mat}|${dn}`;
+            if (!materiais[matKey]) materiais[matKey] = { mat: mat, dn: dn, ext: 0, trechos: 0 };
+            materiais[matKey].ext += ext;
+            materiais[matKey].trechos += 1;
+        });
+
+        Object.keys(bairros).sort((a,b) => bairros[b].ext - bairros[a].ext).forEach(bKey => {
+            const item = bairros[bKey];
+            const pct = totalExt > 0 ? ((item.ext / totalExt) * 100).toFixed(1) + '%' : '0.0%';
+            rows.push(["BAIRRO", item.mun, bKey, item.ext.toFixed(2), (item.ext/1000).toFixed(2), String(item.trechos), pct]);
+        });
+
+        Object.keys(segmentos).sort((a,b) => segmentos[b].ext - segmentos[a].ext).forEach(sKey => {
+            const item = segmentos[sKey];
+            const pct = totalExt > 0 ? ((item.ext / totalExt) * 100).toFixed(1) + '%' : '0.0%';
+            rows.push(["SEGMENTO", "Geral", sKey, item.ext.toFixed(2), (item.ext/1000).toFixed(2), String(item.trechos), pct]);
+        });
+
+        Object.keys(subSegs).sort((a,b) => subSegs[b].ext - subSegs[a].ext).forEach(k => {
+            const item = subSegs[k];
+            const pct = totalExt > 0 ? ((item.ext / totalExt) * 100).toFixed(1) + '%' : '0.0%';
+            rows.push(["SUB_SEGMENTO_DN", item.seg, item.dn, item.ext.toFixed(2), (item.ext/1000).toFixed(2), String(item.trechos), pct]);
+        });
+
+        Object.keys(materiais).sort((a,b) => materiais[b].ext - materiais[a].ext).forEach(k => {
+            const item = materiais[k];
+            const pct = totalExt > 0 ? ((item.ext / totalExt) * 100).toFixed(1) + '%' : '0.0%';
+            rows.push(["MATERIAL_DN", item.mat, item.dn, item.ext.toFixed(2), (item.ext/1000).toFixed(2), String(item.trechos), pct]);
+        });
 
         let csvContent = rows.map(r => r.join(";")).join("\n");
         const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -430,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.download = `Caderno_Quantitativos_Bairros_Engeform_Sabesp_${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
-    };
+    };    };
 
     const btnExportQuantCsv = document.getElementById('btn-export-quant-csv');
     const btnExportGeralCsv = document.getElementById('btn-export-geral-csv');
@@ -474,6 +510,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 14. Dynamic Extensão por Tipo de Rede Widget Updater (Status Concluído)
+    function getBairroDisplayLabel(bairroTarget) {
+        if (!bairroTarget) return 'Lote 4 (Geral)';
+        const normTarget = (bairroTarget || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+        if (window.GIS_LAYERS && typeof window.GIS_LAYERS.getBairroCentroids === 'function') {
+            const found = window.GIS_LAYERS.getBairroCentroids().find(c => {
+                const nId = (c.id || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+                const nNome = (c.nome || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+                return nId === normTarget || nNome === normTarget;
+            });
+            if (found) return `${found.nome} (${found.municipio})`;
+        }
+        return bairroTarget;
+    }
+
     function updateSegmentWidget(bairroTarget) {
         const titleEl = document.getElementById('segment-widget-title');
         const container = document.getElementById('segment-dropdowns-container');
@@ -556,10 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update widget subtitle
         const totalPctConcluido = totalExt > 0 ? ((totalExtConcluido / totalExt) * 100).toFixed(1) : '0.0';
         if (titleEl) {
-            const bLabel = normTarget.startsWith("PEDRAS E VITÓRIA") ? "Pedras e Vitória (Guareí)" : 
-                           (normTarget === "SERRA DA PRATA" ? "Serra da Prata (Paranapanema)" :
-                           (normTarget === "POCINHO" ? "Pocinho (São Miguel Arcanjo)" :
-                           (normTarget === "JARDIM AEROPORTO" ? "Jardim Aeroporto (Itapetininga)" : bairroTarget)));
+            const bLabel = getBairroDisplayLabel(bairroTarget);
             titleEl.innerHTML = `<i class="fas fa-network-wired"></i> Obras lineares — <strong style="color:#ffffff;">${bLabel}</strong> (${(totalExt/1000).toFixed(2).replace('.', ',')} km • <span style="color:#10b981;">${totalPctConcluido.replace('.', ',')}% Concluído</span>)`;
         }
 
@@ -708,10 +755,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update widget title
         if (titleEl) {
-            const bLabel = normTarget.startsWith("PEDRAS E VITÓRIA") ? "Pedras e Vitória (Guareí)" : 
-                           (normTarget === "SERRA DA PRATA" ? "Serra da Prata (Paranapanema)" :
-                           (normTarget === "POCINHO" ? "Pocinho (São Miguel Arcanjo)" :
-                           (normTarget === "JARDIM AEROPORTO" ? "Jardim Aeroporto (Itapetininga)" : bairroTarget)));
+            const bLabel = getBairroDisplayLabel(bairroTarget);
             titleEl.innerHTML = `<i class="fas fa-industry"></i> Obras Localizadas (EEE) — <strong style="color:#ffffff;">${bLabel}</strong> (${count} ${count === 1 ? 'EEE' : 'EEEs'})`;
         }
 
@@ -794,7 +838,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Deselect / Reset to Lote 4
             activeBairroFilter = null;
             bairroCards.forEach(c => c.classList.remove('active-bairro'));
-            if (badgeFrente) badgeFrente.innerHTML = 'Ver Frentes (6) <i class="fas fa-chevron-down"></i>';
+            if (badgeFrente) const totalFrentes = (window.GIS_LAYERS && window.GIS_LAYERS.getBairroCentroids) ? window.GIS_LAYERS.getBairroCentroids().length : 28;
+            if (badgeFrente) badgeFrente.innerHTML = `Ver Frentes (${totalFrentes}) <i class="fas fa-chevron-down"></i>`;
 
             updateSegmentWidget(null);
             updateLocalizadaWidget(null);

@@ -27,74 +27,344 @@ window.GIS_LAYERS = (function() {
     const MIN_ZOOM_LOCALIZADA = 13;
     let isLocalizadaEnabled = true; // Controlado pelo checkbox da camada no painel
 
-    // Centróides calculados das 6 Frentes de Obra / Bairros para exibição em zoom distante (< 13)
+    // Centróides calculados das 28 Frentes de Obra / Bairros para exibição em zoom distante (< 13)
     // Classificados rigorosamente por Status de Execução: Concluído (#10b981), Iniciado (#0284c7) e Não Iniciado (#f59e0b)
-    const BAIRRO_CENTROIDS = [
+const BAIRRO_CENTROIDS = [
         {
-            id: 'PEDRAS E VITÓRIA',
-            nome: 'Pedras e Vitória',
-            municipio: 'Guareí',
-            status: 'INICIADO',
-            statusLabel: 'Iniciado',
-            lat: -23.366327,
-            lng: -48.144570,
-            cor: '#0284c7',
-            icone: 'fa-spinner'
+            id: "JD. CANANÉIA E CH. REUNIDAS",
+            nome: "Jd. Cananéia e Ch. Reunidas",
+            municipio: "Pilar do Sul",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.781865,
+            lng: -47.805088,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 67529.61
         },
         {
-            id: 'TURVO DOS ALMEIDAS',
-            nome: 'Turvo dos Almeidas',
-            municipio: 'Capão Bonito',
-            status: 'NÃO INICIADO',
-            statusLabel: 'Não Iniciado',
-            lat: -23.861787,
-            lng: -48.197851,
-            cor: '#f59e0b',
-            icone: 'fa-clock'
+            id: "PEIXOTO",
+            nome: "Peixoto",
+            municipio: "Itapetininga",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.525092,
+            lng: -48.011324,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 31698.00
         },
         {
-            id: 'SERRA DA PRATA',
-            nome: 'Serra da Prata',
-            municipio: 'Paranapanema',
-            status: 'INICIADO',
-            statusLabel: 'Iniciado',
-            lat: -23.461632,
-            lng: -48.865993,
-            cor: '#0284c7',
-            icone: 'fa-spinner'
+            id: "PEDRAS E VITÓRIA",
+            nome: "Pedras e Vitória",
+            municipio: "Guareí",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.364609,
+            lng: -48.14132,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 19688.37
         },
         {
-            id: 'POCINHO',
-            nome: 'Pocinho',
-            municipio: 'São Miguel Arcanjo',
-            status: 'INICIADO',
-            statusLabel: 'Iniciado',
-            lat: -23.854393,
-            lng: -48.180873,
-            cor: '#0284c7',
-            icone: 'fa-spinner'
+            id: "CAMPO GRANDE-VATINGA",
+            nome: "Campo Grande-Vatinga",
+            municipio: "Itapetininga",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.731522,
+            lng: -48.002731,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 14817.98
         },
         {
-            id: 'JARDIM AEROPORTO',
-            nome: 'Jardim Aeroporto',
-            municipio: 'Itapetininga',
-            status: 'INICIADO',
-            statusLabel: 'Iniciado',
-            lat: -23.576133,
-            lng: -47.982075,
-            cor: '#0284c7',
-            icone: 'fa-spinner'
+            id: "TURVO DOS ALMEIDAS",
+            nome: "Turvo dos Almeidas",
+            municipio: "Capão Bonito",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.859153,
+            lng: -48.201183,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 12809.44
         },
         {
-            id: 'PATEO VELHO',
-            nome: 'Pateo Velho',
-            municipio: 'Angatuba',
-            status: 'CONCLUÍDO',
-            statusLabel: 'Concluído',
-            lat: -23.553913,
-            lng: -48.311200,
-            cor: '#10b981',
-            icone: 'fa-check'
+            id: "ÁGUA DOCE E BOM RETIRO",
+            nome: "Água Doce e Bom Retiro",
+            municipio: "Pilar do Sul",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.778158,
+            lng: -47.675892,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 10899.92
+        },
+        {
+            id: "PORTO",
+            nome: "Porto",
+            municipio: "Itapetininga",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.636055,
+            lng: -48.098883,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 10869.04
+        },
+        {
+            id: "RIBEIRÃO",
+            nome: "Ribeirão",
+            municipio: "Pilar do Sul",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.827742,
+            lng: -47.699132,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 7663.06
+        },
+        {
+            id: "RIO ACIMA",
+            nome: "Rio Acima",
+            municipio: "São Miguel Arcanjo",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.876579,
+            lng: -47.971882,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 7620.63
+        },
+        {
+            id: "SERRA DA PRATA",
+            nome: "Serra da Prata",
+            municipio: "Paranapanema",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.46563,
+            lng: -48.871901,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 6673.29
+        },
+        {
+            id: "TAPIÁ",
+            nome: "Tapiá",
+            municipio: "Campina do Monte Alegre",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.55107,
+            lng: -48.501731,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 5347.02
+        },
+        {
+            id: "SALTO",
+            nome: "Salto",
+            municipio: "Campina do Monte Alegre",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.549635,
+            lng: -48.515539,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 4645.58
+        },
+        {
+            id: "PRAINHA 2",
+            nome: "Prainha 2",
+            municipio: "Campina do Monte Alegre",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.604224,
+            lng: -48.4893,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 4529.15
+        },
+        {
+            id: "PACAEMBU",
+            nome: "Pacaembu",
+            municipio: "Itapetininga",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.564794,
+            lng: -48.050127,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 4268.82
+        },
+        {
+            id: "POCINHO",
+            nome: "Pocinho",
+            municipio: "São Miguel Arcanjo",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.855442,
+            lng: -48.180763,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 4220.61
+        },
+        {
+            id: "CURUÇA III",
+            nome: "Curuça III",
+            municipio: "Itapetininga",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.610272,
+            lng: -48.157949,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 3901.67
+        },
+        {
+            id: "GRAMADÃO",
+            nome: "Gramadão",
+            municipio: "São Miguel Arcanjo",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.845573,
+            lng: -48.177817,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 2679.86
+        },
+        {
+            id: "PATEO VELHO",
+            nome: "Pateo Velho",
+            municipio: "Angatuba",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.553717,
+            lng: -48.310215,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 1942.37
+        },
+        {
+            id: "COQUEIROS",
+            nome: "Coqueiros",
+            municipio: "Angatuba",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.504503,
+            lng: -48.421139,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 1868.54
+        },
+        {
+            id: "SÃO PEDRO 2",
+            nome: "São Pedro 2",
+            municipio: "Paranapanema",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.357284,
+            lng: -48.723586,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 1793.51
+        },
+        {
+            id: "JD AEROPORTO",
+            nome: "Jd Aeroporto",
+            municipio: "Itapetininga",
+            status: "CONCLUÍDO",
+            statusLabel: "Concluído",
+            lat: -23.574975,
+            lng: -47.98157,
+            cor: "#10b981",
+            icone: "fa-check",
+            extensao_total: 1502.29
+        },
+        {
+            id: "PEDRAS E VITÓRIA - B1",
+            nome: "Pedras e Vitória - B1",
+            municipio: "Guareí",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.37013,
+            lng: -48.174214,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 826.72
+        },
+        {
+            id: "PEDRAS E VITÓRIA - B5",
+            nome: "Pedras e Vitória - B5",
+            municipio: "Guareí",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.365889,
+            lng: -48.116929,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 800.45
+        },
+        {
+            id: "SÃO PEDRO",
+            nome: "São Pedro",
+            municipio: "Paranapanema",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.365764,
+            lng: -48.720324,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 708.23
+        },
+        {
+            id: "JARDIM AEROPORTO",
+            nome: "Jardim Aeroporto",
+            municipio: "Itapetininga",
+            status: "INICIADO",
+            statusLabel: "Iniciado",
+            lat: -23.574222,
+            lng: -47.982644,
+            cor: "#0284c7",
+            icone: "fa-spinner",
+            extensao_total: 623.31
+        },
+        {
+            id: "PEDRAS E VITÓRIA - B3",
+            nome: "Pedras e Vitória - B3",
+            municipio: "Guareí",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.363423,
+            lng: -48.14478,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 529.82
+        },
+        {
+            id: "JD VITÓRIA",
+            nome: "Jd Vitória",
+            municipio: "Pilar do Sul",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.79375,
+            lng: -47.744792,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 515.25
+        },
+        {
+            id: "TUPY",
+            nome: "Tupy",
+            municipio: "Itapetininga",
+            status: "NÃO INICIADO",
+            statusLabel: "Não Iniciado",
+            lat: -23.543379,
+            lng: -48.230363,
+            cor: "#f59e0b",
+            icone: "fa-clock",
+            extensao_total: 76.12
         }
     ];
 
@@ -110,10 +380,16 @@ window.GIS_LAYERS = (function() {
     };
 
     const SEGMENTO_COLORS = {
-        'REDE COLETORA': '#2563eb',    // Royal Blue
-        'LINHA DE RECALQUE': '#dc2626',// Vermelho (Red)
-        'EMISSÁRIO': '#ea580c',        // Laranja (Orange)
-        'EEE': '#919389',             // Engeform Taupe
+        'REDE COLETORA': '#2563eb',       // Royal Blue
+        'LINHA DE RECALQUE': '#dc2626',   // Vermelho (Red)
+        'EMISSÁRIO': '#ea580c',           // Laranja (Orange)
+        'REDE DE DISTRIBUIÇÃO': '#06b6d4',// Ciano (Cyan)
+        'ADUTORA': '#8b5cf6',             // Violeta (Purple)
+        'POÇO DE ESGOTO': '#10b981',      // Verde (PVs)
+        'POÇO ESGOTO': '#10b981',
+        'NÓ': '#94a3b8',
+        'NÓS': '#94a3b8',
+        'EEE': '#f59e0b',                 // Âmbar
         'DEFAULT': '#64748b'
     };
 
