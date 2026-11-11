@@ -331,7 +331,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCloseComparativoFooter = document.getElementById('btn-close-modal-comparativo-footer');
 
     if (btnOpenComparativo && modalComparativo) {
-        btnOpenComparativo.addEventListener('click', function() {
+        btnOpenComparativo.addEventListener('click', function(e) {
+            if (e) e.stopPropagation();
             modalComparativo.style.display = 'flex';
         });
     }

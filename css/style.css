@@ -2701,3 +2701,68 @@ body.light-theme .export-field-checkbox-item:hover {
     line-height: 1.1;
     margin-top: 2px;
 }
+
+/* ==========================================================================
+   Collapsible Scope Groups (Comparação Escopo Panel)
+   ========================================================================== */
+details.scope-group-card {
+    transition: all 0.25s ease;
+}
+
+details.scope-group-card summary.scope-group-header {
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+}
+
+details.scope-group-card[open] summary.scope-group-header {
+    margin-bottom: 0.95rem;
+}
+
+details.scope-group-card summary::-webkit-details-marker,
+details.scope-group-card summary::marker {
+    display: none;
+    content: "";
+}
+
+.scope-toggle-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--engeform-light-taupe);
+    font-size: 0.75rem;
+    transition: transform 0.25s ease, background 0.2s, color 0.2s;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+details.scope-group-card:hover .scope-toggle-arrow {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+details.scope-group-card:not([open]) .scope-toggle-arrow {
+    transform: rotate(-90deg);
+}
+
+details.scope-group-card[open] .scope-toggle-arrow {
+    transform: rotate(0deg);
+}
+
+.scope-group-content {
+    animation: fadeInContent 0.2s ease-in-out;
+}
+
+@keyframes fadeInContent {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
