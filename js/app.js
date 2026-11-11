@@ -1609,15 +1609,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
-    // 17. Search, Municipality & Status Filters for 169 Frentes de Obra (Painéis Visão Geral e Visão Detalhada)
+    // 17. Search, Municipality, Status & Modalidade Filters for 169 Frentes de Obra (Painéis Visão Geral e Visão Detalhada)
     const searchFrentesInput = document.getElementById('search-frentes-input');
     const selectMunFrentes = document.getElementById('select-mun-frentes');
     const selectStatusFrentes = document.getElementById('select-status-frentes');
+    const selectModalidadeFrentes = document.getElementById('select-modalidade-frentes');
     const titleFrentesEl = document.getElementById('frentes-card-title-count');
 
     const searchFrentesQuantInput = document.getElementById('search-frentes-quant-input');
     const selectMunQuant = document.getElementById('select-mun-quant');
     const selectStatusQuant = document.getElementById('select-status-quant');
+    const selectModalidadeQuant = document.getElementById('select-modalidade-quant');
     const badgeFrenteQuant = document.getElementById('badge-frente-obra-quant');
 
     let isSyncingFilters = false;
@@ -1626,41 +1628,55 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isSyncingFilters) return;
         isSyncingFilters = true;
 
-        let term, selMun, selStatus;
+        let term, selMun, selStatus, selModalidade;
 
         if (source === 'quant') {
-            term = (searchFrentesQuantInput ? searchFrentesQuantInput.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-            selMun = (selectMunQuant ? selectMunQuant.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-            selStatus = (selectStatusQuant ? selectStatusQuant.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+            term = (searchFrentesQuantInput ? searchFrentesQuantInput.value : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
+            selMun = (selectMunQuant ? selectMunQuant.value : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
+            selStatus = (selectStatusQuant ? selectStatusQuant.value : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
+            selModalidade = (selectModalidadeQuant ? selectModalidadeQuant.value : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
 
             // Sync with Geral
             if (searchFrentesInput) searchFrentesInput.value = searchFrentesQuantInput ? searchFrentesQuantInput.value : '';
             if (selectMunFrentes) selectMunFrentes.value = selectMunQuant ? selectMunQuant.value : '';
             if (selectStatusFrentes) selectStatusFrentes.value = selectStatusQuant ? selectStatusQuant.value : '';
+            if (selectModalidadeFrentes) selectModalidadeFrentes.value = selectModalidadeQuant ? selectModalidadeQuant.value : '';
         } else {
-            term = (searchFrentesInput ? searchFrentesInput.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-            selMun = (selectMunFrentes ? selectMunFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-            selStatus = (selectStatusFrentes ? selectStatusFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+            term = (searchFrentesInput ? searchFrentesInput.value : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
+            selMun = (selectMunFrentes ? selectMunFrentes.value : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
+            selStatus = (selectStatusFrentes ? selectStatusFrentes.value : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
+            selModalidade = (selectModalidadeFrentes ? selectModalidadeFrentes.value : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
 
             // Sync with Quant
             if (searchFrentesQuantInput) searchFrentesQuantInput.value = searchFrentesInput ? searchFrentesInput.value : '';
             if (selectMunQuant) selectMunQuant.value = selectMunFrentes ? selectMunFrentes.value : '';
             if (selectStatusQuant) selectStatusQuant.value = selectStatusFrentes ? selectStatusFrentes.value : '';
+            if (selectModalidadeQuant) selectModalidadeQuant.value = selectModalidadeFrentes ? selectModalidadeFrentes.value : '';
         }
+
+        const matchModalidadeFn = (cardMod) => {
+            if (!selModalidade) return true;
+            if (selModalidade === 'SEM MODALIDADE' || selModalidade === 'NAO INFORMADO') {
+                return !cardMod || cardMod === 'SEM MODALIDADE' || cardMod === 'NAO INFORMADO';
+            }
+            return cardMod === selModalidade;
+        };
 
         // 1. Filter Visão Geral cards (.frentes-scroll-container)
         let visibleGeral = 0;
         const cardsGeral = document.querySelectorAll('.frentes-scroll-container .bairro-card');
         cardsGeral.forEach(card => {
-            const b = (card.dataset.bairro || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-            const m = (card.dataset.mun || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-            const st = (card.dataset.status || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+            const b = (card.dataset.bairro || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+            const m = (card.dataset.mun || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+            const st = (card.dataset.status || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+            const mod = (card.dataset.modalidade || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
 
-            const matchTerm = !term || b.includes(term) || m.includes(term) || st.includes(term);
+            const matchTerm = !term || b.includes(term) || m.includes(term) || st.includes(term) || mod.includes(term);
             const matchMun = !selMun || m === selMun;
             const matchStatus = !selStatus || st === selStatus || (selStatus === 'INICIADO' && st.startsWith('INICIADO'));
+            const matchMod = matchModalidadeFn(mod);
 
-            const isVisible = matchTerm && matchMun && matchStatus;
+            const isVisible = matchTerm && matchMun && matchStatus && matchMod;
             card.style.display = isVisible ? '' : 'none';
             if (isVisible) visibleGeral++;
         });
@@ -1677,15 +1693,17 @@ document.addEventListener('DOMContentLoaded', function() {
         let visibleQuant = 0;
         const cardsQuant = document.querySelectorAll('#dropdown-frente-obra-quant .bairro-card');
         cardsQuant.forEach(card => {
-            const b = (card.dataset.bairro || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-            const m = (card.dataset.mun || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-            const st = (card.dataset.status || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+            const b = (card.dataset.bairro || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+            const m = (card.dataset.mun || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+            const st = (card.dataset.status || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+            const mod = (card.dataset.modalidade || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
 
-            const matchTerm = !term || b.includes(term) || m.includes(term) || st.includes(term);
+            const matchTerm = !term || b.includes(term) || m.includes(term) || st.includes(term) || mod.includes(term);
             const matchMun = !selMun || m === selMun;
             const matchStatus = !selStatus || st === selStatus || (selStatus === 'INICIADO' && st.startsWith('INICIADO'));
+            const matchMod = matchModalidadeFn(mod);
 
-            const isVisible = matchTerm && matchMun && matchStatus;
+            const isVisible = matchTerm && matchMun && matchStatus && matchMod;
             card.style.display = isVisible ? '' : 'none';
             if (isVisible) visibleQuant++;
         });
@@ -1702,11 +1720,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (searchFrentesInput) searchFrentesInput.addEventListener('input', () => filterFrentesUI('geral'));
     if (selectMunFrentes) selectMunFrentes.addEventListener('change', () => filterFrentesUI('geral'));
     if (selectStatusFrentes) selectStatusFrentes.addEventListener('change', () => filterFrentesUI('geral'));
+    if (selectModalidadeFrentes) selectModalidadeFrentes.addEventListener('change', () => filterFrentesUI('geral'));
 
     // Event listeners for Visão Detalhada filters
     if (searchFrentesQuantInput) searchFrentesQuantInput.addEventListener('input', () => filterFrentesUI('quant'));
     if (selectMunQuant) selectMunQuant.addEventListener('change', () => filterFrentesUI('quant'));
     if (selectStatusQuant) selectStatusQuant.addEventListener('change', () => filterFrentesUI('quant'));
+    if (selectModalidadeQuant) selectModalidadeQuant.addEventListener('change', () => filterFrentesUI('quant'));
 
     // Quick-filter clicking on legend items
     document.querySelectorAll('.quick-status-filter').forEach(item => {
