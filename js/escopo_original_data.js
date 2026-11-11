@@ -10,3 +10,2249 @@ window.GIS_ESCOPO_ORIGINAL = {
         municipios: ["Angatuba", "Campina do Monte Alegre", "CapÃ£o Bonito", "GuareÃ­", "Itapetininga", "Paranapanema", "Pardinho", "Pilar do Sul", "RibeirÃ£o Grande", "SÃ£o Miguel Arcanjo"]
     }
 };
+
+
+// Auto-associação de Bairro por ae_id para as camadas lineares e pontuais do Escopo Original
+(function() {
+    if (!window.GIS_ESCOPO_ORIGINAL || !window.GIS_ESCOPO_ORIGINAL.areas) return;
+    const aeToBairro = {};
+    const aeToMun = {};
+    window.GIS_ESCOPO_ORIGINAL.areas.features.forEach(function(f) {
+        const p = f.properties || {};
+        if (p.ae_id && p.bairro) {
+            aeToBairro[p.ae_id] = p.bairro;
+            if (p.nm_mun) aeToMun[p.ae_id] = p.nm_mun;
+        }
+    });
+    if (window.GIS_ESCOPO_ORIGINAL.linear && window.GIS_ESCOPO_ORIGINAL.linear.features) {
+        window.GIS_ESCOPO_ORIGINAL.linear.features.forEach(function(f) {
+            const p = f.properties || {};
+            if (p.ae_id && aeToBairro[p.ae_id] && !p.bairro) {
+                p.bairro = aeToBairro[p.ae_id];
+            }
+            if (p.ae_id && aeToMun[p.ae_id] && !p.nm_mun) {
+                p.nm_mun = aeToMun[p.ae_id];
+            }
+        });
+    }
+    if (window.GIS_ESCOPO_ORIGINAL.pontual && window.GIS_ESCOPO_ORIGINAL.pontual.features) {
+        window.GIS_ESCOPO_ORIGINAL.pontual.features.forEach(function(f) {
+            const p = f.properties || {};
+            if (p.ae_id && aeToBairro[p.ae_id] && !p.bairro) {
+                p.bairro = aeToBairro[p.ae_id];
+            }
+            if (p.ae_id && aeToMun[p.ae_id] && !p.nm_mun) {
+                p.nm_mun = aeToMun[p.ae_id];
+            }
+        });
+    }
+})();
+
+// Lista consolidada das 58 frentes presentes no Escopo Original e Escopo Consolidado
+window.FRENTES_COMPARATIVO_ESCOPO = [
+  {
+    "id": "libaneos",
+    "frente": "Libaneos",
+    "municipio": "Angatuba",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 3238.09,
+      "ext_km": 3.24,
+      "trechos": 31,
+      "poligonos": 1,
+      "area_ha": 10.8,
+      "pontual_total": 2,
+      "eees": 2,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -3238.09,
+      "km": -3.24,
+      "pct_str": "-100.0%",
+      "trechos": -31,
+      "poligonos": 0,
+      "eees": -2,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "prainha 2",
+    "frente": "Prainha 2",
+    "municipio": "Campina do Monte Alegre",
+    "status": "INICIADO",
+    "status_label": "Iniciado",
+    "orig": {
+      "ext_m": 3166.66,
+      "ext_km": 3.17,
+      "trechos": 6,
+      "poligonos": 3,
+      "area_ha": 0.14,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 4529.15,
+      "ext_km": 4.53,
+      "trechos": 143,
+      "poligonos": 1,
+      "loc_total": 135,
+      "major": 1,
+      "eees": 1,
+      "etes": 0,
+      "pocos_nos": 134
+    },
+    "delta": {
+      "m": 1362.49,
+      "km": 1.36,
+      "pct_str": "+43.0%",
+      "trechos": 137,
+      "poligonos": -2,
+      "eees": 0,
+      "tipo": "ampliacao"
+    }
+  },
+  {
+    "id": "salto",
+    "frente": "Salto",
+    "municipio": "Campina do Monte Alegre",
+    "status": "INICIADO",
+    "status_label": "Iniciado",
+    "orig": {
+      "ext_m": 7160.15,
+      "ext_km": 7.16,
+      "trechos": 18,
+      "poligonos": 3,
+      "area_ha": 0.0,
+      "pontual_total": 3,
+      "eees": 3,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 4645.58,
+      "ext_km": 4.65,
+      "trechos": 120,
+      "poligonos": 1,
+      "loc_total": 75,
+      "major": 4,
+      "eees": 4,
+      "etes": 0,
+      "pocos_nos": 71
+    },
+    "delta": {
+      "m": -2514.57,
+      "km": -2.51,
+      "pct_str": "-35.1%",
+      "trechos": 102,
+      "poligonos": -2,
+      "eees": 1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "tapia",
+    "frente": "Tapiá",
+    "municipio": "Campina do Monte Alegre",
+    "status": "INICIADO",
+    "status_label": "Iniciado",
+    "orig": {
+      "ext_m": 11736.21,
+      "ext_km": 11.74,
+      "trechos": 5,
+      "poligonos": 1,
+      "area_ha": 21.98,
+      "pontual_total": 2,
+      "eees": 1,
+      "etes": 0,
+      "outros": 1
+    },
+    "cons": {
+      "ext_m": 5347.02,
+      "ext_km": 5.35,
+      "trechos": 201,
+      "poligonos": 1,
+      "loc_total": 48,
+      "major": 1,
+      "eees": 1,
+      "etes": 0,
+      "pocos_nos": 47
+    },
+    "delta": {
+      "m": -6389.19,
+      "km": -6.39,
+      "pct_str": "-54.4%",
+      "trechos": 196,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "querencia do turvo",
+    "frente": "Querência do Turvo",
+    "municipio": "Capão Bonito",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 11567.22,
+      "ext_km": 11.57,
+      "trechos": 20,
+      "poligonos": 2,
+      "area_ha": 110.43,
+      "pontual_total": 3,
+      "eees": 3,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -11567.22,
+      "km": -11.57,
+      "pct_str": "-100.0%",
+      "trechos": -20,
+      "poligonos": -1,
+      "eees": -3,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "turvo dos almeidas",
+    "frente": "Turvo dos Almeidas",
+    "municipio": "Capão Bonito",
+    "status": "INICIADO",
+    "status_label": "Iniciado",
+    "orig": {
+      "ext_m": 12806.93,
+      "ext_km": 12.81,
+      "trechos": 86,
+      "poligonos": 3,
+      "area_ha": 0.65,
+      "pontual_total": 5,
+      "eees": 4,
+      "etes": 1,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 12809.44,
+      "ext_km": 12.81,
+      "trechos": 340,
+      "poligonos": 1,
+      "loc_total": 190,
+      "major": 8,
+      "eees": 8,
+      "etes": 0,
+      "pocos_nos": 182
+    },
+    "delta": {
+      "m": 2.51,
+      "km": 0.0,
+      "pct_str": "+0.0%",
+      "trechos": 254,
+      "poligonos": -2,
+      "eees": 4,
+      "tipo": "estavel"
+    }
+  },
+  {
+    "id": "frente 01 - gri",
+    "frente": "Frente 01 - GRI",
+    "municipio": "Guareí",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2073.49,
+      "ext_km": 2.07,
+      "trechos": 7,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2073.49,
+      "km": -2.07,
+      "pct_str": "-100.0%",
+      "trechos": -7,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "frente 02 - gri",
+    "frente": "Frente 02 - GRI",
+    "municipio": "Guareí",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 1267.8,
+      "ext_km": 1.27,
+      "trechos": 4,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -1267.8,
+      "km": -1.27,
+      "pct_str": "-100.0%",
+      "trechos": -4,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "frente 03 - gri",
+    "frente": "Frente 03 - GRI",
+    "municipio": "Guareí",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2515.01,
+      "ext_km": 2.52,
+      "trechos": 6,
+      "poligonos": 2,
+      "area_ha": 0.0,
+      "pontual_total": 2,
+      "eees": 2,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2515.01,
+      "km": -2.52,
+      "pct_str": "-100.0%",
+      "trechos": -6,
+      "poligonos": -1,
+      "eees": -2,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "jacutinga",
+    "frente": "Jacutinga",
+    "municipio": "Guareí",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 7864.58,
+      "ext_km": 7.86,
+      "trechos": 16,
+      "poligonos": 1,
+      "area_ha": 24.7,
+      "pontual_total": 5,
+      "eees": 2,
+      "etes": 0,
+      "outros": 3
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -7864.58,
+      "km": -7.86,
+      "pct_str": "-100.0%",
+      "trechos": -16,
+      "poligonos": 0,
+      "eees": -2,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "jardim adelina",
+    "frente": "Jardim Adelina",
+    "municipio": "Guareí",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2672.16,
+      "ext_km": 2.67,
+      "trechos": 5,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2672.16,
+      "km": -2.67,
+      "pct_str": "-100.0%",
+      "trechos": -5,
+      "poligonos": 0,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "pedras e vitoria",
+    "frente": "Pedras e Vitória",
+    "municipio": "Guareí",
+    "status": "INICIADO",
+    "status_label": "Iniciado",
+    "orig": {
+      "ext_m": 3289.87,
+      "ext_km": 3.29,
+      "trechos": 5,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 19688.37,
+      "ext_km": 19.69,
+      "trechos": 412,
+      "poligonos": 1,
+      "loc_total": 332,
+      "major": 5,
+      "eees": 5,
+      "etes": 0,
+      "pocos_nos": 327
+    },
+    "delta": {
+      "m": 16398.5,
+      "km": 16.4,
+      "pct_str": "+498.5%",
+      "trechos": 407,
+      "poligonos": 0,
+      "eees": 4,
+      "tipo": "ampliacao"
+    }
+  },
+  {
+    "id": "rua benedito tome",
+    "frente": "Rua Benedito Tomé",
+    "municipio": "Guareí",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 608.07,
+      "ext_km": 0.61,
+      "trechos": 4,
+      "poligonos": 1,
+      "area_ha": 1.6,
+      "pontual_total": 1,
+      "eees": 0,
+      "etes": 0,
+      "outros": 1
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -608.07,
+      "km": -0.61,
+      "pct_str": "-100.0%",
+      "trechos": -4,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rua francis castanho de moraes",
+    "frente": "Rua Francis Castanho de Moraes",
+    "municipio": "Guareí",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 245.16,
+      "ext_km": 0.25,
+      "trechos": 2,
+      "poligonos": 1,
+      "area_ha": 0.05,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -245.16,
+      "km": -0.25,
+      "pct_str": "-100.0%",
+      "trechos": -2,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rua tiradentes",
+    "frente": "Rua Tiradentes",
+    "municipio": "Guareí",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "area_ha": 0.3,
+      "pontual_total": 1,
+      "eees": 0,
+      "etes": 0,
+      "outros": 1
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": 0.0,
+      "km": 0.0,
+      "pct_str": "0%",
+      "trechos": 0,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "estavel"
+    }
+  },
+  {
+    "id": "curuca iii",
+    "frente": "Curuça III",
+    "municipio": "Itapetininga",
+    "status": "INICIADO",
+    "status_label": "Iniciado (Água)",
+    "orig": {
+      "ext_m": 6861.47,
+      "ext_km": 6.86,
+      "trechos": 62,
+      "poligonos": 1,
+      "area_ha": 33.99,
+      "pontual_total": 4,
+      "eees": 1,
+      "etes": 1,
+      "outros": 2
+    },
+    "cons": {
+      "ext_m": 3901.67,
+      "ext_km": 3.9,
+      "trechos": 30,
+      "poligonos": 1,
+      "loc_total": 28,
+      "major": 2,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 26
+    },
+    "delta": {
+      "m": -2959.8,
+      "km": -2.96,
+      "pct_str": "-43.1%",
+      "trechos": -32,
+      "poligonos": 0,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "gramadinho - formal 2",
+    "frente": "Gramadinho - Formal 2",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "area_ha": 1.64,
+      "pontual_total": 1,
+      "eees": 0,
+      "etes": 0,
+      "outros": 1
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": 0.0,
+      "km": 0.0,
+      "pct_str": "0%",
+      "trechos": 0,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "estavel"
+    }
+  },
+  {
+    "id": "gramadinho formal 1",
+    "frente": "Gramadinho Formal 1",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 561.49,
+      "ext_km": 0.56,
+      "trechos": 9,
+      "poligonos": 2,
+      "area_ha": 1.15,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -561.49,
+      "km": -0.56,
+      "pct_str": "-100.0%",
+      "trechos": -9,
+      "poligonos": -1,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "jardim monte santo 2",
+    "frente": "Jardim Monte Santo 2",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 467.66,
+      "ext_km": 0.47,
+      "trechos": 4,
+      "poligonos": 1,
+      "area_ha": 0.35,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -467.66,
+      "km": -0.47,
+      "pct_str": "-100.0%",
+      "trechos": -4,
+      "poligonos": 0,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "morro do alto",
+    "frente": "Morro do Alto",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 217.33,
+      "ext_km": 0.22,
+      "trechos": 5,
+      "poligonos": 1,
+      "area_ha": 0.75,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -217.33,
+      "km": -0.22,
+      "pct_str": "-100.0%",
+      "trechos": -5,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "morro do alto 1",
+    "frente": "Morro do Alto 1",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 359.8,
+      "ext_km": 0.36,
+      "trechos": 7,
+      "poligonos": 2,
+      "area_ha": 1.98,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -359.8,
+      "km": -0.36,
+      "pct_str": "-100.0%",
+      "trechos": -7,
+      "poligonos": -1,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "pescaria",
+    "frente": "Pescaria",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 4685.64,
+      "ext_km": 4.69,
+      "trechos": 63,
+      "poligonos": 2,
+      "area_ha": 42.27,
+      "pontual_total": 2,
+      "eees": 1,
+      "etes": 1,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -4685.64,
+      "km": -4.69,
+      "pct_str": "-100.0%",
+      "trechos": -63,
+      "poligonos": -1,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "tupy 1",
+    "frente": "Tupy 1",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 199.32,
+      "ext_km": 0.2,
+      "trechos": 3,
+      "poligonos": 1,
+      "area_ha": 0.5,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -199.32,
+      "km": -0.2,
+      "pct_str": "-100.0%",
+      "trechos": -3,
+      "poligonos": 0,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "tupy 2",
+    "frente": "Tupy 2",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 1337.91,
+      "ext_km": 1.34,
+      "trechos": 12,
+      "poligonos": 4,
+      "area_ha": 5.8,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -1337.91,
+      "km": -1.34,
+      "pct_str": "-100.0%",
+      "trechos": -12,
+      "poligonos": -3,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "tupy 3",
+    "frente": "Tupy 3",
+    "municipio": "Itapetininga",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 2,
+      "area_ha": 1.73,
+      "pontual_total": 3,
+      "eees": 0,
+      "etes": 0,
+      "outros": 3
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": 0.0,
+      "km": 0.0,
+      "pct_str": "0%",
+      "trechos": 0,
+      "poligonos": -1,
+      "eees": 0,
+      "tipo": "estavel"
+    }
+  },
+  {
+    "id": "bairro aparecida",
+    "frente": "Bairro Aparecida",
+    "municipio": "Paranapanema",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 475.68,
+      "ext_km": 0.48,
+      "trechos": 2,
+      "poligonos": 2,
+      "area_ha": 8.1,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -475.68,
+      "km": -0.48,
+      "pct_str": "-100.0%",
+      "trechos": -2,
+      "poligonos": -1,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "loteamento apiai",
+    "frente": "Loteamento Apiaí",
+    "municipio": "Paranapanema",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2.37,
+      "ext_km": 0.0,
+      "trechos": 1,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2.37,
+      "km": -0.0,
+      "pct_str": "-100.0%",
+      "trechos": -1,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "estavel"
+    }
+  },
+  {
+    "id": "recanto i",
+    "frente": "Recanto I",
+    "municipio": "Paranapanema",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 3,
+      "eees": 0,
+      "etes": 0,
+      "outros": 3
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": 0.0,
+      "km": 0.0,
+      "pct_str": "0%",
+      "trechos": 0,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "estavel"
+    }
+  },
+  {
+    "id": "remanso do paranapanema",
+    "frente": "Remanso do Paranapanema",
+    "municipio": "Paranapanema",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2895.75,
+      "ext_km": 2.9,
+      "trechos": 18,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2895.75,
+      "km": -2.9,
+      "pct_str": "-100.0%",
+      "trechos": -18,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rua um",
+    "frente": "Rua Um",
+    "municipio": "Paranapanema",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 6338.83,
+      "ext_km": 6.34,
+      "trechos": 5,
+      "poligonos": 1,
+      "area_ha": 1.0,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -6338.83,
+      "km": -6.34,
+      "pct_str": "-100.0%",
+      "trechos": -5,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rua das posses",
+    "frente": "Rua das Posses",
+    "municipio": "Paranapanema",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 666.04,
+      "ext_km": 0.67,
+      "trechos": 3,
+      "poligonos": 2,
+      "area_ha": 1.49,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -666.04,
+      "km": -0.67,
+      "pct_str": "-100.0%",
+      "trechos": -3,
+      "poligonos": -1,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "serra da prata",
+    "frente": "Serra da Prata",
+    "municipio": "Paranapanema",
+    "status": "INICIADO",
+    "status_label": "Iniciado",
+    "orig": {
+      "ext_m": 1070.77,
+      "ext_km": 1.07,
+      "trechos": 14,
+      "poligonos": 2,
+      "area_ha": 2.31,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 6673.29,
+      "ext_km": 6.67,
+      "trechos": 318,
+      "poligonos": 1,
+      "loc_total": 3,
+      "major": 3,
+      "eees": 3,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": 5602.52,
+      "km": 5.6,
+      "pct_str": "+523.2%",
+      "trechos": 304,
+      "poligonos": -1,
+      "eees": 3,
+      "tipo": "ampliacao"
+    }
+  },
+  {
+    "id": "sao pedro",
+    "frente": "São Pedro",
+    "municipio": "Paranapanema",
+    "status": "INICIADO",
+    "status_label": "Iniciado",
+    "orig": {
+      "ext_m": 17363.66,
+      "ext_km": 17.36,
+      "trechos": 37,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 3,
+      "eees": 3,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 708.23,
+      "ext_km": 0.71,
+      "trechos": 36,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -16655.43,
+      "km": -16.66,
+      "pct_str": "-95.9%",
+      "trechos": -1,
+      "poligonos": 0,
+      "eees": -3,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "bairro serra italiana",
+    "frente": "Bairro Serra Italiana",
+    "municipio": "Pardinho",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 23855.61,
+      "ext_km": 23.86,
+      "trechos": 43,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 2,
+      "eees": 2,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -23855.61,
+      "km": -23.86,
+      "pct_str": "-100.0%",
+      "trechos": -43,
+      "poligonos": 0,
+      "eees": -2,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "distrito industrial",
+    "frente": "Distrito Industrial",
+    "municipio": "Pardinho",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 128.43,
+      "ext_km": 0.13,
+      "trechos": 1,
+      "poligonos": 1,
+      "area_ha": 14.14,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -128.43,
+      "km": -0.13,
+      "pct_str": "-100.0%",
+      "trechos": -1,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "maristela",
+    "frente": "Maristela",
+    "municipio": "Pardinho",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 19390.25,
+      "ext_km": 19.39,
+      "trechos": 72,
+      "poligonos": 3,
+      "area_ha": 0.0,
+      "pontual_total": 9,
+      "eees": 5,
+      "etes": 0,
+      "outros": 4
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -19390.25,
+      "km": -19.39,
+      "pct_str": "-100.0%",
+      "trechos": -72,
+      "poligonos": -2,
+      "eees": -5,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rua nicanor teodoro rosa",
+    "frente": "Rua Nicanor Teodoro Rosa",
+    "municipio": "Pardinho",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 334.24,
+      "ext_km": 0.33,
+      "trechos": 4,
+      "poligonos": 1,
+      "area_ha": 1.1,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -334.24,
+      "km": -0.33,
+      "pct_str": "-100.0%",
+      "trechos": -4,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "bairro ilha",
+    "frente": "Bairro Ilha",
+    "municipio": "Pilar do Sul",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2199.01,
+      "ext_km": 2.2,
+      "trechos": 48,
+      "poligonos": 1,
+      "area_ha": 13.05,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2199.01,
+      "km": -2.2,
+      "pct_str": "-100.0%",
+      "trechos": -48,
+      "poligonos": 0,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "frente 01 - pls",
+    "frente": "Frente 01 - PLS",
+    "municipio": "Pilar do Sul",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 6308.49,
+      "ext_km": 6.31,
+      "trechos": 3,
+      "poligonos": 1,
+      "area_ha": 1.11,
+      "pontual_total": 5,
+      "eees": 0,
+      "etes": 0,
+      "outros": 5
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -6308.49,
+      "km": -6.31,
+      "pct_str": "-100.0%",
+      "trechos": -3,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "jardim panorama",
+    "frente": "Jardim Panorama",
+    "municipio": "Pilar do Sul",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 15514.58,
+      "ext_km": 15.51,
+      "trechos": 230,
+      "poligonos": 4,
+      "area_ha": 98.35,
+      "pontual_total": 2,
+      "eees": 1,
+      "etes": 1,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -15514.58,
+      "km": -15.51,
+      "pct_str": "-100.0%",
+      "trechos": -230,
+      "poligonos": -3,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "jd cananeia e ch. reunidas",
+    "frente": "Jd Cananéia e Ch. Reunidas",
+    "municipio": "Pilar do Sul",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 94593.0,
+      "ext_km": 94.59,
+      "trechos": 1419,
+      "poligonos": 23,
+      "area_ha": 777.9,
+      "pontual_total": 7,
+      "eees": 6,
+      "etes": 1,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -94593.0,
+      "km": -94.59,
+      "pct_str": "-100.0%",
+      "trechos": -1419,
+      "poligonos": -22,
+      "eees": -6,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "lavrinha",
+    "frente": "Lavrinha",
+    "municipio": "Pilar do Sul",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2450.18,
+      "ext_km": 2.45,
+      "trechos": 17,
+      "poligonos": 2,
+      "area_ha": 10.9,
+      "pontual_total": 3,
+      "eees": 1,
+      "etes": 1,
+      "outros": 1
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2450.18,
+      "km": -2.45,
+      "pct_str": "-100.0%",
+      "trechos": -17,
+      "poligonos": -1,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rod. nestor fogaca (bairro)",
+    "frente": "Rod. Nestor Fogaça (Bairro)",
+    "municipio": "Pilar do Sul",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 118.88,
+      "ext_km": 0.12,
+      "trechos": 1,
+      "poligonos": 1,
+      "area_ha": 2.14,
+      "pontual_total": 2,
+      "eees": 0,
+      "etes": 0,
+      "outros": 2
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -118.88,
+      "km": -0.12,
+      "pct_str": "-100.0%",
+      "trechos": -1,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rua doracina meira e regiao",
+    "frente": "Rua Doracina Meira e Região",
+    "municipio": "Ribeirão Grande",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 1039.75,
+      "ext_km": 1.04,
+      "trechos": 9,
+      "poligonos": 2,
+      "area_ha": 0.3,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -1039.75,
+      "km": -1.04,
+      "pct_str": "-100.0%",
+      "trechos": -9,
+      "poligonos": -1,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rua francisco cesarino ferreira",
+    "frente": "Rua Francisco Cesarino Ferreira",
+    "municipio": "Ribeirão Grande",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 334.48,
+      "ext_km": 0.33,
+      "trechos": 4,
+      "poligonos": 1,
+      "area_ha": 1.24,
+      "pontual_total": 1,
+      "eees": 0,
+      "etes": 0,
+      "outros": 1
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -334.48,
+      "km": -0.33,
+      "pct_str": "-100.0%",
+      "trechos": -4,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "abaitinga",
+    "frente": "Abaitinga",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 54.57,
+      "ext_km": 0.05,
+      "trechos": 1,
+      "poligonos": 1,
+      "area_ha": 0.07,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -54.57,
+      "km": -0.05,
+      "pct_str": "-100.0%",
+      "trechos": -1,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "bairro laranjal",
+    "frente": "Bairro Laranjal",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 301.92,
+      "ext_km": 0.3,
+      "trechos": 4,
+      "poligonos": 1,
+      "area_ha": 0.0,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -301.92,
+      "km": -0.3,
+      "pct_str": "-100.0%",
+      "trechos": -4,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "bairro monho",
+    "frente": "Bairro Monho",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 4099.84,
+      "ext_km": 4.1,
+      "trechos": 22,
+      "poligonos": 2,
+      "area_ha": 34.45,
+      "pontual_total": 2,
+      "eees": 1,
+      "etes": 0,
+      "outros": 1
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -4099.84,
+      "km": -4.1,
+      "pct_str": "-100.0%",
+      "trechos": -22,
+      "poligonos": -1,
+      "eees": -1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "frente 01 sma",
+    "frente": "Frente 01 SMA",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2591.11,
+      "ext_km": 2.59,
+      "trechos": 29,
+      "poligonos": 2,
+      "area_ha": 5.64,
+      "pontual_total": 4,
+      "eees": 2,
+      "etes": 0,
+      "outros": 2
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2591.11,
+      "km": -2.59,
+      "pct_str": "-100.0%",
+      "trechos": -29,
+      "poligonos": -1,
+      "eees": -2,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "gramadao",
+    "frente": "Gramadão",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 3158.84,
+      "ext_km": 3.16,
+      "trechos": 51,
+      "poligonos": 1,
+      "area_ha": 33.88,
+      "pontual_total": 1,
+      "eees": 1,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 2679.86,
+      "ext_km": 2.68,
+      "trechos": 75,
+      "poligonos": 1,
+      "loc_total": 45,
+      "major": 2,
+      "eees": 2,
+      "etes": 0,
+      "pocos_nos": 43
+    },
+    "delta": {
+      "m": -478.98,
+      "km": -0.48,
+      "pct_str": "-15.2%",
+      "trechos": 24,
+      "poligonos": 0,
+      "eees": 1,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "gramadao 2",
+    "frente": "Gramadão 2",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 2415.29,
+      "ext_km": 2.42,
+      "trechos": 8,
+      "poligonos": 3,
+      "area_ha": 6.36,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -2415.29,
+      "km": -2.42,
+      "pct_str": "-100.0%",
+      "trechos": -8,
+      "poligonos": -2,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "gramadao 3",
+    "frente": "Gramadão 3",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 287.33,
+      "ext_km": 0.29,
+      "trechos": 8,
+      "poligonos": 1,
+      "area_ha": 2.69,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -287.33,
+      "km": -0.29,
+      "pct_str": "-100.0%",
+      "trechos": -8,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "gramadao 4",
+    "frente": "Gramadão 4",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 236.53,
+      "ext_km": 0.24,
+      "trechos": 5,
+      "poligonos": 1,
+      "area_ha": 0.7,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -236.53,
+      "km": -0.24,
+      "pct_str": "-100.0%",
+      "trechos": -5,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "guararema",
+    "frente": "Guararema",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 81.37,
+      "ext_km": 0.08,
+      "trechos": 2,
+      "poligonos": 1,
+      "area_ha": 0.11,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -81.37,
+      "km": -0.08,
+      "pct_str": "-100.0%",
+      "trechos": -2,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "pocinho 2",
+    "frente": "Pocinho 2",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 3215.78,
+      "ext_km": 3.22,
+      "trechos": 30,
+      "poligonos": 2,
+      "area_ha": 25.54,
+      "pontual_total": 1,
+      "eees": 0,
+      "etes": 0,
+      "outros": 1
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -3215.78,
+      "km": -3.22,
+      "pct_str": "-100.0%",
+      "trechos": -30,
+      "poligonos": -1,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "pocinho 3",
+    "frente": "Pocinho 3",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 117.86,
+      "ext_km": 0.12,
+      "trechos": 2,
+      "poligonos": 1,
+      "area_ha": 1.3,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -117.86,
+      "km": -0.12,
+      "pct_str": "-100.0%",
+      "trechos": -2,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "retiro",
+    "frente": "Retiro",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 11207.72,
+      "ext_km": 11.21,
+      "trechos": 134,
+      "poligonos": 7,
+      "area_ha": 69.55,
+      "pontual_total": 8,
+      "eees": 5,
+      "etes": 1,
+      "outros": 2
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 2,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -11207.72,
+      "km": -11.21,
+      "pct_str": "-100.0%",
+      "trechos": -134,
+      "poligonos": -5,
+      "eees": -5,
+      "tipo": "otimizacao"
+    }
+  },
+  {
+    "id": "rua jacaranda",
+    "frente": "Rua Jacarandá",
+    "municipio": "São Miguel Arcanjo",
+    "status": "NÃO INICIADO",
+    "status_label": "Não Iniciado",
+    "orig": {
+      "ext_m": 61.71,
+      "ext_km": 0.06,
+      "trechos": 2,
+      "poligonos": 1,
+      "area_ha": 0.49,
+      "pontual_total": 0,
+      "eees": 0,
+      "etes": 0,
+      "outros": 0
+    },
+    "cons": {
+      "ext_m": 0.0,
+      "ext_km": 0.0,
+      "trechos": 0,
+      "poligonos": 1,
+      "loc_total": 0,
+      "major": 0,
+      "eees": 0,
+      "etes": 0,
+      "pocos_nos": 0
+    },
+    "delta": {
+      "m": -61.71,
+      "km": -0.06,
+      "pct_str": "-100.0%",
+      "trechos": -2,
+      "poligonos": 0,
+      "eees": 0,
+      "tipo": "otimizacao"
+    }
+  }
+];
+

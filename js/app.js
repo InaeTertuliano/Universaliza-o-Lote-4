@@ -324,74 +324,329 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Modal Confrontação de Escopo: Original vs. Atual por Bairro
+    // =========================================================================
+    // MODAL & CONTROLES: CONFRONTAÇÃO DE ESCOPO (ORIGINAL VS. CONSOLIDADO)
+    // Permite confrontar apenas a frente selecionada na lista suspensa
+    // =========================================================================
     const modalComparativo = document.getElementById('modal-comparativo-escopo');
-    const btnOpenComparativo = document.getElementById('btn-open-comparativo-escopo');
+    const btnConfrontarCard = document.getElementById('btn-confrontar-escopo');
+    const btnOpenComparativoLegacy = document.getElementById('btn-open-comparativo-escopo');
     const btnCloseComparativo = document.getElementById('btn-close-modal-comparativo');
     const btnCloseComparativoFooter = document.getElementById('btn-close-modal-comparativo-footer');
+    const selConfrontarCard = document.getElementById('select-confrontar-frente');
+    const selConfrontarModal = document.getElementById('select-modal-confrontar-frente');
+    const btnExportFrenteCsv = document.getElementById('btn-export-comparativo-frente-csv');
+    const btnExportTodasCsv = document.getElementById('btn-export-comparativo-todas-csv');
 
-    if (btnOpenComparativo && modalComparativo) {
-        btnOpenComparativo.addEventListener('click', function(e) {
+    // Helper para recuperar lista das frentes comuns
+    function getFrentesComparativoList() {
+        if (window.FRENTES_COMPARATIVO_ESCOPO && Array.isArray(window.FRENTES_COMPARATIVO_ESCOPO) && window.FRENTES_COMPARATIVO_ESCOPO.length > 0) {
+            return window.FRENTES_COMPARATIVO_ESCOPO;
+        }
+        return [];
+    }
+
+    // Renderiza a confrontação no modal para APENAS A FRENTE SELECIONADA
+    function renderModalComparativoFrente(frenteId) {
+        const list = getFrentesComparativoList();
+        if (list.length === 0) return;
+
+        let item = list.find(f => f.id === frenteId);
+        if (!item && frenteId) {
+            const normTarget = normStr(frenteId);
+            item = list.find(f => normStr(f.frente) === normTarget || normStr(f.id) === normTarget);
+        }
+        if (!item) item = list[0];
+
+        // Atualiza os selects
+        if (selConfrontarCard && selConfrontarCard.value !== item.id) {
+            selConfrontarCard.value = item.id;
+        }
+        if (selConfrontarModal && selConfrontarModal.value !== item.id) {
+            selConfrontarModal.value = item.id;
+        }
+
+        // Determina classe do status badge
+        let statusBadgeClass = 'nao-iniciado';
+        const stUpper = (item.status || '').toUpperCase();
+        if (stUpper.includes('CONCLU') || stUpper.includes('EXECUTAD')) {
+            statusBadgeClass = 'concluido';
+        } else if (stUpper.includes('INICIADO') && !stUpper.includes('NÃO') && !stUpper.includes('NAO')) {
+            statusBadgeClass = 'iniciado';
+        }
+
+        // Atualiza status badge na barra superior do modal
+        const badgeContainer = document.getElementById('modal-frente-status-badge');
+        if (badgeContainer) {
+            badgeContainer.innerHTML = `
+                <span class="popup-badge" style="background: rgba(2, 132, 199, 0.15); color: #38bdf8; border: 1px solid rgba(2, 132, 199, 0.35); font-size:0.75rem;">
+                    <i class="fas fa-city"></i> ${item.municipio}
+                </span>
+                <span class="popup-badge ${statusBadgeClass}" style="font-size:0.75rem;">
+                    ${item.status_label || item.status}
+                </span>
+            `;
+        }
+
+        const dynContainer = document.getElementById('modal-comparativo-dynamic-content');
+        if (!dynContainer) return;
+
+        // Métricas formatadas
+        const origKm = (item.orig.ext_m / 1000).toFixed(2).replace('.', ',') + ' km';
+        const consKm = (item.cons.ext_m / 1000).toFixed(2).replace('.', ',') + ' km';
+        const origM = item.orig.ext_m.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
+        const consM = item.cons.ext_m.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
+
+        const deltaSign = item.delta.m >= 0 ? '+' : '';
+        const deltaMStr = deltaSign + item.delta.m.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
+        const deltaKmStr = deltaSign + (item.delta.m / 1000).toFixed(2).replace('.', ',') + ' km';
+        const deltaPctStr = item.delta.pct_str;
+
+        let deltaColor = '#10b981'; // Verde para ampliação
+        let deltaLabel = 'AMPLIAÇÃO LÍQUIDA REDE';
+        let variacaoDesc = `Expansão de <strong>${deltaKmStr} (${deltaPctStr})</strong> de rede de esgoto após consolidação de campo no Geopackage.`;
+
+        if (item.delta.tipo === 'otimizacao') {
+            deltaColor = '#f59e0b'; // Âmbar para otimização
+            deltaLabel = 'OTIMIZAÇÃO DE TRAÇADO';
+            variacaoDesc = `Racionalização de traçado com foco executivo prioritário (variação líquida de <strong>${deltaKmStr}</strong>).`;
+        } else if (item.delta.tipo === 'estavel') {
+            deltaColor = '#38bdf8'; // Azul para estável
+            deltaLabel = 'ADERÊNCIA CONCEITUAL';
+            variacaoDesc = `Traçado executivo com perfeita aderência ao estudo preliminar de concepção original (<strong>${deltaMStr}</strong>).`;
+        }
+
+        const origInst = `${item.orig.eees} EEE${item.orig.eees !== 1 ? 's' : ''}${item.orig.etes > 0 ? ` • ${item.orig.etes} ETE` : ''}`;
+        const consInst = `${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''}${item.cons.etes > 0 ? ` • ${item.cons.etes} ETE` : ''}${item.cons.pocos_nos > 0 ? ` • ${item.cons.pocos_nos} PV/Nós` : ''}`;
+
+        dynContainer.innerHTML = `
+            <!-- Card Exclusivo da Frente Selecionada -->
+            <div class="widget-card" style="border: 1.5px solid rgba(249, 115, 22, 0.45); background: rgba(249, 115, 22, 0.03); margin-bottom: 0; padding: 1.1rem; border-radius: 8px;">
+                <div class="widget-title" style="color: #f97316; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-dark); padding-bottom: 0.6rem;">
+                    <span style="font-size: 1.05rem; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+                        <i class="fas fa-map-marked-alt"></i> ${item.frente} • ${item.municipio}
+                    </span>
+                    <span style="font-size: 0.74rem; color: var(--text-muted-dark); font-weight: normal; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">
+                        Frente de Obra Selecionada
+                    </span>
+                </div>
+                
+                <p style="font-size:0.82rem; color:var(--text-light); margin:0.65rem 0 1.1rem 0; line-height: 1.45;">
+                    <i class="fas fa-info-circle" style="color: ${deltaColor}; margin-right: 5px;"></i>
+                    ${variacaoDesc}
+                </p>
+
+                <!-- Grid de KPIs da Frente -->
+                <div class="modal-kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1.25rem;">
+                    <div class="modal-kpi-card" style="border-top-color: #f97316;">
+                        <div class="modal-kpi-title">ESCOPO ORIGINAL</div>
+                        <div class="modal-kpi-num" style="color:#f97316;">${origKm}</div>
+                        <div class="modal-kpi-sub">${item.orig.trechos} trechos • ${item.orig.poligonos} polígono${item.orig.poligonos > 1 ? 's' : ''}</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: #0284c7;">
+                        <div class="modal-kpi-title">ESCOPO ATUAL CONSOLIDADO</div>
+                        <div class="modal-kpi-num" style="color:#38bdf8;">${consKm}</div>
+                        <div class="modal-kpi-sub">${item.cons.trechos} trechos • ${item.cons.poligonos} polígono${item.cons.poligonos > 1 ? 's' : ''}</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: ${deltaColor};">
+                        <div class="modal-kpi-title">${deltaLabel}</div>
+                        <div class="modal-kpi-num" style="color:${deltaColor};">${deltaKmStr}</div>
+                        <div class="modal-kpi-sub">${deltaPctStr} de variação</div>
+                    </div>
+                    <div class="modal-kpi-card" style="border-top-color: #a855f7;">
+                        <div class="modal-kpi-title">ESTRUTURAS & LOCALIZADAS</div>
+                        <div class="modal-kpi-num" style="color:#c084fc;">${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''} / ${item.cons.etes} ETE</div>
+                        <div class="modal-kpi-sub">${item.cons.loc_total} obras localizadas no total</div>
+                    </div>
+                </div>
+
+                <!-- Tabela Comparativa Detalhada da Frente -->
+                <table class="datatable" style="font-size:0.8rem; margin-bottom: 1.1rem; width:100%;">
+                    <thead>
+                        <tr style="background: rgba(255,255,255,0.04);">
+                            <th style="padding: 9px 12px; text-align: left;">Item Confrontado</th>
+                            <th style="padding: 9px 12px; text-align: left; color:#fdba74;"><i class="fas fa-history"></i> Escopo Original</th>
+                            <th style="padding: 9px 12px; text-align: left; color:#38bdf8;"><i class="fas fa-check-circle"></i> Escopo Consolidado</th>
+                            <th style="padding: 9px 12px; text-align: left; color:${deltaColor};"><i class="fas fa-exchange-alt"></i> Variação / Balanço</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 8px 12px;"><strong>Extensão Total de Rede</strong></td>
+                            <td style="padding: 8px 12px;">${origM} (${origKm})</td>
+                            <td style="padding: 8px 12px;"><strong style="color:#38bdf8;">${consM} (${consKm})</strong></td>
+                            <td style="padding: 8px 12px;"><span style="color:${deltaColor}; font-weight:700;">${deltaMStr} (${deltaPctStr})</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px;"><strong>Trechos Cadastrados</strong></td>
+                            <td style="padding: 8px 12px;">${item.orig.trechos} trechos</td>
+                            <td style="padding: 8px 12px;"><strong>${item.cons.trechos} trechos</strong></td>
+                            <td style="padding: 8px 12px;"><span style="color:${item.delta.trechos >= 0 ? '#10b981' : '#f59e0b'}; font-weight:700;">${item.delta.trechos >= 0 ? '+' : ''}${item.delta.trechos} trechos</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px;"><strong>Polígonos de Área de Expansão (AE)</strong></td>
+                            <td style="padding: 8px 12px;">${item.orig.poligonos} polígono${item.orig.poligonos > 1 ? 's' : ''} (${item.orig.area_ha} ha)</td>
+                            <td style="padding: 8px 12px;"><strong>${item.cons.poligonos} polígono${item.cons.poligonos > 1 ? 's' : ''}</strong></td>
+                            <td style="padding: 8px 12px;"><span style="color:${item.delta.poligonos >= 0 ? '#10b981' : '#94a3b8'}; font-weight:700;">${item.delta.poligonos >= 0 ? '+' : ''}${item.delta.poligonos} polígono${Math.abs(item.delta.poligonos) !== 1 ? 's' : ''}</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px;"><strong>Grandes Instalações (EEEs / ETEs)</strong></td>
+                            <td style="padding: 8px 12px;">${origInst}</td>
+                            <td style="padding: 8px 12px;"><strong>${consInst}</strong></td>
+                            <td style="padding: 8px 12px;"><span style="color:${item.delta.eees >= 0 ? '#10b981' : '#f59e0b'}; font-weight:700;">${item.delta.eees >= 0 ? '+' : ''}${item.delta.eees} EEE${Math.abs(item.delta.eees) !== 1 ? 's' : ''}</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px;"><strong>Elementos de Rede (Poços de Visita e Nós)</strong></td>
+                            <td style="padding: 8px 12px; color:var(--text-muted-dark);">Não detalhados na concepção preliminar</td>
+                            <td style="padding: 8px 12px;"><strong>${item.cons.pocos_nos} elementos cadastrados</strong></td>
+                            <td style="padding: 8px 12px;"><span style="color:#10b981; font-weight:700;">+${item.cons.pocos_nos} pontos detalhados</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px;"><strong>Status de Execução</strong></td>
+                            <td style="padding: 8px 12px;"><span class="popup-badge" style="background:rgba(249,115,22,0.2); color:#f97316;">Estudo Preliminar</span></td>
+                            <td style="padding: 8px 12px;"><span class="popup-badge ${statusBadgeClass}">${item.status_label || item.status}</span></td>
+                            <td style="padding: 8px 12px;"><span style="color:var(--text-muted-dark); font-weight:600;">Geopackage Integrado</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 14px; display:flex; justify-content: flex-end; align-items:center; gap:10px; flex-wrap: wrap;">
+                    <span style="font-size:0.75rem; color:var(--text-muted-dark);">
+                        Deseja visualizar o confronto simultâneo no mapa?
+                    </span>
+                    <button type="button" class="btn-goto-bairro" id="btn-modal-enquadrar-mapa" data-bairro="${item.frente}" data-mun="${item.municipio}" style="background:linear-gradient(135deg, #f97316, #ea580c); color:white; border:none; border-radius:6px; padding:0.55rem 1.15rem; font-size:0.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px; box-shadow:0 2px 8px rgba(249,115,22,0.4);">
+                        <i class="fas fa-crosshairs"></i> Enquadrar e Confrontar no Mapa
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Vincula evento ao botão Enquadrar no Mapa
+        const btnGoto = document.getElementById('btn-modal-enquadrar-mapa');
+        if (btnGoto) {
+            btnGoto.addEventListener('click', function() {
+                if (modalComparativo) modalComparativo.style.display = 'none';
+
+                // Ativa a legenda "Classificar por Escopo"
+                const selLegend = document.getElementById('select-legend-mode');
+                if (selLegend) selLegend.value = 'escopo';
+                if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
+                    window.GIS_LAYERS.setLegendMode('escopo');
+                }
+                if (window.selectBairro) {
+                    window.selectBairro(item.frente, false, item.municipio);
+                }
+            });
+        }
+    }
+
+    // Inicialização das opções da lista suspensa e sincronização de eventos
+    function initComparativoEscopoControls() {
+        const list = getFrentesComparativoList();
+        if (list.length === 0) return;
+
+        let optionsHtml = '';
+        list.forEach(f => {
+            optionsHtml += `<option value="${f.id}">${f.frente} (${f.municipio}) - ${f.status_label}</option>`;
+        });
+
+        if (selConfrontarCard) selConfrontarCard.innerHTML = optionsHtml;
+        if (selConfrontarModal) selConfrontarModal.innerHTML = optionsHtml;
+
+        const defaultId = list[0].id;
+        if (selConfrontarCard) selConfrontarCard.value = defaultId;
+        if (selConfrontarModal) selConfrontarModal.value = defaultId;
+
+        // Ao alterar a seleção no quadro dedicado
+        if (selConfrontarCard) {
+            selConfrontarCard.addEventListener('change', function() {
+                if (selConfrontarModal) selConfrontarModal.value = this.value;
+            });
+        }
+
+        // Ao alterar a seleção dentro do modal, re-renderiza imediatamente a frente escolhida
+        if (selConfrontarModal) {
+            selConfrontarModal.addEventListener('change', function() {
+                if (selConfrontarCard) selConfrontarCard.value = this.value;
+                renderModalComparativoFrente(this.value);
+            });
+        }
+
+        // Botão no quadro dedicado abre o modal com a frente selecionada
+        const handleOpen = function(e) {
             if (e) e.stopPropagation();
-            modalComparativo.style.display = 'flex';
-        });
-    }
+            const currentVal = (selConfrontarCard && selConfrontarCard.value) ? selConfrontarCard.value : defaultId;
+            if (selConfrontarModal) selConfrontarModal.value = currentVal;
+            renderModalComparativoFrente(currentVal);
+            if (modalComparativo) modalComparativo.style.display = 'flex';
+        };
 
-    if (btnCloseComparativo && modalComparativo) {
-        btnCloseComparativo.addEventListener('click', function() {
-            modalComparativo.style.display = 'none';
-        });
-    }
+        if (btnConfrontarCard) btnConfrontarCard.addEventListener('click', handleOpen);
+        if (btnOpenComparativoLegacy) btnOpenComparativoLegacy.addEventListener('click', handleOpen);
 
-    if (btnCloseComparativoFooter && modalComparativo) {
-        btnCloseComparativoFooter.addEventListener('click', function() {
-            modalComparativo.style.display = 'none';
-        });
-    }
-
-    if (modalComparativo) {
-        modalComparativo.addEventListener('click', function(e) {
-            if (e.target === modalComparativo) {
+        // Fechamento do modal
+        if (btnCloseComparativo && modalComparativo) {
+            btnCloseComparativo.addEventListener('click', function() {
                 modalComparativo.style.display = 'none';
-            }
-        });
+            });
+        }
+        if (btnCloseComparativoFooter && modalComparativo) {
+            btnCloseComparativoFooter.addEventListener('click', function() {
+                modalComparativo.style.display = 'none';
+            });
+        }
+        if (modalComparativo) {
+            modalComparativo.addEventListener('click', function(e) {
+                if (e.target === modalComparativo) {
+                    modalComparativo.style.display = 'none';
+                }
+            });
+        }
+
+        // Exportação CSV: Frente Selecionada
+        if (btnExportFrenteCsv) {
+            btnExportFrenteCsv.addEventListener('click', function() {
+                const currentVal = (selConfrontarModal && selConfrontarModal.value) ? selConfrontarModal.value : (selConfrontarCard ? selConfrontarCard.value : defaultId);
+                const item = list.find(f => f.id === currentVal) || list[0];
+                const rows = [
+                    ["FRENTE", "MUNICIPIO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"],
+                    [item.frente, item.municipio, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.eees, item.cons.eees, item.cons.pocos_nos]
+                ];
+                const csvContent = rows.map(r => r.map(c => `"${c}"`).join(";")).join("\n");
+                const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Comparativo_Escopo_${item.frente.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Exportação CSV: Todas as 58 Frentes Comuns
+        if (btnExportTodasCsv) {
+            btnExportTodasCsv.addEventListener('click', function() {
+                const rows = [
+                    ["FRENTE", "MUNICIPIO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"]
+                ];
+                list.forEach(item => {
+                    rows.push([item.frente, item.municipio, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.eees, item.cons.eees, item.cons.pocos_nos]);
+                });
+                const csvContent = rows.map(r => r.map(c => `"${c}"`).join(";")).join("\n");
+                const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Comparativo_Escopo_Todas_58_Frentes_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
     }
 
-    // Botões "Enquadrar e Confrontar no Mapa" dentro do modal comparativo
-    document.querySelectorAll('.btn-goto-bairro').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const bairro = this.dataset.bairro;
-            const mun = this.dataset.mun || null;
-            if (modalComparativo) modalComparativo.style.display = 'none';
-            // Ativa o modo escopo para que as camadas do escopo original fiquem visíveis no mapa
-            const selLegend = document.getElementById('select-legend-mode');
-            if (selLegend) selLegend.value = 'escopo';
-            if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
-                window.GIS_LAYERS.setLegendMode('escopo');
-            }
-            if (window.selectBairro) window.selectBairro(bairro, false, mun);
-        });
-    });
-
-    // Exportação CSV do Comparativo de Escopo Original vs. Atual
-    const btnExportComparativoCsv = document.getElementById('btn-export-comparativo-csv');
-    if (btnExportComparativoCsv) {
-        btnExportComparativoCsv.addEventListener('click', function() {
-            const rows = [
-                ["BAIRRO", "MUNICIPIO", "STATUS_OBRA", "EXTENSAO_ORIGINAL_M", "EXTENSAO_ATUAL_M", "VARIACAO_EXTENSAO_M", "VARIACAO_EXTENSAO_KM", "TRECHOS_ORIGINAL", "TRECHOS_ATUAL", "AREAS_ORIGINAL", "AREAS_ATUAL", "EEES_ORIGINAL", "EEES_ATUAL"],
-                ["Pedras e Vitoria", "Guarei", "Iniciado", "4200.00", "21542.64", "+17342.64", "+17.34 km (+412.9%)", "8", "348", "1", "2", "1", "5"],
-                ["Turvo dos Almeidas", "Capao Bonito", "Nao Iniciado", "12560.00", "9037.90", "-3522.10", "-3.52 km (Otimizado)", "85", "34", "3", "3", "5 (4 EEEs + 1 ETE)", "0 (Rede Prioritaria)"]
-            ];
-            let csvContent = rows.map(r => r.join(";")).join("\n");
-            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Comparativo_Escopo_Original_vs_Atual_${new Date().toISOString().slice(0, 10)}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-    }
+    // Inicializa controles de confrontação de escopo
+    initComparativoEscopoControls();
+    window.renderModalComparativoFrente = renderModalComparativoFrente;
 
     // 12. Quantitativos CSV Export (Dinamico a partir das camadas carregadas)
     const handleExportQuant = function() {
@@ -980,6 +1235,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // Select new Frente de Obra
             activeBairroFilter = bairroTarget;
             activeMunFilter = normMun;
+            // Sync with Confrontar Escopo dropdown if available
+            if (window.FRENTES_COMPARATIVO_ESCOPO) {
+                const matchFrente = window.FRENTES_COMPARATIVO_ESCOPO.find(f => normStr(f.frente) === normTarget || normStr(f.id) === normTarget);
+                if (matchFrente) {
+                    const sc = document.getElementById('select-confrontar-frente');
+                    const sm = document.getElementById('select-modal-confrontar-frente');
+                    if (sc && sc.value !== matchFrente.id) sc.value = matchFrente.id;
+                    if (sm && sm.value !== matchFrente.id) sm.value = matchFrente.id;
+                }
+            }
+
 
             bairroCards.forEach(c => {
                 const cardB = normStr(c.dataset.bairro);
