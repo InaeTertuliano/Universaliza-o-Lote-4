@@ -346,6 +346,216 @@ document.addEventListener('DOMContentLoaded', function() {
         return [];
     }
 
+    // Enquadra a área da frente no mapa e ativa a legenda de escopo
+    function enquadrarFrenteNoMapa(bairro, mun) {
+        // 1. Ativa a legenda "Classificar por Escopo"
+        const selLegend = document.getElementById('select-legend-mode');
+        if (selLegend) selLegend.value = 'escopo';
+        if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
+            window.GIS_LAYERS.setLegendMode('escopo');
+        }
+
+        // 2. Chama selectBairro para destacar feições
+        if (window.selectBairro) {
+            window.selectBairro(bairro, false, mun);
+        }
+
+        // 3. Garante ajuste preciso da câmera sobre a frente selecionada
+        if (window.GIS_MAP) {
+            const normB = normStr(bairro);
+            const normM = mun ? normStr(mun) : null;
+            let matchedFeats = [];
+            
+            if (window.GIS_DATA && window.GIS_DATA.areas && window.GIS_DATA.areas.features) {
+                matchedFeats = window.GIS_DATA.areas.features.filter(f => {
+                    const p = f.properties || {};
+                    const name = normStr(p.frente || p.bairro || '');
+                    const m = normStr(p.nm_mun || '');
+                    return (name === normB || name.includes(normB) || normB.includes(name)) && (!normM || m === normM);
+                });
+            }
+            if (matchedFeats.length === 0 && window.GIS_ESCOPO_ORIGINAL && window.GIS_ESCOPO_ORIGINAL.areas && window.GIS_ESCOPO_ORIGINAL.areas.features) {
+                matchedFeats = window.GIS_ESCOPO_ORIGINAL.areas.features.filter(f => {
+                    const p = f.properties || {};
+                    const name = normStr(p.bairro || p.frente || '');
+                    const m = normStr(p.nm_mun || '');
+                    return (name === normB || name.includes(normB) || normB.includes(name)) && (!normM || m === normM);
+                });
+            }
+            if (matchedFeats.length > 0) {
+                const b = L.geoJSON({ type: "FeatureCollection", features: matchedFeats }).getBounds();
+                if (b.isValid()) {
+                    window.GIS_MAP.fitBounds(b, { maxZoom: 16, padding: [40, 40] });
+                }
+            }
+        }
+    }
+
+    // Renderiza o quadro simplificado no próprio painel lateral com as informações da imagem
+    function renderQuadroConfrontoLateral(frenteId) {
+        const list = getFrentesComparativoList();
+        if (list.length === 0) return;
+
+        let item = list.find(f => f.id === frenteId);
+        if (!item && frenteId) {
+            const normTarget = normStr(frenteId);
+            item = list.find(f => normStr(f.frente) === normTarget || normStr(f.id) === normTarget);
+        }
+        if (!item) item = list[0];
+
+        const container = document.getElementById('quadro-confronto-lateral');
+        if (!container) return;
+
+        let statusBadgeClass = 'nao-iniciado';
+        const stUpper = (item.status || '').toUpperCase();
+        if (stUpper.includes('CONCLU') || stUpper.includes('EXECUTAD')) {
+            statusBadgeClass = 'concluido';
+        } else if (stUpper.includes('INICIADO') && !stUpper.includes('NÃO') && !stUpper.includes('NAO')) {
+            statusBadgeClass = 'iniciado';
+        }
+
+        // Formatação numérica
+        const origKm = (item.orig.ext_m / 1000).toFixed(2).replace('.', ',') + ' km';
+        const consKm = (item.cons.ext_m / 1000).toFixed(2).replace('.', ',') + ' km';
+        const origM = item.orig.ext_m.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
+        const consM = item.cons.ext_m.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
+
+        const deltaSign = item.delta.m >= 0 ? '+' : '';
+        const deltaMStr = deltaSign + item.delta.m.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
+        const deltaPctStr = item.delta.pct_str;
+
+        let deltaColor = '#10b981'; // Verde para ampliação
+        if (item.delta.tipo === 'otimizacao') {
+            deltaColor = '#f59e0b'; // Âmbar para otimização
+        } else if (item.delta.tipo === 'estavel') {
+            deltaColor = '#38bdf8'; // Azul para estável
+        }
+
+        const origInst = `${item.orig.eees} EEE${item.orig.eees !== 1 ? 's' : ''}${item.orig.etes > 0 ? ` • ${item.orig.etes} ETE` : ''}`;
+        const consInst = `${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''}${item.cons.etes > 0 ? ` • ${item.cons.etes} ETE` : ''}${item.cons.pocos_nos > 0 ? ` • ${item.cons.pocos_nos} PV/Nós` : ''}`;
+
+        container.style.display = 'block';
+        container.innerHTML = `
+            <div style="background: rgba(0, 0, 0, 0.35); border: 1.5px solid rgba(249, 115, 22, 0.4); border-radius: 8px; padding: 10px; box-shadow: inset 0 1px 4px rgba(0,0,0,0.4);">
+                <!-- Cabeçalho do Quadro Simplificado -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 6px;">
+                    <div style="display: flex; align-items: center; gap: 7px;">
+                        <span style="font-weight: 800; color: #fdba74; font-size: 0.92rem;">
+                            <i class="fas fa-map-marker-alt" style="color: #f97316;"></i> ${item.frente}
+                        </span>
+                        <span style="font-size: 0.74rem; color: #94a3b8;">(${item.municipio})</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="popup-badge ${statusBadgeClass}" style="font-size: 0.68rem; padding: 2px 7px;">
+                            ${item.status_label || item.status}
+                        </span>
+                        <button id="btn-fechar-quadro-lateral" type="button" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 0 4px;" title="Ocultar Confrontação">&times;</button>
+                    </div>
+                </div>
+
+                <!-- Tabela idêntica à imagem fornecida pelo usuário -->
+                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <table class="datatable" style="font-size: 0.74rem; width: 100%; border-collapse: collapse; margin: 0; min-width: 520px;">
+                        <thead>
+                            <tr style="background: rgba(255, 255, 255, 0.04); border-bottom: 1.5px solid rgba(255, 255, 255, 0.14);">
+                                <th style="padding: 7px 8px; text-align: left; font-size: 0.75rem; color: #ffffff;">Item Confrontado</th>
+                                <th style="padding: 7px 8px; text-align: left; color: #fdba74; font-size: 0.75rem; white-space: nowrap;"><i class="fas fa-history" style="color: #f97316;"></i> Escopo Original</th>
+                                <th style="padding: 7px 8px; text-align: left; color: #38bdf8; font-size: 0.75rem; white-space: nowrap;"><i class="fas fa-check-circle" style="color: #0284c7;"></i> Escopo Consolidado</th>
+                                <th style="padding: 7px 8px; text-align: left; color: #10b981; font-size: 0.75rem; white-space: nowrap;"><i class="fas fa-exchange-alt" style="color: #10b981;"></i> Variação / Balanço</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Extensão Total de Rede</td>
+                                <td style="padding: 7px 8px; color: #f8fafc; white-space: nowrap;">${origM} (${origKm})</td>
+                                <td style="padding: 7px 8px; color: #38bdf8; font-weight: 700; white-space: nowrap;">${consM} (${consKm})</td>
+                                <td style="padding: 7px 8px; color: ${deltaColor}; font-weight: 700; white-space: nowrap;">${deltaMStr} (${deltaPctStr})</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Trechos Cadastrados</td>
+                                <td style="padding: 7px 8px; color: #f8fafc; white-space: nowrap;">${item.orig.trechos} trechos</td>
+                                <td style="padding: 7px 8px; color: #ffffff; font-weight: 700; white-space: nowrap;">${item.cons.trechos} trechos</td>
+                                <td style="padding: 7px 8px; color: ${item.delta.trechos >= 0 ? '#10b981' : '#f59e0b'}; font-weight: 700; white-space: nowrap;">${item.delta.trechos >= 0 ? '+' : ''}${item.delta.trechos} trechos</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Polígonos de Área de Expansão (AE)</td>
+                                <td style="padding: 7px 8px; color: #f8fafc; white-space: nowrap;">${item.orig.poligonos} polígono${item.orig.poligonos > 1 ? 's' : ''}${item.orig.area_ha > 0 ? ` (${item.orig.area_ha} ha)` : ''}</td>
+                                <td style="padding: 7px 8px; color: #ffffff; font-weight: 700; white-space: nowrap;">${item.cons.poligonos} polígono${item.cons.poligonos > 1 ? 's' : ''}</td>
+                                <td style="padding: 7px 8px; color: ${item.delta.poligonos >= 0 ? '#10b981' : '#94a3b8'}; font-weight: 700; white-space: nowrap;">${item.delta.poligonos >= 0 ? '+' : ''}${item.delta.poligonos} polígono${Math.abs(item.delta.poligonos) !== 1 ? 's' : ''}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Grandes Instalações (EEEs / ETEs)</td>
+                                <td style="padding: 7px 8px; color: #f8fafc; white-space: nowrap;">${origInst}</td>
+                                <td style="padding: 7px 8px; color: #ffffff; font-weight: 700; white-space: nowrap;">${consInst}</td>
+                                <td style="padding: 7px 8px; color: ${item.delta.eees >= 0 ? '#10b981' : '#f59e0b'}; font-weight: 700; white-space: nowrap;">${item.delta.eees >= 0 ? '+' : ''}${item.delta.eees} EEE${Math.abs(item.delta.eees) !== 1 ? 's' : ''}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Elementos de Rede (Poços de Visita e Nós)</td>
+                                <td style="padding: 7px 8px; color: #94a3b8; font-size: 0.71rem;">Não detalhados na concepção preliminar</td>
+                                <td style="padding: 7px 8px; color: #ffffff; font-weight: 700; white-space: nowrap;">${item.cons.pocos_nos} elementos cadastrados</td>
+                                <td style="padding: 7px 8px; color: #10b981; font-weight: 700; white-space: nowrap;">+${item.cons.pocos_nos} pontos detalhados</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Status de Execução</td>
+                                <td style="padding: 7px 8px;"><span class="popup-badge" style="background: rgba(249, 115, 22, 0.25); color: #f97316; font-size: 0.68rem; padding: 2px 7px;">ESTUDO PRELIMINAR</span></td>
+                                <td style="padding: 7px 8px;"><span class="popup-badge ${statusBadgeClass}" style="font-size: 0.68rem; padding: 2px 7px;">${(item.status_label || item.status).toUpperCase()}</span></td>
+                                <td style="padding: 7px 8px; color: #94a3b8; font-size: 0.72rem; white-space: nowrap;">Geopackage Integrado</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Rodapé com Ações Rápidas -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255, 255, 255, 0.1); flex-wrap: wrap; gap: 6px;">
+                    <div style="display: flex; gap: 6px;">
+                        <button id="btn-re-enquadrar-mapa" type="button" style="background: rgba(2, 132, 199, 0.2); border: 1px solid #0284c7; color: #38bdf8; border-radius: 5px; padding: 4px 9px; font-size: 0.72rem; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                            <i class="fas fa-crosshairs"></i> Enquadrar no Mapa
+                        </button>
+                        <button id="btn-export-lateral-csv" type="button" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; border-radius: 5px; padding: 4px 9px; font-size: 0.72rem; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                            <i class="fas fa-file-csv"></i> Exportar CSV
+                        </button>
+                    </div>
+                    <span style="font-size: 0.68rem; color: #94a3b8;">
+                        <i class="fas fa-eye" style="color: #f97316;"></i> Legenda de Escopo Ativa
+                    </span>
+                </div>
+            </div>
+        `;
+
+        // Eventos dos botões internos do quadro
+        const btnFechar = document.getElementById('btn-fechar-quadro-lateral');
+        if (btnFechar) {
+            btnFechar.addEventListener('click', function() {
+                container.style.display = 'none';
+            });
+        }
+
+        const btnReEnquadrar = document.getElementById('btn-re-enquadrar-mapa');
+        if (btnReEnquadrar) {
+            btnReEnquadrar.addEventListener('click', function() {
+                enquadrarFrenteNoMapa(item.frente, item.municipio);
+            });
+        }
+
+        const btnCsv = document.getElementById('btn-export-lateral-csv');
+        if (btnCsv) {
+            btnCsv.addEventListener('click', function() {
+                const rows = [
+                    ["FRENTE", "MUNICIPIO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"],
+                    [item.frente, item.municipio, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.eees, item.cons.eees, item.cons.pocos_nos]
+                ];
+                const csvContent = rows.map(r => r.map(c => `"${c}"`).join(";")).join("\n");
+                const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Comparativo_Escopo_${item.frente.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+    }
+
     // Renderiza a confrontação no modal para APENAS A FRENTE SELECIONADA
     function renderModalComparativoFrente(frenteId) {
         const list = getFrentesComparativoList();
@@ -561,6 +771,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selConfrontarCard) {
             selConfrontarCard.addEventListener('change', function() {
                 if (selConfrontarModal) selConfrontarModal.value = this.value;
+                const lateralContainer = document.getElementById('quadro-confronto-lateral');
+                if (lateralContainer && lateralContainer.style.display !== 'none') {
+                    renderQuadroConfrontoLateral(this.value);
+                    const item = list.find(f => f.id === this.value);
+                    if (item) enquadrarFrenteNoMapa(item.frente, item.municipio);
+                }
             });
         }
 
@@ -572,17 +788,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Botão no quadro dedicado abre o modal com a frente selecionada
-        const handleOpen = function(e) {
+        // Botão Confrontar Escopo: exibe o quadro simplificado no próprio painel lateral e enquadra no mapa
+        const handleConfrontar = function(e) {
             if (e) e.stopPropagation();
             const currentVal = (selConfrontarCard && selConfrontarCard.value) ? selConfrontarCard.value : defaultId;
-            if (selConfrontarModal) selConfrontarModal.value = currentVal;
-            renderModalComparativoFrente(currentVal);
-            if (modalComparativo) modalComparativo.style.display = 'flex';
+            const item = list.find(f => f.id === currentVal) || list[0];
+            
+            // 1. Renderiza o quadro simplificado no próprio painel lateral
+            renderQuadroConfrontoLateral(currentVal);
+
+            // 2. Enquadra a área da frente na área do mapa com modo escopo ativo
+            enquadrarFrenteNoMapa(item.frente, item.municipio);
         };
 
-        if (btnConfrontarCard) btnConfrontarCard.addEventListener('click', handleOpen);
-        if (btnOpenComparativoLegacy) btnOpenComparativoLegacy.addEventListener('click', handleOpen);
+        if (btnConfrontarCard) btnConfrontarCard.addEventListener('click', handleConfrontar);
+        if (btnOpenComparativoLegacy) btnOpenComparativoLegacy.addEventListener('click', handleConfrontar);
 
         // Fechamento do modal
         if (btnCloseComparativo && modalComparativo) {
