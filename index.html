@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom Portal Stylesheet -->
-    <link rel="stylesheet" href="css/style.css?v=20261111w">
+    <link rel="stylesheet" href="css/style.css?v=20261111x">
 </head>
 <body class="auth-locked">
 
@@ -166,15 +166,7 @@
                 <button class="nav-tab-btn" data-tab="metas">
                     <i class="fas fa-bullseye"></i> Metas
                 </button>
-                <button class="nav-tab-btn" data-tab="dashboard">
-                    <i class="fas fa-chart-pie"></i> Indicadores
-                </button>
-                <button class="nav-tab-btn" data-tab="filtros">
-                    <i class="fas fa-filter"></i> Filtros
-                </button>
-                <button class="nav-tab-btn" data-tab="tabela">
-                    <i class="fas fa-table"></i> Tabela
-                </button>
+                <!-- Painéis Indicadores, Filtros e Tabela excluídos temporariamente a pedido do usuário -->
             </nav>
 
             <!-- Sidebar Tab Content Panels -->
@@ -4989,228 +4981,7 @@ da Cidade) <span style="font-size:0.7rem; opacity:0.75; font-weight:400;">(Paran
 
                 </div>
 
-                <!-- Tab 3: Painel de Indicadores (Quadro de Metas por Ano e por Recorte) -->
-                <div id="tab-dashboard" class="tab-pane">
-
-                    <!-- Header Card -->
-                    <div class="widget-card engeform-card" style="background: linear-gradient(135deg, #1e293b, #0f766e);">
-                        <div class="widget-title" style="color: white;">
-                            <span><i class="fas fa-chart-line"></i> Metas por Ano e Recorte por Município</span>
-                            <button id="btn-export-quadro-indicadores-csv" style="background: #10b981; color: white; border: none; border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.75rem; cursor: pointer; font-weight: 700;">
-                                <i class="fas fa-file-csv"></i> Exportar CSV
-                            </button>
-                        </div>
-                        <div style="font-size: 1.55rem; font-weight: 900; color: #ffffff;">
-                            <span id="quadro-total-economias">21.887</span> <span style="font-size: 0.85rem; font-weight: 500; opacity: 0.9;">economias no Lote 4</span>
-                        </div>
-                        <div style="font-size: 0.8rem; color: #ccfbf1; margin-top: 0.25rem;">
-                            Distribuição contratual por <strong>Ano (2026, 2027, 2028)</strong> e <strong>Recorte (Formal Urbano e Rural)</strong> nos 10 municípios.
-                        </div>
-                    </div>
-
-                    <!-- Seletor de Tipo de Serviço (Geral / Esgoto / Água) -->
-                    <div class="metas-service-toggle">
-                        <button class="quadro-service-btn active" data-service="all">
-                            <i class="fas fa-layer-group"></i> Geral (Água + Esgoto)
-                        </button>
-                        <button class="quadro-service-btn" data-service="esgoto">
-                            <i class="fas fa-water"></i> Apenas Esgoto (IEC)
-                        </button>
-                        <button class="quadro-service-btn" data-service="agua">
-                            <i class="fas fa-tint"></i> Apenas Água
-                        </button>
-                    </div>
-
-                    <!-- Resumo dos Recortes & Anos -->
-                    <div class="kpi-grid">
-                        <div class="kpi-card blue" style="padding: 0.75rem;">
-                            <div class="kpi-label"><i class="fas fa-city"></i> Recorte Formal (Total)</div>
-                            <div class="kpi-value"><span id="quadro-kpi-formal">9.904</span><span class="kpi-unit">econ.</span></div>
-                            <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:3px;">
-                                2026: <strong id="quadro-f26">3.392</strong> | 2027: <strong id="quadro-f27">5.456</strong> | 2028: <strong id="quadro-f28">1.056</strong>
-                            </div>
-                        </div>
-                        <div class="kpi-card green" style="padding: 0.75rem;">
-                            <div class="kpi-label"><i class="fas fa-tree"></i> Recorte Rural (Total)</div>
-                            <div class="kpi-value"><span id="quadro-kpi-rural">11.983</span><span class="kpi-unit">econ.</span></div>
-                            <div style="font-size:0.72rem; color:var(--text-muted-dark); margin-top:3px;">
-                                2026: <strong id="quadro-r26">0</strong> | 2027: <strong id="quadro-r27">7.252</strong> | 2028: <strong id="quadro-r28">4.731</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Widget: Diagrama de Barras Comparativo (Metas vs Domicílios em Obras em Execução) -->
-                    <div class="widget-card">
-                        <div class="widget-title" style="flex-wrap: wrap; gap: 6px;">
-                            <span><i class="fas fa-chart-bar"></i> Comparativo: Metas Sabesp vs. Domicílios em Obras</span>
-                        </div>
-                        
-                        <!-- Controles do Diagrama de Barras -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
-                            <!-- Seletor do Horizonte de Comparação -->
-                            <div class="diag-toggle-group" style="display:flex; background:rgba(0,0,0,0.25); border:1px solid var(--border-dark); border-radius:6px; padding:2px; gap:3px;">
-                                <button class="diag-mode-btn active" data-mode="2026" style="padding:3px 8px; font-size:0.72rem; font-weight:600; border-radius:4px; border:none; background:#0284c7; color:white; cursor:pointer;">
-                                    Meta 2026
-                                </button>
-                                <button class="diag-mode-btn" data-mode="esgoto" style="padding:3px 8px; font-size:0.72rem; font-weight:600; border-radius:4px; border:none; background:transparent; color:var(--text-muted-dark); cursor:pointer;">
-                                    Meta Esgoto (IEC)
-                                </button>
-                                <button class="diag-mode-btn" data-mode="total" style="padding:3px 8px; font-size:0.72rem; font-weight:600; border-radius:4px; border:none; background:transparent; color:var(--text-muted-dark); cursor:pointer;">
-                                    Meta Total
-                                </button>
-                            </div>
-
-                            <!-- Seletor de Escopo de Municípios -->
-                            <div style="display:flex; align-items:center; gap:5px;">
-                                <label style="font-size:0.72rem; color:var(--text-muted-dark); cursor:pointer;">
-                                    <input type="checkbox" id="chk-diag-all-mun" style="cursor:pointer; vertical-align:middle;">
-                                    <span>Exibir todos os 10 mun.</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Mini KPIs de Aderência da Execução -->
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px;">
-                            <div style="background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.3); border-radius:6px; padding:6px; text-align:center;">
-                                <div style="font-size:0.68rem; color:#10b981; font-weight:700;">Domicílios em Execução</div>
-                                <div style="font-size:1.05rem; font-weight:800; color:#10b981;" id="diag-kpi-dom-exec">705 <span style="font-size:0.7rem;">dom.</span></div>
-                            </div>
-                            <div style="background:rgba(245, 158, 11, 0.12); border:1px solid rgba(245, 158, 11, 0.3); border-radius:6px; padding:6px; text-align:center;">
-                                <div style="font-size:0.68rem; color:#f59e0b; font-weight:700;">Meta Sabesp Selecionada</div>
-                                <div style="font-size:1.05rem; font-weight:800; color:#f59e0b;" id="diag-kpi-meta-val">1.285 <span style="font-size:0.7rem;">econ.</span></div>
-                            </div>
-                            <div style="background:rgba(2, 132, 199, 0.12); border:1px solid rgba(2, 132, 199, 0.3); border-radius:6px; padding:6px; text-align:center;">
-                                <div style="font-size:0.68rem; color:#38bdf8; font-weight:700;">% Aderência / Cobertura</div>
-                                <div style="font-size:1.05rem; font-weight:800; color:#38bdf8;" id="diag-kpi-aderencia">54.9%</div>
-                            </div>
-                        </div>
-
-                        <!-- Canvas do Diagrama de Barras -->
-                        <div style="position: relative; height: 230px; width: 100%;">
-                            <canvas id="chart-metas-domicilios"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Quadro Tabela Matricial Completa: Município x Ano x Recorte -->
-                    <div class="widget-card">
-                        <div class="widget-title">
-                            <span><i class="fas fa-table"></i> Quadro Matricial por Município</span>
-                            <span style="font-size:0.72rem; color:var(--engeform-light-taupe);">Role horizontalmente se necessário</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px;">
-                            <input type="text" id="quadro-search-mun" class="form-input" placeholder="🔍 Filtrar município..." style="padding:0.35rem 0.6rem; font-size:0.75rem; border-radius:6px; flex:1;">
-                            <span style="font-size:0.72rem; color:var(--text-muted-dark);" id="quadro-mun-count">10 municípios</span>
-                        </div>
-                        <div id="quadro-matriz-container" style="overflow-x: auto; max-height: 480px; border:1px solid var(--border-dark); border-radius:8px;">
-                            <!-- Tabela Matricial Renderizada via JS -->
-                        </div>
-                        <div style="font-size:0.7rem; color:var(--text-muted-dark); margin-top:8px; display:flex; align-items:center; gap:6px;">
-                            <i class="fas fa-info-circle" style="color:var(--engeform-light-taupe);"></i>
-                            <span>Clique em qualquer linha com o ícone <i class="fas fa-map-marker-alt" style="color:#0284c7;"></i> para navegar até a Frente de Obra no mapa.</span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Tab 4: Filtros Avançados -->
-                <div id="tab-filtros" class="tab-pane">
-
-                    <div class="widget-card">
-                        <div class="widget-title">
-                            <span><i class="fas fa-filter"></i> Filtros Multicritério</span>
-                            <button id="btn-reset-filters" style="background:transparent; border:none; color:#c0c4b7; font-size:0.78rem; cursor:pointer;">Limpar</button>
-                        </div>
-
-                        <!-- Filter Município -->
-                        <div class="filter-group">
-                            <label class="filter-label">Município:</label>
-                            <select id="filter-municipio" class="form-select">
-                                <option value="all">Todos os Municípios</option>
-                                <option value="ANGATUBA">Angatuba</option>
-                                <option value="CAPÃO BONITO">Capão Bonito</option>
-                                <option value="GUAREÍ">Guareí</option>
-                                <option value="ITAPETININGA">Itapetininga</option>
-                                <option value="PARANAPANEMA">Paranapanema</option>
-                                <option value="SÃO MIGUEL ARCANJO">São Miguel Arcanjo</option>
-                            </select>
-                        </div>
-
-                        <!-- Filter Status -->
-                        <div class="filter-group">
-                            <label class="filter-label">Status da Obra:</label>
-                            <select id="filter-status" class="form-select">
-                                <option value="all">Todos os Status</option>
-                                <option value="CONCLUÍDO">Concluído</option>
-                                <option value="INICIADO">Iniciado</option>
-                                <option value="NÃO INICIADO">Não Iniciado</option>
-                            </select>
-                        </div>
-
-                        <!-- Filter Segmento -->
-                        <div class="filter-group">
-                            <label class="filter-label">Segmento / Infraestrutura:</label>
-                            <select id="filter-segmento" class="form-select">
-                                <option value="all">Todos os Segmentos</option>
-                                <option value="REDE COLETORA">Rede Coletora</option>
-                                <option value="LINHA DE RECALQUE">Linha de Recalque</option>
-                                <option value="EMISSÁRIO">Emissário</option>
-                                <option value="EEE">EEE (Estação Elevatória)</option>
-                            </select>
-                        </div>
-
-                        <!-- Filter Material -->
-                        <div class="filter-group">
-                            <label class="filter-label">Material da Tubulação:</label>
-                            <select id="filter-material" class="form-select">
-                                <option value="all">Todos os Materiais</option>
-                                <option value="PVC">PVC</option>
-                                <option value="PVC-O">PVC-O</option>
-                                <option value="PEAD">PEAD</option>
-                                <option value="FOFO">FOFO (Ferro Fundido)</option>
-                            </select>
-                        </div>
-
-                        <!-- Filter Recorte -->
-                        <div class="filter-group">
-                            <label class="filter-label">Recorte (Tipo Área):</label>
-                            <select id="filter-recorte" class="form-select">
-                                <option value="all">Todos os Recortes</option>
-                                <option value="FORMAL">Formal / Urbano</option>
-                                <option value="RURAL">Rural</option>
-                            </select>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Tab 5: Tabela de Atributos -->
-                <div id="tab-tabela" class="tab-pane">
-                    <div class="widget-card" style="padding: 0.5rem;">
-                        <div class="widget-title" style="padding: 0.5rem;">
-                            <span><i class="fas fa-table"></i> Tabela de Atributos</span>
-                        </div>
-                        <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:0.5rem; padding: 0 0.5rem;" id="table-count">Exibindo trechos de redes</div>
-
-                        <div class="datatable-wrapper">
-                            <table class="datatable">
-                                <thead>
-                                    <tr>
-                                        <th>FID</th>
-                                        <th>Município</th>
-                                        <th>Bairro</th>
-                                        <th>Segmento</th>
-                                        <th>Material</th>
-                                        <th>Extensão</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-body">
-                                    <!-- Populated via Javascript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                <!-- Painéis Indicadores (#tab-dashboard), Filtros (#tab-filtros) e Tabela (#tab-tabela) excluídos temporariamente a pedido do usuário -->
 
             </div>
 
@@ -5742,20 +5513,20 @@ da Cidade) <span style="font-size:0.7rem; opacity:0.75; font-weight:400;">(Paran
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <!-- Embedded GeoJSON Data Package -->
-    <script src="js/data.js?v=20261111w"></script>
-    <script src="js/escopo_original_data.js?v=20261111w"></script>
-    <script src="js/municipios_data.js?v=20261111w"></script>
-    <script src="js/metas_data.js?v=20261111w"></script>
+    <script src="js/data.js?v=20261111x"></script>
+    <script src="js/escopo_original_data.js?v=20261111x"></script>
+    <script src="js/municipios_data.js?v=20261111x"></script>
+    <script src="js/metas_data.js?v=20261111x"></script>
 
     <!-- WebGIS Modules -->
-    <script src="js/auth.js?v=20261111w"></script>
-    <script src="js/editor.js?v=20261111w"></script>
-    <script src="js/export.js?v=20261111w"></script>
-    <script src="js/layers.js?v=20261111w"></script>
-    <script src="js/charts.js?v=20261111w"></script>
-    <script src="js/filters.js?v=20261111w"></script>
-    <script src="js/metas.js?v=20261111w"></script>
-    <script src="js/app.js?v=20261111w"></script>
+    <script src="js/auth.js?v=20261111x"></script>
+    <script src="js/editor.js?v=20261111x"></script>
+    <script src="js/export.js?v=20261111x"></script>
+    <script src="js/layers.js?v=20261111x"></script>
+    <script src="js/charts.js?v=20261111x"></script>
+    <script src="js/filters.js?v=20261111x"></script>
+    <script src="js/metas.js?v=20261111x"></script>
+    <script src="js/app.js?v=20261111x"></script>
 
 </body>
 </html>

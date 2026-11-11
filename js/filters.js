@@ -158,7 +158,10 @@ window.GIS_FILTERS = (function() {
             tbody.appendChild(tr);
         });
 
-        document.getElementById('table-count').innerText = `${filteredLinear.length} trechos (exibindo primeiros ${displayList.length})`;
+        const elTableCount = document.getElementById('table-count');
+        if (elTableCount) {
+            elTableCount.innerText = `${filteredLinear.length} trechos (exibindo primeiros ${displayList.length})`;
+        }
     }
 
     return {
