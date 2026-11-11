@@ -1140,19 +1140,16 @@ const BAIRRO_CENTROIDS = [
                     const munNome = p.nm_mun || '';
                     const stRaw = (p.status || 'NÃO INICIADO').trim().toUpperCase();
                     let stColor = '#f59e0b';
-                    let stLabel = 'Não Iniciado';
                     if (stRaw.includes('CONCLU') || stRaw.includes('EXECUTAD')) {
                         stColor = '#10b981';
-                        stLabel = 'Concluído';
                     } else if (stRaw.includes('INICIADO') && !stRaw.includes('NÃO') && !stRaw.includes('NAO')) {
                         stColor = '#0284c7';
-                        stLabel = 'Iniciado';
                     }
 
                     const labelHtml = `
                         <div class="ae-polygon-label-badge" style="border-top: 2px solid ${stColor};">
                             <span class="ae-polygon-label-name">${fNome}</span>
-                            <span class="ae-polygon-label-sub">${munNome ? munNome + ' • ' : ''}<strong style="color:${stColor};">${stLabel}</strong></span>
+                            ${munNome ? `<span class="ae-polygon-label-sub">${munNome}</span>` : ''}
                         </div>
                     `;
 
