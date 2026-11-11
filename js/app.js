@@ -774,7 +774,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (window.GIS_LAYERS && typeof window.GIS_LAYERS.getLocalizadaCategory === 'function') {
                     cat = window.GIS_LAYERS.getLocalizadaCategory(p);
                 } else {
-                    const seg = (p.segmento || '').toString().trim().toUpperCase();
+                    const seg = (p.segmento || p.nome || p.Name || '').toString().trim().toUpperCase();
                     if (seg.includes('EEE') || seg.includes('EEAT') || seg.includes('ETE') ||
                         seg.includes('RESERVAT') || seg.includes('BOOSTER') || seg.includes('ETA') ||
                         seg.includes('POÇO PROFUNDO') || seg.includes('POCO PROFUNDO')) {
