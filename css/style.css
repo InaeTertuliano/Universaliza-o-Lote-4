@@ -1365,50 +1365,114 @@ body.light-theme .datatable th {
 .no-leaflet-icon {
     background: transparent !important;
     border: none !important;
-    display: flex !important;
+    overflow: visible !important;
+}
+
+.detalhe-marker-container {
+    position: relative;
+    width: 0;
+    height: 0;
+    display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
 }
 
 .poco-esgoto-marker {
-    width: 7px;
-    height: 7px;
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    top: -4px;
+    left: -4px;
     border-radius: 50%;
     border: 1.5px solid #ffffff;
     background-color: #10b981;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
     cursor: pointer;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
-}
-
-.poco-esgoto-marker:hover {
-    transform: scale(2.2);
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.95), 0 2px 6px rgba(0, 0, 0, 0.8);
-    z-index: 9999 !important;
+    z-index: 2;
 }
 
 .no-rede-marker {
-    width: 5px;
-    height: 5px;
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    top: -3px;
+    left: -3px;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.9);
     background-color: #64748b;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
     cursor: pointer;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+    z-index: 2;
 }
 
-.no-rede-marker:hover {
-    transform: scale(2.4);
+.detalhe-marker-label {
+    position: absolute;
+    left: 8px;
+    top: 0;
+    transform: translateY(-50%);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 3px;
+    padding: 0.5px 4.5px;
+    white-space: nowrap;
+    line-height: 1.2;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+    user-select: none;
+    z-index: 3;
+    transition: all 0.15s ease;
+}
+
+.detalhe-marker-container:hover .poco-esgoto-marker {
+    transform: scale(2.0);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.95), 0 2px 6px rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+}
+
+.detalhe-marker-container:hover .no-rede-marker {
+    transform: scale(2.2);
     box-shadow: 0 0 8px rgba(56, 189, 248, 0.95), 0 2px 5px rgba(0, 0, 0, 0.7);
-    z-index: 9999 !important;
+    z-index: 10000;
 }
 
-/* Pulsing SVG Marker for Major Facilities (EEE, EEAT, Reservatórios, ETAs) */
+.detalhe-marker-container:hover .detalhe-marker-label {
+    background: rgba(15, 23, 42, 0.98);
+    border-color: rgba(255, 255, 255, 0.65);
+    transform: translateY(-50%) scale(1.1);
+    z-index: 10001;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.75);
+}
+
+/* Pulsing SVG Marker for Major Facilities (EEE, EEAT, Reservatórios, ETAs, Boosters) */
 .pulsing-marker {
+    background: transparent !important;
+    border: none !important;
+    overflow: visible !important;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.major-marker-container {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
 }
 
 .pulsing-marker-ring {
@@ -1440,10 +1504,58 @@ body.light-theme .datatable th {
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     cursor: pointer;
     transition: transform 0.2s ease;
+    z-index: 2;
 }
 
-.pulsing-marker:hover .pulsing-marker-icon {
+.major-marker-container:hover .pulsing-marker-icon {
     transform: scale(1.2);
+}
+
+.major-marker-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 4px;
+    padding: 2px 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+    white-space: nowrap;
+    pointer-events: auto;
+    cursor: pointer;
+    user-select: none;
+    z-index: 10;
+    transition: all 0.15s ease;
+}
+
+.major-label-name {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.major-label-seg {
+    font-size: 7.5px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 1px;
+}
+
+.major-marker-container:hover .major-marker-label {
+    background: rgba(15, 23, 42, 0.98);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateX(-50%) scale(1.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
+    z-index: 10000;
 }
 
 /* Centroid Marker & Label for Distant Zoom (< 13) */

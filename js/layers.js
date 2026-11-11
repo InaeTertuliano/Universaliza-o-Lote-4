@@ -294,36 +294,58 @@ const BAIRRO_CENTROIDS = [
 
         let customIcon;
         if (cat === 'poco') {
-            const pvName = props.Name || 'PV';
+            const pvName = props.Name || props.nome || (props.fid ? 'PV-' + props.fid : 'PV');
             customIcon = L.divIcon({
                 className: 'poco-leaflet-icon',
-                html: `<div class="poco-esgoto-marker" style="background-color: ${color};" title="Poço de Esgoto: ${pvName} (${props.status || 'Não Iniciado'})"></div>`,
-                iconSize: [8, 8],
-                iconAnchor: [4, 4]
+                html: `
+                    <div class="detalhe-marker-container" title="Poço de Esgoto: ${pvName} (${props.status || 'Não Iniciado'})">
+                        <div class="poco-esgoto-marker" style="background-color: ${color};"></div>
+                        <span class="detalhe-marker-label poco-label" style="border-left: 2px solid ${color};">${pvName}</span>
+                    </div>
+                `,
+                iconSize: [0, 0],
+                iconAnchor: [0, 0]
             });
         } else if (cat === 'no') {
-            const noName = props.Name || 'Nó';
+            const noName = props.Name || props.nome || (props.fid ? 'NÓ-' + props.fid : 'Nó');
             customIcon = L.divIcon({
                 className: 'no-leaflet-icon',
-                html: `<div class="no-rede-marker" style="background-color: ${color};" title="Nó de Rede: ${noName}"></div>`,
-                iconSize: [6, 6],
-                iconAnchor: [3, 3]
+                html: `
+                    <div class="detalhe-marker-container" title="Nó de Rede: ${noName}">
+                        <div class="no-rede-marker" style="background-color: ${color};"></div>
+                        <span class="detalhe-marker-label no-label" style="border-left: 2px solid ${color};">${noName}</span>
+                    </div>
+                `,
+                iconSize: [0, 0],
+                iconAnchor: [0, 0]
             });
         } else {
-            // Grandes Instalações
+            // Grandes Instalações (Obras Localizadas)
             let faIcon = 'fa-industry';
-            const seg = (props.segmento || '').toUpperCase();
+            const seg = (props.segmento || props.nome || props.Name || '').toUpperCase();
             if (seg.includes('RESERVAT')) faIcon = 'fa-water';
             else if (seg.includes('POÇO') || seg.includes('POCO')) faIcon = 'fa-droplet';
             else if (seg.includes('BOOSTER') || seg.includes('EEAT')) faIcon = 'fa-bolt';
             else if (seg.includes('ETA')) faIcon = 'fa-filter';
 
+            const instName = props.nome || props.Name || props.segmento || 'Instalação';
+            const sUpper = (props.segmento || '').toUpperCase();
+            const nUpper = instName.toUpperCase();
+            const isBothEE = sUpper.startsWith('EE') && nUpper.startsWith('EE');
+            const segLabel = (props.segmento && !nUpper.includes(sUpper) && !sUpper.includes(nUpper) && !isBothEE) ? props.segmento : '';
+
             customIcon = L.divIcon({
                 className: 'pulsing-marker',
                 html: `
-                    <div class="pulsing-marker-ring" style="background: ${color}55;"></div>
-                    <div class="pulsing-marker-icon" style="background: ${color};">
-                        <i class="fas ${faIcon}"></i>
+                    <div class="major-marker-container" title="${instName} (${props.segmento || 'Instalação'}) - ${props.status || 'Não Iniciado'}">
+                        <div class="pulsing-marker-ring" style="background: ${color}55;"></div>
+                        <div class="pulsing-marker-icon" style="background: ${color};">
+                            <i class="fas ${faIcon}"></i>
+                        </div>
+                        <div class="major-marker-label" style="border-top: 2px solid ${color};">
+                            <span class="major-label-name">${instName}</span>
+                            ${segLabel ? `<span class="major-label-seg">${segLabel}</span>` : ''}
+                        </div>
                     </div>
                 `,
                 iconSize: [32, 32],
