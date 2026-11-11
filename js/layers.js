@@ -1419,6 +1419,7 @@ const BAIRRO_CENTROIDS = [
         getLegendsData: function() { return LEGENDS_DATA; },
         updateLegends: updateLegends,
         renderLegendHTML: renderLegendHTML,
+        getLocalizadaCategory: getLocalizadaCategory,
         getMinZoomLocalizada: function() { return MIN_ZOOM_LOCALIZADA; },
         getMinZoomPocosNos: function() { return MIN_ZOOM_POCOS_NOS; },
         updateZoomVisibility: updateZoomVisibility,

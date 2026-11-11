@@ -730,18 +730,20 @@ document.addEventListener('DOMContentLoaded', function() {
         container.innerHTML = html;
     }
 
-    // 15. Dynamic Obras Localizadas (EEE) Widget Updater
+    // 15. Dynamic Obras Localizadas Widget Updater (Painel Visão Detalhada)
+    // REQUISITO: No quadro localizadas NÃO DEVEM APARECER poços de esgoto e nós da camada localizadas!
+    // Apenas instalações de grande porte (EEE, EEAT, Reservatórios, ETAs, Boosters, Poços Profundos)
     function updateLocalizadaWidget(bairroTarget) {
         const titleEl = document.getElementById('localizada-widget-title');
         const container = document.getElementById('localizada-container');
         if (!container) return;
 
-        const normTarget = bairroTarget ? bairroTarget.toUpperCase().trim() : null;
+        const normTarget = bairroTarget ? normStr(bairroTarget) : null;
 
-        // Se nenhuma frente de obra estiver selecionada, manter sem informações
+        // Se nenhuma frente de obra estiver selecionada, exibir estado vazio
         if (!normTarget) {
             if (titleEl) {
-                titleEl.innerHTML = `<i class="fas fa-industry"></i> Obras Localizadas (EEE)`;
+                titleEl.innerHTML = `<i class="fas fa-industry"></i> Obras Localizadas (Instalações)`;
             }
             container.innerHTML = `
                 <div class="quant-empty-state">
@@ -752,48 +754,102 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Filter localizadas features by selected bairro if active
-        let filteredFeatures = window.GIS_DATA.localizada.features.filter(f => {
-            const b = (f.properties.bairro || '').toUpperCase().trim();
-            if (!b) return false;
-            if (b === normTarget) return true;
-            if (normTarget.startsWith("PEDRAS E VITÓRIA") && b.startsWith("PEDRAS E VITÓRIA")) return true;
-            return false;
-        });
+        // Filtrar feições da camada localizada pertencentes à frente selecionada
+        // RESTRITO a instalações principais (major facilities) - Poços e Nós são 100% excluídos deste quadro
+        let filteredFeatures = [];
+        if (window.GIS_DATA && window.GIS_DATA.localizada && window.GIS_DATA.localizada.features) {
+            filteredFeatures = window.GIS_DATA.localizada.features.filter(f => {
+                const p = f.properties || {};
+                const b = normStr(p.bairro || '');
+                if (!b) return false;
+
+                let matchesBairro = (b === normTarget);
+                if (!matchesBairro && normTarget.startsWith("PEDRAS E VITORIA") && b.startsWith("PEDRAS E VITORIA")) matchesBairro = true;
+                if (!matchesBairro && normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) matchesBairro = true;
+                if (!matchesBairro && (normTarget.includes(b) || b.includes(normTarget))) matchesBairro = true;
+                if (!matchesBairro) return false;
+
+                // Classificação rigorosa: somente grandes instalações (EEE, EEAT, Reservatório, Booster, ETA, Poço Profundo)
+                let cat = 'no';
+                if (window.GIS_LAYERS && typeof window.GIS_LAYERS.getLocalizadaCategory === 'function') {
+                    cat = window.GIS_LAYERS.getLocalizadaCategory(p);
+                } else {
+                    const seg = (p.segmento || '').toString().trim().toUpperCase();
+                    if (seg.includes('EEE') || seg.includes('EEAT') || seg.includes('ETE') ||
+                        seg.includes('RESERVAT') || seg.includes('BOOSTER') || seg.includes('ETA') ||
+                        seg.includes('POÇO PROFUNDO') || seg.includes('POCO PROFUNDO')) {
+                        cat = 'major';
+                    }
+                }
+
+                return cat === 'major';
+            });
+        }
 
         const count = filteredFeatures.length;
 
-        // Update widget title
+        // Atualizar título do quadro com contagem de instalações
         if (titleEl) {
             const bLabel = getBairroDisplayLabel(bairroTarget);
-            titleEl.innerHTML = `<i class="fas fa-industry"></i> Obras Localizadas (EEE) — <strong style="color:#ffffff;">${bLabel}</strong> (${count} ${count === 1 ? 'EEE' : 'EEEs'})`;
+            const countLabel = count === 1 ? '1 Instalação' : `${count} Instalações`;
+            titleEl.innerHTML = `<i class="fas fa-industry"></i> Obras Localizadas — <strong style="color:#ffffff;">${bLabel}</strong> (${countLabel})`;
         }
 
         if (count === 0) {
-            container.innerHTML = `<div class="quant-empty-state"><span>Nenhuma obra localizada (EEE) cadastrada nesta frente de obra.</span></div>`;
+            container.innerHTML = `
+                <div class="quant-empty-state">
+                    <i class="fas fa-info-circle" style="color:var(--text-muted-dark); font-size:1.1rem; margin-bottom:4px;"></i>
+                    <span>Nenhuma instalação de grande porte (EEE/Reservatório) cadastrada nesta frente de obra.</span>
+                </div>
+            `;
             return;
         }
 
         let html = '';
         filteredFeatures.forEach((f, idx) => {
-            const p = f.properties;
+            const p = f.properties || {};
+            const seg = (p.segmento || 'EEE').toUpperCase();
+            const nomeInstalacao = p.nome || p.ae_id || p.Name || `${seg} #${idx+1}`;
+            const status = p.status || 'NÃO INICIADO';
+            const statusClass = (status || 'não-iniciado').toLowerCase().replace(/ /g, '-').replace(/ã/g, 'a').replace(/õ/g, 'o');
+
+            // Ícone temático conforme tipo de infraestrutura
+            let faIcon = 'fa-industry';
+            if (seg.includes('RESERVAT')) faIcon = 'fa-water';
+            else if (seg.includes('POÇO') || seg.includes('POCO')) faIcon = 'fa-droplet';
+            else if (seg.includes('BOOSTER') || seg.includes('EEAT')) faIcon = 'fa-bolt';
+            else if (seg.includes('ETA')) faIcon = 'fa-filter';
+
             const q = floatVal(p.q_proj);
             const pot = floatVal(p.pot_cv);
             const alt = floatVal(p.altura_man);
-            const status = p.status || 'NÃO INICIADO';
-            const lat = f.geometry.coordinates[1];
-            const lng = f.geometry.coordinates[0];
+            const vol = floatVal(p.vol_proj || p.vol_total);
+            const lat = f.geometry ? f.geometry.coordinates[1] : (p.latitude || 0);
+            const lng = f.geometry ? f.geometry.coordinates[0] : (p.longitude || 0);
+
+            let metricasHtml = '';
+            if (vol > 0) {
+                metricasHtml = `
+                    <div>Tipo: <span class="eee-unit-val">${seg}</span></div>
+                    <div>Volume: <span class="eee-unit-val" style="color:#38bdf8; font-weight:800;">${vol.toLocaleString('pt-BR')} m³</span></div>
+                    <div>Produto: <span class="eee-unit-val">${p.produto || 'ÁGUA'}</span></div>
+                `;
+            } else {
+                metricasHtml = `
+                    <div>Vazão: <span class="eee-unit-val">${q > 0 ? q.toFixed(2).replace('.', ',') + ' L/s' : '-'}</span></div>
+                    <div>Potência: <span class="eee-unit-val">${pot > 0 ? pot.toFixed(1).replace('.', ',') + ' CV' : '-'}</span></div>
+                    <div>Alt. Man.: <span class="eee-unit-val">${alt > 0 ? alt.toFixed(1).replace('.', ',') + ' mca' : '-'}</span></div>
+                `;
+            }
 
             html += `
-                <div class="eee-unit-card" data-lat="${lat}" data-lng="${lng}" style="cursor:pointer;" title="Clique para aproximar nesta EEE no mapa">
+                <div class="eee-unit-card" data-lat="${lat}" data-lng="${lng}" style="cursor:pointer;" title="Clique para aproximar nesta instalação no mapa">
                     <div class="eee-unit-header">
-                        <span><i class="fas fa-industry" style="color:var(--engeform-light-taupe); margin-right:4px;"></i> EEE #${idx+1} — ${p.ae_id || 'EEE'}</span>
-                        <span class="popup-badge nao-iniciado" style="font-size:0.7rem;">${status}</span>
+                        <span><i class="fas ${faIcon}" style="color:var(--engeform-light-taupe); margin-right:5px;"></i> <strong>${nomeInstalacao}</strong> <span style="font-size:0.75rem; color:#94a3b8;">(${seg})</span></span>
+                        <span class="popup-badge ${statusClass}" style="font-size:0.68rem;">${status}</span>
                     </div>
                     <div class="eee-unit-grid">
-                        <div>Vazão: <span class="eee-unit-val">${q > 0 ? q.toFixed(2).replace('.', ',') + ' L/s' : '-'}</span></div>
-                        <div>Potência: <span class="eee-unit-val">${pot > 0 ? pot.toFixed(2).replace('.', ',') + ' CV' : '-'}</span></div>
-                        <div>Altura Man.: <span class="eee-unit-val">${alt > 0 ? alt.toFixed(1).replace('.', ',') + ' mca' : '-'}</span></div>
+                        ${metricasHtml}
                     </div>
                 </div>
             `;
@@ -801,7 +857,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         container.innerHTML = html;
 
-        // Clique no card da EEE para aproximar diretamente no mapa (Zoom 16) e abrir popup
+        // Clique no card para aproximar diretamente no mapa (Zoom 16) e abrir popup
         container.querySelectorAll('.eee-unit-card').forEach(card => {
             card.addEventListener('click', function() {
                 const lat = parseFloat(this.dataset.lat);
