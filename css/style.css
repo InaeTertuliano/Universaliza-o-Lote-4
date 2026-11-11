@@ -2531,3 +2531,61 @@ body.light-theme .export-field-checkbox-item:hover {
     background: rgba(16, 185, 129, 0.08) !important;
     border-color: #10b981 !important;
 }
+
+
+/* Rótulos dos Polígonos da Camada AE (Exibidos em Zoom Maior >= 13) */
+.ae-polygon-permanent-label {
+    display: none !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+    user-select: none !important;
+}
+
+.ae-polygon-permanent-label::before {
+    display: none !important;
+}
+
+.map-zoom-ae-labels .ae-polygon-permanent-label,
+.map-zoom-high .ae-polygon-permanent-label {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.ae-polygon-label-badge {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 8px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none !important;
+    transition: transform 0.15s ease;
+}
+
+.ae-polygon-label-name {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.ae-polygon-label-sub {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #94a3b8;
+    line-height: 1.1;
+    margin-top: 2px;
+}

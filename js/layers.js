@@ -962,6 +962,7 @@ const BAIRRO_CENTROIDS = [
             } else {
                 mapEl.classList.add('map-zoom-high');
             }
+            mapEl.classList.toggle('map-zoom-ae-labels', currentZoom >= MIN_ZOOM_LOCALIZADA);
         }
 
         // 1. Obras Localizadas:
@@ -1137,10 +1138,28 @@ const BAIRRO_CENTROIDS = [
                     const p = feature.properties || {};
                     const fNome = p.frente || p.bairro || 'Frente de Obra';
                     const munNome = p.nm_mun || '';
-                    layer.bindTooltip(`<strong>${fNome}</strong> <span style="opacity:0.85;">(${munNome})</span>`, {
-                        sticky: true,
-                        direction: 'top',
-                        className: 'ae-frente-tooltip'
+                    const stRaw = (p.status || 'NÃO INICIADO').trim().toUpperCase();
+                    let stColor = '#f59e0b';
+                    let stLabel = 'Não Iniciado';
+                    if (stRaw.includes('CONCLU') || stRaw.includes('EXECUTAD')) {
+                        stColor = '#10b981';
+                        stLabel = 'Concluído';
+                    } else if (stRaw.includes('INICIADO') && !stRaw.includes('NÃO') && !stRaw.includes('NAO')) {
+                        stColor = '#0284c7';
+                        stLabel = 'Iniciado';
+                    }
+
+                    const labelHtml = `
+                        <div class="ae-polygon-label-badge" style="border-top: 2px solid ${stColor};">
+                            <span class="ae-polygon-label-name">${fNome}</span>
+                            <span class="ae-polygon-label-sub">${munNome ? munNome + ' • ' : ''}<strong style="color:${stColor};">${stLabel}</strong></span>
+                        </div>
+                    `;
+
+                    layer.bindTooltip(labelHtml, {
+                        permanent: true,
+                        direction: 'center',
+                        className: 'ae-polygon-permanent-label'
                     });
                     layer.bindPopup(function() {
                         if (window.GIS_EDITOR && typeof window.GIS_EDITOR.setActiveFeature === 'function') {
