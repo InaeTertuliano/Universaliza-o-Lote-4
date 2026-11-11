@@ -626,6 +626,16 @@ document.addEventListener('DOMContentLoaded', function() {
             200: '#8b5cf6'
         };
 
+        if (filteredFeatures.length === 0) {
+            container.innerHTML = `
+                <div class="quant-empty-state">
+                    <i class="fas fa-info-circle" style="color:#38bdf8;"></i>
+                    <span>Frente de Obra cadastrada na Camada AE (Planejamento / Projeto Executivo). Nenhuma rede linear lançada nesta etapa.</span>
+                </div>
+            `;
+            return;
+        }
+
         let html = '';
         const segKeys = Object.keys(segData).sort((a,b) => segData[b].ext - segData[a].ext);
 
@@ -867,11 +877,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Zoom map to fit matching features of the selected bairro (both current and original scope)
             const predicate = function(feature) {
-                const b = normStr(feature.properties ? feature.properties.bairro : '');
+                const props = feature.properties || {};
+                const b = normStr(props.frente || props.bairro || '');
                 if (!b) return false;
                 if (b === normTarget) return true;
                 if (normTarget.startsWith("PEDRAS E VITORIA") && b.startsWith("PEDRAS E VITORIA")) return true;
                 if (normTarget.startsWith("TURVO DOS ALMEIDAS") && b.startsWith("TURVO DOS ALMEIDAS")) return true;
+                if (normTarget.includes(b) || b.includes(normTarget)) return true;
                 return false;
             };
 
@@ -948,6 +960,27 @@ document.addEventListener('DOMContentLoaded', function() {
             dropdownFrente.open = false;
         }
     });
+
+    
+    // 17. Search & Municipality Filter for 169 Frentes de Obra (Camada AE)
+    const searchFrentesInput = document.getElementById('search-frentes-input');
+    const selectMunFrentes = document.getElementById('select-mun-frentes');
+
+    function filterFrentesUI() {
+        const term = (searchFrentesInput ? searchFrentesInput.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+        const selMun = (selectMunFrentes ? selectMunFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+        
+        document.querySelectorAll('.frentes-scroll-container .bairro-card').forEach(card => {
+            const b = (card.dataset.bairro || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+            const m = (card.dataset.mun || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+            const matchTerm = !term || b.includes(term) || m.includes(term);
+            const matchMun = !selMun || m === selMun;
+            card.style.display = (matchTerm && matchMun) ? '' : 'none';
+        });
+    }
+
+    if (searchFrentesInput) searchFrentesInput.addEventListener('input', filterFrentesUI);
+    if (selectMunFrentes) selectMunFrentes.addEventListener('change', filterFrentesUI);
 
     console.log("Portal WebGIS Engeform & Sabesp ready with Dynamic Bairro Segment & Obras Localizadas Widgets!");
 });
