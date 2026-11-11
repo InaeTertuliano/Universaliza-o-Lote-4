@@ -782,8 +782,8 @@ const BAIRRO_CENTROIDS = [
         const customIcon = L.divIcon({
             className: 'bairro-centroid-leaflet-icon',
             html: iconHtml,
-            iconSize: [26, 26],
-            iconAnchor: [13, 13]
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
         });
 
         const marker = L.marker([bairro.lat, bairro.lng], {

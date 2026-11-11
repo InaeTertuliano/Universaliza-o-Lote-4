@@ -1438,12 +1438,12 @@ body.light-theme .datatable th {
    ZOOM-RESPONSIVE SIZING FOR FRENTES CENTROID MARKERS
    ========================================================== */
 
-/* 1. Ultra-Low Zoom (<= 9): Mini dots (11px) */
+/* 1. Ultra-Low Zoom (<= 9): Mini discreet dots (7px) */
 .map-zoom-ultralow .bairro-centroid-pin {
-    width: 11px !important;
-    height: 11px !important;
+    width: 7px !important;
+    height: 7px !important;
     border-width: 1.5px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
 }
 .map-zoom-ultralow .bairro-centroid-pin i {
     display: none !important;
@@ -1455,12 +1455,12 @@ body.light-theme .datatable th {
     display: none !important;
 }
 
-/* 2. Low Zoom (10 - Overview of Entire Lote 4): Sleek compact dots (15px) */
+/* 2. Low Zoom (10 - Overview of Entire Lote 4): Compact dots (9px) */
 .map-zoom-low .bairro-centroid-pin {
-    width: 15px !important;
-    height: 15px !important;
-    border-width: 2px !important;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5) !important;
+    width: 9px !important;
+    height: 9px !important;
+    border-width: 1.5px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
 }
 .map-zoom-low .bairro-centroid-pin i {
     display: none !important;
@@ -1505,39 +1505,46 @@ body.light-theme .datatable th {
     text-transform: uppercase;
 }
 
-/* 3. Mid Zoom (11 - 12 - Closer view of Municipality): Medium pins with compact labels */
+/* 3. Mid Zoom (11 - 12 - Closer view of Municipality): Small/medium pins */
 .map-zoom-mid .bairro-centroid-pin {
-    width: 22px !important;
-    height: 22px !important;
+    width: 15px !important;
+    height: 15px !important;
     border-width: 2px !important;
-    font-size: 10px !important;
+    font-size: 8px !important;
 }
 .map-zoom-mid .bairro-centroid-pin i {
-    font-size: 9px !important;
+    display: none !important;
 }
 .map-zoom-mid .bairro-centroid-pin::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 5px solid currentColor;
+    display: none !important;
 }
 .map-zoom-mid .bairro-centroid-label {
+    display: none !important;
+}
+.map-zoom-mid .bairro-centroid-marker:hover .bairro-centroid-label {
+    display: block !important;
     position: absolute;
-    top: calc(100% + 5px);
+    bottom: calc(100% + 6px);
     left: 50%;
     transform: translateX(-50%);
-    margin-top: 0;
     background: rgba(22, 24, 21, 0.94);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 6px;
+    padding: 2px 7px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+/* Default / fallback */
+.bairro-centroid-pin {
+    width: 9px;
+    height: 9px;
+    border: 1.5px solid #ffffff;
+}
     padding: 2px 7px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
     text-align: center;
