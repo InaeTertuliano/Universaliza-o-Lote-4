@@ -122,10 +122,6 @@
                 <i class="fas fa-ruler-combined"></i> Painel de Quantidade de Rede
             </button>
 
-            <button id="btn-open-custos-header" class="btn-header" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7;">
-                <i class="fas fa-coins"></i> Custos e Preços
-            </button>
-
             <button id="btn-theme-toggle" class="btn-header">
                 <i class="fas fa-sun"></i> Light Mode
             </button>
@@ -201,9 +197,6 @@
                             Equivalente a <strong style="color: #c0c4b7;">231,05 km</strong> e <strong style="color: #c0c4b7;">2.864 estruturas</strong> distribuídos em 28 frentes de obra consolidadas.
                         </div>
                     </div>
-
-                    <!-- Card Dinâmico de Investimento e Orçamento Estimado -->
-                    <div id="widget-investimento-lateral"></div>
 
                     <!-- Quadro Frente de Obra (Apresentação Independente - Não é lista suspensa) -->
                     <div class="widget-card">
@@ -1537,10 +1530,10 @@
                         <div class="modal-kpi-num" style="color:#10b981;">22.231,32 m</div>
                         <div class="modal-kpi-sub">9,6% de avanço físico</div>
                     </div>
-                    <div class="modal-kpi-card" style="border-top-color: #10b981;">
-                        <div class="modal-kpi-title">CUSTO REDE COLETORA 150</div>
-                        <div class="modal-kpi-num" style="color:#10b981;">R$ 69,46 M</div>
-                        <div class="modal-kpi-sub">R$ 600/m (PREÇO.xlsx)</div>
+                    <div class="modal-kpi-card" style="border-top-color: #f59e0b;">
+                        <div class="modal-kpi-title">OBRAS LOCALIZADAS</div>
+                        <div class="modal-kpi-num" style="color:#f59e0b;">2.864 pontos</div>
+                        <div class="modal-kpi-sub">EEEs, PVs e Estruturas</div>
                     </div>
                 </div>
 
@@ -1556,39 +1549,38 @@
                                 <th>Extensão (km)</th>
                                 <th>Trechos</th>
                                 <th>% Lote</th>
-                                <th style="color:#10b981;">Custo Est. (RC 150)</th>
                                 <th>Status Dominante</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td><strong>Jd. Cananéia e Ch. Reunidas</strong></td><td>Pilar do Sul</td><td>67.529,61 m</td><td>67,53 km</td><td>1152</td><td><span class="popup-badge nao-iniciado">29.2%</span></td><td style="color:#10b981; font-weight:700;">R$ 40.517.766,00</td><td>Não Iniciado (67,53 km)</td></tr>
-                            <tr><td><strong>Peixoto</strong></td><td>Itapetininga</td><td>31.698,00 m</td><td>31,70 km</td><td>205</td><td><span class="popup-badge nao-iniciado">13.7%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (31,70 km)</td></tr>
-                            <tr><td><strong>Pedras e Vitória</strong></td><td>Guareí</td><td>19.688,37 m</td><td>19,69 km</td><td>412</td><td><span class="popup-badge iniciado">8.5%</span></td><td style="color:#10b981; font-weight:700;">R$ 9.083.682,00</td><td>Não Iniciado (14,30 km) / Concluído (5,39 km)</td></tr>
-                            <tr><td><strong>Campo Grande-Vatinga</strong></td><td>Itapetininga</td><td>14.817,98 m</td><td>14,82 km</td><td>75</td><td><span class="popup-badge iniciado">6.4%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (9,14 km) / Concluído (5,68 km)</td></tr>
-                            <tr><td><strong>Turvo dos Almeidas</strong></td><td>Capão Bonito</td><td>12.809,44 m</td><td>12,81 km</td><td>340</td><td><span class="popup-badge iniciado">5.5%</span></td><td style="color:#10b981; font-weight:700;">R$ 5.475.060,00</td><td>Não Iniciado (11,58 km) / Concluído (1,23 km)</td></tr>
-                            <tr><td><strong>Água Doce e Bom Retiro</strong></td><td>Pilar do Sul</td><td>10.899,92 m</td><td>10,90 km</td><td>72</td><td><span class="popup-badge nao-iniciado">4.7%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (10,90 km)</td></tr>
-                            <tr><td><strong>Porto</strong></td><td>Itapetininga</td><td>10.869,04 m</td><td>10,87 km</td><td>81</td><td><span class="popup-badge nao-iniciado">4.7%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (10,87 km)</td></tr>
-                            <tr><td><strong>Ribeirão</strong></td><td>Pilar do Sul</td><td>7.663,06 m</td><td>7,66 km</td><td>71</td><td><span class="popup-badge nao-iniciado">3.3%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (7,66 km)</td></tr>
-                            <tr><td><strong>Rio Acima</strong></td><td>São Miguel Arcanjo</td><td>7.620,63 m</td><td>7,62 km</td><td>253</td><td><span class="popup-badge nao-iniciado">3.3%</span></td><td style="color:#10b981; font-weight:700;">R$ 2.650.002,00</td><td>Não Iniciado (7,62 km)</td></tr>
-                            <tr><td><strong>Serra da Prata</strong></td><td>Paranapanema</td><td>6.673,29 m</td><td>6,67 km</td><td>318</td><td><span class="popup-badge iniciado">2.9%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (3,77 km) / Concluído (2,90 km)</td></tr>
-                            <tr><td><strong>Tapiá</strong></td><td>Campina do Monte Alegre</td><td>5.347,02 m</td><td>5,35 km</td><td>201</td><td><span class="popup-badge iniciado">2.3%</span></td><td style="color:#10b981; font-weight:700;">R$ 1.369.464,00</td><td>Não Iniciado (5,26 km) / Concluído (0,08 km)</td></tr>
-                            <tr><td><strong>Salto</strong></td><td>Campina do Monte Alegre</td><td>4.645,58 m</td><td>4,65 km</td><td>120</td><td><span class="popup-badge iniciado">2.0%</span></td><td style="color:#10b981; font-weight:700;">R$ 2.208.870,00</td><td>Não Iniciado (4,31 km) / Concluído (0,34 km)</td></tr>
-                            <tr><td><strong>Prainha 2</strong></td><td>Campina do Monte Alegre</td><td>4.529,15 m</td><td>4,53 km</td><td>143</td><td><span class="popup-badge iniciado">2.0%</span></td><td style="color:#10b981; font-weight:700;">R$ 1.491.036,00</td><td>Não Iniciado (4,38 km) / Concluído (0,15 km)</td></tr>
-                            <tr><td><strong>Pacaembu</strong></td><td>Itapetininga</td><td>4.268,82 m</td><td>4,27 km</td><td>2</td><td><span class="popup-badge nao-iniciado">1.8%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (4,27 km)</td></tr>
-                            <tr><td><strong>Pocinho</strong></td><td>São Miguel Arcanjo</td><td>4.220,61 m</td><td>4,22 km</td><td>117</td><td><span class="popup-badge iniciado">1.8%</span></td><td style="color:#10b981; font-weight:700;">R$ 1.969.164,00</td><td>Concluído (2,50 km) / Não Iniciado (1,72 km)</td></tr>
-                            <tr><td><strong>Curuça III</strong></td><td>Itapetininga</td><td>3.901,67 m</td><td>3,90 km</td><td>30</td><td><span class="popup-badge iniciado">1.7%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (2,54 km) / Concluído (1,36 km)</td></tr>
-                            <tr><td><strong>Gramadão</strong></td><td>São Miguel Arcanjo</td><td>2.679,86 m</td><td>2,68 km</td><td>75</td><td><span class="popup-badge nao-iniciado">1.2%</span></td><td style="color:#10b981; font-weight:700;">R$ 1.236.786,00</td><td>Não Iniciado (2,68 km)</td></tr>
-                            <tr><td><strong>Pateo Velho</strong></td><td>Angatuba</td><td>1.942,37 m</td><td>1,94 km</td><td>72</td><td><span class="popup-badge iniciado">0.8%</span></td><td style="color:#10b981; font-weight:700;">R$ 499.524,00</td><td>Não Iniciado (1,07 km) / Concluído (0,88 km)</td></tr>
-                            <tr><td><strong>Coqueiros</strong></td><td>Angatuba</td><td>1.868,54 m</td><td>1,87 km</td><td>41</td><td><span class="popup-badge nao-iniciado">0.8%</span></td><td style="color:#10b981; font-weight:700;">R$ 978.156,00</td><td>Não Iniciado (1,87 km)</td></tr>
-                            <tr><td><strong>São Pedro 2</strong></td><td>Paranapanema</td><td>1.793,51 m</td><td>1,79 km</td><td>32</td><td><span class="popup-badge iniciado">0.8%</span></td><td style="color:#10b981; font-weight:700;">R$ 1.076.106,00</td><td>Não Iniciado (1,64 km) / Concluído (0,16 km)</td></tr>
-                            <tr><td><strong>Jd Aeroporto</strong></td><td>Itapetininga</td><td>1.502,29 m</td><td>1,50 km</td><td>20</td><td><span class="popup-badge concluido">0.7%</span></td><td style="color:#10b981; font-weight:700;">R$ 901.374,00</td><td>Concluído (1,40 km) / Não Iniciado (0,11 km)</td></tr>
-                            <tr><td><strong>Pedras e Vitória - B1</strong></td><td>Guareí</td><td>826,72 m</td><td>0,83 km</td><td>42</td><td><span class="popup-badge nao-iniciado">0.4%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (0,83 km)</td></tr>
-                            <tr><td><strong>Pedras e Vitória - B5</strong></td><td>Guareí</td><td>800,45 m</td><td>0,80 km</td><td>41</td><td><span class="popup-badge nao-iniciado">0.3%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (0,80 km)</td></tr>
-                            <tr><td><strong>São Pedro</strong></td><td>Paranapanema</td><td>708,23 m</td><td>0,71 km</td><td>36</td><td><span class="popup-badge nao-iniciado">0.3%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (0,71 km)</td></tr>
-                            <tr><td><strong>Jardim Aeroporto</strong></td><td>Itapetininga</td><td>623,31 m</td><td>0,62 km</td><td>32</td><td><span class="popup-badge iniciado">0.3%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (0,44 km) / Concluído (0,18 km)</td></tr>
-                            <tr><td><strong>Pedras e Vitória - B3</strong></td><td>Guareí</td><td>529,82 m</td><td>0,53 km</td><td>27</td><td><span class="popup-badge nao-iniciado">0.2%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (0,53 km)</td></tr>
-                            <tr><td><strong>Jd Vitória</strong></td><td>Pilar do Sul</td><td>515,25 m</td><td>0,52 km</td><td>26</td><td><span class="popup-badge nao-iniciado">0.2%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (0,52 km)</td></tr>
-                            <tr><td><strong>Tupy</strong></td><td>Itapetininga</td><td>76,12 m</td><td>0,08 km</td><td>4</td><td><span class="popup-badge nao-iniciado">0.0%</span></td><td style="color:#10b981; font-weight:700;">-</td><td>Não Iniciado (0,08 km)</td></tr>
+                            <tr><td><strong>Jd. Cananéia e Ch. Reunidas</strong></td><td>Pilar do Sul</td><td>67.529,61 m</td><td>67,53 km</td><td>1152</td><td><span class="popup-badge nao-iniciado">29.2%</span></td><td>Não Iniciado (67,53 km)</td></tr>
+                            <tr><td><strong>Peixoto</strong></td><td>Itapetininga</td><td>31.698,00 m</td><td>31,70 km</td><td>205</td><td><span class="popup-badge nao-iniciado">13.7%</span></td><td>Não Iniciado (31,70 km)</td></tr>
+                            <tr><td><strong>Pedras e Vitória</strong></td><td>Guareí</td><td>19.688,37 m</td><td>19,69 km</td><td>412</td><td><span class="popup-badge iniciado">8.5%</span></td><td>Não Iniciado (14,30 km) / Concluído (5,39 km)</td></tr>
+                            <tr><td><strong>Campo Grande-Vatinga</strong></td><td>Itapetininga</td><td>14.817,98 m</td><td>14,82 km</td><td>75</td><td><span class="popup-badge iniciado">6.4%</span></td><td>Não Iniciado (9,14 km) / Concluído (5,68 km)</td></tr>
+                            <tr><td><strong>Turvo dos Almeidas</strong></td><td>Capão Bonito</td><td>12.809,44 m</td><td>12,81 km</td><td>340</td><td><span class="popup-badge iniciado">5.5%</span></td><td>Não Iniciado (11,58 km) / Concluído (1,23 km)</td></tr>
+                            <tr><td><strong>Água Doce e Bom Retiro</strong></td><td>Pilar do Sul</td><td>10.899,92 m</td><td>10,90 km</td><td>72</td><td><span class="popup-badge nao-iniciado">4.7%</span></td><td>Não Iniciado (10,90 km)</td></tr>
+                            <tr><td><strong>Porto</strong></td><td>Itapetininga</td><td>10.869,04 m</td><td>10,87 km</td><td>81</td><td><span class="popup-badge nao-iniciado">4.7%</span></td><td>Não Iniciado (10,87 km)</td></tr>
+                            <tr><td><strong>Ribeirão</strong></td><td>Pilar do Sul</td><td>7.663,06 m</td><td>7,66 km</td><td>71</td><td><span class="popup-badge nao-iniciado">3.3%</span></td><td>Não Iniciado (7,66 km)</td></tr>
+                            <tr><td><strong>Rio Acima</strong></td><td>São Miguel Arcanjo</td><td>7.620,63 m</td><td>7,62 km</td><td>253</td><td><span class="popup-badge nao-iniciado">3.3%</span></td><td>Não Iniciado (7,62 km)</td></tr>
+                            <tr><td><strong>Serra da Prata</strong></td><td>Paranapanema</td><td>6.673,29 m</td><td>6,67 km</td><td>318</td><td><span class="popup-badge iniciado">2.9%</span></td><td>Não Iniciado (3,77 km) / Concluído (2,90 km)</td></tr>
+                            <tr><td><strong>Tapiá</strong></td><td>Campina do Monte Alegre</td><td>5.347,02 m</td><td>5,35 km</td><td>201</td><td><span class="popup-badge iniciado">2.3%</span></td><td>Não Iniciado (5,26 km) / Concluído (0,08 km)</td></tr>
+                            <tr><td><strong>Salto</strong></td><td>Campina do Monte Alegre</td><td>4.645,58 m</td><td>4,65 km</td><td>120</td><td><span class="popup-badge iniciado">2.0%</span></td><td>Não Iniciado (4,31 km) / Concluído (0,34 km)</td></tr>
+                            <tr><td><strong>Prainha 2</strong></td><td>Campina do Monte Alegre</td><td>4.529,15 m</td><td>4,53 km</td><td>143</td><td><span class="popup-badge iniciado">2.0%</span></td><td>Não Iniciado (4,38 km) / Concluído (0,15 km)</td></tr>
+                            <tr><td><strong>Pacaembu</strong></td><td>Itapetininga</td><td>4.268,82 m</td><td>4,27 km</td><td>2</td><td><span class="popup-badge nao-iniciado">1.8%</span></td><td>Não Iniciado (4,27 km)</td></tr>
+                            <tr><td><strong>Pocinho</strong></td><td>São Miguel Arcanjo</td><td>4.220,61 m</td><td>4,22 km</td><td>117</td><td><span class="popup-badge iniciado">1.8%</span></td><td>Concluído (2,50 km) / Não Iniciado (1,72 km)</td></tr>
+                            <tr><td><strong>Curuça III</strong></td><td>Itapetininga</td><td>3.901,67 m</td><td>3,90 km</td><td>30</td><td><span class="popup-badge iniciado">1.7%</span></td><td>Não Iniciado (2,54 km) / Concluído (1,36 km)</td></tr>
+                            <tr><td><strong>Gramadão</strong></td><td>São Miguel Arcanjo</td><td>2.679,86 m</td><td>2,68 km</td><td>75</td><td><span class="popup-badge nao-iniciado">1.2%</span></td><td>Não Iniciado (2,68 km)</td></tr>
+                            <tr><td><strong>Pateo Velho</strong></td><td>Angatuba</td><td>1.942,37 m</td><td>1,94 km</td><td>72</td><td><span class="popup-badge iniciado">0.8%</span></td><td>Não Iniciado (1,07 km) / Concluído (0,88 km)</td></tr>
+                            <tr><td><strong>Coqueiros</strong></td><td>Angatuba</td><td>1.868,54 m</td><td>1,87 km</td><td>41</td><td><span class="popup-badge nao-iniciado">0.8%</span></td><td>Não Iniciado (1,87 km)</td></tr>
+                            <tr><td><strong>São Pedro 2</strong></td><td>Paranapanema</td><td>1.793,51 m</td><td>1,79 km</td><td>32</td><td><span class="popup-badge iniciado">0.8%</span></td><td>Não Iniciado (1,64 km) / Concluído (0,16 km)</td></tr>
+                            <tr><td><strong>Jd Aeroporto</strong></td><td>Itapetininga</td><td>1.502,29 m</td><td>1,50 km</td><td>20</td><td><span class="popup-badge concluido">0.7%</span></td><td>Concluído (1,40 km) / Não Iniciado (0,11 km)</td></tr>
+                            <tr><td><strong>Pedras e Vitória - B1</strong></td><td>Guareí</td><td>826,72 m</td><td>0,83 km</td><td>42</td><td><span class="popup-badge nao-iniciado">0.4%</span></td><td>Não Iniciado (0,83 km)</td></tr>
+                            <tr><td><strong>Pedras e Vitória - B5</strong></td><td>Guareí</td><td>800,45 m</td><td>0,80 km</td><td>41</td><td><span class="popup-badge nao-iniciado">0.3%</span></td><td>Não Iniciado (0,80 km)</td></tr>
+                            <tr><td><strong>São Pedro</strong></td><td>Paranapanema</td><td>708,23 m</td><td>0,71 km</td><td>36</td><td><span class="popup-badge nao-iniciado">0.3%</span></td><td>Não Iniciado (0,71 km)</td></tr>
+                            <tr><td><strong>Jardim Aeroporto</strong></td><td>Itapetininga</td><td>623,31 m</td><td>0,62 km</td><td>32</td><td><span class="popup-badge iniciado">0.3%</span></td><td>Não Iniciado (0,44 km) / Concluído (0,18 km)</td></tr>
+                            <tr><td><strong>Pedras e Vitória - B3</strong></td><td>Guareí</td><td>529,82 m</td><td>0,53 km</td><td>27</td><td><span class="popup-badge nao-iniciado">0.2%</span></td><td>Não Iniciado (0,53 km)</td></tr>
+                            <tr><td><strong>Jd Vitória</strong></td><td>Pilar do Sul</td><td>515,25 m</td><td>0,52 km</td><td>26</td><td><span class="popup-badge nao-iniciado">0.2%</span></td><td>Não Iniciado (0,52 km)</td></tr>
+                            <tr><td><strong>Tupy</strong></td><td>Itapetininga</td><td>76,12 m</td><td>0,08 km</td><td>4</td><td><span class="popup-badge nao-iniciado">0.0%</span></td><td>Não Iniciado (0,08 km)</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -2067,120 +2059,11 @@
         </div>
     </div>
 
-    <!-- Modal Custos e Orçamento de Obras (Fonte: PREÇO.xlsx) -->
-    <div id="modal-custos-orcamento" class="modal-overlay">
-        <div class="modal-container" style="max-width: 980px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #1e201d, #064e3b); border-bottom: 2px solid #10b981;">
-                <div>
-                    <h2 class="modal-title" style="display:flex; align-items:center; gap:8px;">
-                        <i class="fas fa-coins" style="color:#10b981;"></i> 
-                        Tabela de Custos Unitários e Orçamento Executivo
-                    </h2>
-                    <p class="modal-subtitle">Parametrização orçamentária integrada da planilha <code>PREÇO.xlsx</code> (Lote 4 - Itapetininga)</p>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <a href="data/PRECO.xlsx" download="PRECO.xlsx" class="btn-header" style="background: rgba(16, 185, 129, 0.25); border-color: #10b981; color: #6ee7b7; text-decoration: none; font-size: 0.75rem; padding: 5px 10px;">
-                        <i class="fas fa-file-excel"></i> Baixar Planilha Original (PREÇO.xlsx)
-                    </a>
-                    <button id="btn-close-modal-custos" class="modal-close-btn">&times;</button>
-                </div>
-            </div>
-            <div class="modal-body" style="padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
-
-                <!-- 1. Tabela de Preços Unitários Parametrizados -->
-                <div class="widget-card" style="margin-bottom: 0;">
-                    <div class="widget-title" style="color: #6ee7b7;">
-                        <span><i class="fas fa-tags" style="color: #10b981;"></i> Tabela de Preços Unitários Cadastrados</span>
-                        <span style="font-size: 0.72rem; color: var(--text-muted-dark);">Origem: <code>C:\Users\Administrador\Desktop\0-teste\CUSTO\PREÇO.xlsx</code></span>
-                    </div>
-                    <table class="datatable" style="font-size: 0.82rem;">
-                        <thead>
-                            <tr>
-                                <th>Segmento</th>
-                                <th>Diâmetro (DN)</th>
-                                <th>Preço Unitário / Metro</th>
-                                <th>Origem / Referência</th>
-                            </tr>
-                        </thead>
-                        <tbody id="custos-tabela-precos">
-                            <!-- Preenchido via JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 2. KPIs de Orçamento Executivo -->
-                <div class="modal-kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin: 0;">
-                    <div class="modal-kpi-card" style="border-top-color: #10b981;">
-                        <div class="modal-kpi-title">ORÇAMENTO TOTAL PREVISTO</div>
-                        <div id="custos-kpi-total" class="modal-kpi-num" style="color:#10b981;">R$ 0,00</div>
-                        <div id="custos-kpi-extensao" class="modal-kpi-sub">33,90 km parametrizados</div>
-                    </div>
-                    <div class="modal-kpi-card" style="border-top-color: #38bdf8;">
-                        <div class="modal-kpi-title">VALOR EXECUTADO (CONCLUÍDO)</div>
-                        <div id="custos-kpi-concluido" class="modal-kpi-num" style="color:#38bdf8;">R$ 0,00</div>
-                        <div class="modal-kpi-sub">Rede executada e concluída</div>
-                    </div>
-                    <div class="modal-kpi-card" style="border-top-color: #f59e0b;">
-                        <div class="modal-kpi-title">SALDO A EXECUTAR</div>
-                        <div id="custos-kpi-nao-iniciado" class="modal-kpi-num" style="color:#fbbf24;">R$ 0,00</div>
-                        <div class="modal-kpi-sub">Redes não iniciadas</div>
-                    </div>
-                    <div class="modal-kpi-card" style="border-top-color: #a855f7;">
-                        <div class="modal-kpi-title">PREÇO MÉDIO / KM</div>
-                        <div class="modal-kpi-num" style="color:#c084fc;">R$ 600.000</div>
-                        <div class="modal-kpi-sub">Equivalente a R$ 600,00/m</div>
-                    </div>
-                </div>
-
-                <!-- 3. Tabela Detalhada por Frente de Obra / Bairro -->
-                <div class="widget-card" style="margin-bottom: 0;">
-                    <div class="widget-title" style="color: #6ee7b7;">
-                        <span><i class="fas fa-hard-hat" style="color: #10b981;"></i> Orçamento e Execução Financeira por Frente de Obra</span>
-                    </div>
-                    <div class="datatable-wrapper" style="max-height: 280px; overflow-y: auto;">
-                        <table class="datatable" style="font-size: 0.8rem;">
-                            <thead>
-                                <tr>
-                                    <th>Frente de Obra</th>
-                                    <th>Município</th>
-                                    <th style="text-align:right;">Extensão RC 150 (m)</th>
-                                    <th style="text-align:right;">Preço / m</th>
-                                    <th style="text-align:right;">Custo Previsto (R$)</th>
-                                    <th style="text-align:right;">Custo Executado (R$)</th>
-                                    <th style="text-align:right;">Saldo a Executar (R$)</th>
-                                    <th style="text-align:center;">% Concluído</th>
-                                </tr>
-                            </thead>
-                            <tbody id="custos-tabela-bairros">
-                                <!-- Preenchido dinamicamente via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-size:0.75rem; color:var(--text-muted-dark);">
-                    💡 <em>Os custos são calculados dinamicamente cruzando a malha vetorial com a tabela de preços unitários.</em>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button id="btn-export-custos-csv" class="btn-header" style="background:#10b981; border:none; color:white;">
-                        <i class="fas fa-file-excel"></i> Exportar Relatório Financeiro (CSV)
-                    </button>
-                    <button id="btn-close-modal-custos-footer" class="btn-header">
-                        Fechar Painel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Leaflet JS CDN -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <!-- Embedded GeoJSON Data Package -->
     <script src="js/data.js?v=20261111a"></script>
-    <script src="js/custos_data.js?v=20261111a"></script>
     <script src="js/escopo_original_data.js?v=20261111a"></script>
     <script src="js/municipios_data.js?v=20261111a"></script>
     <script src="js/metas_data.js?v=20261111a"></script>
@@ -2188,7 +2071,6 @@
     <!-- WebGIS Modules -->
     <script src="js/auth.js?v=20261111a"></script>
     <script src="js/editor.js?v=20261111a"></script>
-    <script src="js/custos.js?v=20261111a"></script>
     <script src="js/export.js?v=20261111a"></script>
     <script src="js/layers.js?v=20261111a"></script>
     <script src="js/charts.js?v=20261111a"></script>
