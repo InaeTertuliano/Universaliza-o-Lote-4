@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom Portal Stylesheet -->
-    <link rel="stylesheet" href="css/style.css?v=20261111o">
+    <link rel="stylesheet" href="css/style.css?v=20261111p">
 </head>
 <body class="auth-locked">
 
@@ -201,29 +201,41 @@
                     <!-- Quadro Frente de Obra (Apresentação Independente - Não é lista suspensa) -->
                     <div class="widget-card">
                         <div class="widget-title">
-                            <span><i class="fas fa-hard-hat"></i> Frentes de Obra (169 — Camada AE)</span>
+                            <span><i class="fas fa-hard-hat"></i> Frentes de Obra <span id="frentes-card-title-count" style="font-size:0.82rem; font-weight:700; color:#38bdf8;">(169 — Camada AE)</span></span>
                             <span style="font-size:0.75rem; font-weight:400; color:var(--engeform-light-taupe);">💡 Clique para aproximar no mapa</span>
                         </div>
 
-                        <!-- Filtros de Busca e Município -->
+                        <!-- Filtros de Busca, Município e Status das Frentes -->
                         <div style="margin-bottom: 0.75rem; display: flex; flex-direction: column; gap: 6px;">
                             <div style="position: relative;">
                                 <input type="text" id="search-frentes-input" placeholder="🔍 Buscar frente de obra..." style="width: 100%; padding: 0.45rem 0.75rem 0.45rem 2rem; border-radius: 6px; background: var(--bg-surface-elevated); border: 1px solid var(--border-dark); color: #fff; font-size: 0.8rem; box-sizing: border-box;">
                                 <i class="fas fa-search" style="position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); color: var(--engeform-light-taupe); font-size: 0.75rem;"></i>
                             </div>
-                            <select id="select-mun-frentes" class="form-select" style="font-size: 0.78rem; padding: 0.35rem 0.6rem;">
-                                <option value="">Todos os Municípios (169 frentes)</option>
-                                <option value="Angatuba">Angatuba (11)</option>
-                                <option value="Campina do Monte Alegre">Campina do Monte Alegre (9)</option>
-                                <option value="Capão Bonito">Capão Bonito (8)</option>
-                                <option value="Guareí">Guareí (15)</option>
-                                <option value="Itapetininga">Itapetininga (46)</option>
-                                <option value="Paranapanema">Paranapanema (14)</option>
-                                <option value="Pardinho">Pardinho (6)</option>
-                                <option value="Pilar do Sul">Pilar do Sul (15)</option>
-                                <option value="Ribeirão Grande">Ribeirão Grande (15)</option>
-                                <option value="São Miguel Arcanjo">São Miguel Arcanjo (30)</option>
-                            </select>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                <div>
+                                    <select id="select-mun-frentes" class="form-select" style="font-size: 0.78rem; padding: 0.35rem 0.6rem; width: 100%; height: 32px;">
+                                        <option value="">Todos os Municípios (169)</option>
+                                        <option value="Angatuba">Angatuba (11)</option>
+                                        <option value="Campina do Monte Alegre">Campina do Monte Alegre (9)</option>
+                                        <option value="Capão Bonito">Capão Bonito (8)</option>
+                                        <option value="Guareí">Guareí (15)</option>
+                                        <option value="Itapetininga">Itapetininga (46)</option>
+                                        <option value="Paranapanema">Paranapanema (14)</option>
+                                        <option value="Pardinho">Pardinho (6)</option>
+                                        <option value="Pilar do Sul">Pilar do Sul (15)</option>
+                                        <option value="Ribeirão Grande">Ribeirão Grande (15)</option>
+                                        <option value="São Miguel Arcanjo">São Miguel Arcanjo (30)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <select id="select-status-frentes" class="form-select" style="font-size: 0.78rem; padding: 0.35rem 0.6rem; width: 100%; height: 32px;">
+                                        <option value="">Todos os Status (169)</option>
+                                        <option value="INICIADO">🔵 Iniciado (14)</option>
+                                        <option value="NÃO INICIADO">🟡 Não Iniciado (155)</option>
+                                        <option value="CONCLUÍDO">🟢 Concluído (0)</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Legenda do Mapa no Zoom Distante (Classificada em Concluído, Iniciado e Não Iniciado) -->
@@ -233,24 +245,24 @@
                                 <span style="font-size: 0.68rem; opacity: 0.8; font-weight: 400;">Classificação das Frentes</span>
                             </div>
                             <div style="display: flex; gap: 8px; justify-content: space-between;">
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                <div class="quick-status-filter" data-status="CONCLUÍDO" style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.78rem; padding: 3px 6px; border-radius: 4px; transition: background 0.2s;" title="Clique para filtrar por Concluído">
                                     <div style="width: 14px; height: 14px; border-radius: 50%; background: #10b981; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 0 6px rgba(16,185,129,0.6); display: flex; align-items: center; justify-content: center; font-size: 7px; color: #fff;"><i class="fas fa-check"></i></div>
-                                    <span style="font-weight: 600; color: #10b981;">Concluído</span>
+                                    <span style="font-weight: 600; color: #10b981;">Concluído (0)</span>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                <div class="quick-status-filter" data-status="INICIADO" style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.78rem; padding: 3px 6px; border-radius: 4px; transition: background 0.2s;" title="Clique para filtrar por Iniciado">
                                     <div style="width: 14px; height: 14px; border-radius: 50%; background: #0284c7; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 0 6px rgba(2,132,199,0.6); display: flex; align-items: center; justify-content: center; font-size: 7px; color: #fff;"><i class="fas fa-spinner"></i></div>
-                                    <span style="font-weight: 600; color: #38bdf8;">Iniciado</span>
+                                    <span style="font-weight: 600; color: #38bdf8;">Iniciado (14)</span>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                <div class="quick-status-filter" data-status="NÃO INICIADO" style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.78rem; padding: 3px 6px; border-radius: 4px; transition: background 0.2s;" title="Clique para filtrar por Não Iniciado">
                                     <div style="width: 14px; height: 14px; border-radius: 50%; background: #f59e0b; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 0 6px rgba(245,158,11,0.6); display: flex; align-items: center; justify-content: center; font-size: 7px; color: #fff;"><i class="fas fa-clock"></i></div>
-                                    <span style="font-weight: 600; color: #fbbf24;">Não Iniciado</span>
+                                    <span style="font-weight: 600; color: #fbbf24;">Não Iniciado (155)</span>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="frentes-scroll-container" style="max-height: 480px; overflow-y: auto; padding-right: 4px;">
 <!-- 1. Banco da Areia I (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Banco da Areia I" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Banco da Areia I" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Banco da Areia I <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -266,7 +278,7 @@
                             </div>
                         </div>
                         <!-- 2. Banco da Terra II (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Banco da Terra II" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Banco da Terra II" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Banco da Terra II <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -282,7 +294,7 @@
                             </div>
                         </div>
                         <!-- 3. Buenos (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Buenos" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Buenos" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Buenos <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -298,7 +310,7 @@
                             </div>
                         </div>
                         <!-- 4. Campina do Bom Retiro (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Campina do Bom Retiro" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Campina do Bom Retiro" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Campina do Bom Retiro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -314,7 +326,7 @@
                             </div>
                         </div>
                         <!-- 5. Coqueiros (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Coqueiros" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Coqueiros" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Coqueiros <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -330,7 +342,7 @@
                             </div>
                         </div>
                         <!-- 6. Dos Leites (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Dos Leites" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Dos Leites" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Dos Leites <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -346,7 +358,7 @@
                             </div>
                         </div>
                         <!-- 7. ETE - Bom Retiro (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="ETE - Bom Retiro" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="ETE - Bom Retiro" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> ETE - Bom Retiro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -362,7 +374,7 @@
                             </div>
                         </div>
                         <!-- 8. Figueira (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Figueira" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Figueira" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Figueira <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -378,7 +390,7 @@
                             </div>
                         </div>
                         <!-- 9. Libaneos (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Libaneos" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Libaneos" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Libaneos <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -394,7 +406,7 @@
                             </div>
                         </div>
                         <!-- 10. Machadinho (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Machadinho" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Machadinho" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Machadinho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -410,7 +422,7 @@
                             </div>
                         </div>
                         <!-- 11. Pateo Velho (Angatuba) -->
-                        <div class="quant-row bairro-card" data-bairro="Pateo Velho" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Pateo Velho" data-mun="Angatuba" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Pateo Velho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Angatuba)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -426,7 +438,7 @@
                             </div>
                         </div>
                         <!-- 12. Aleixos (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Aleixos" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Aleixos" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Aleixos <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -442,7 +454,7 @@
                             </div>
                         </div>
                         <!-- 13. Barreiro (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Barreiro" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Barreiro" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Barreiro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -458,7 +470,7 @@
                             </div>
                         </div>
                         <!-- 14. Engenheiro Hermilio (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Engenheiro Hermilio" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Engenheiro Hermilio" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Engenheiro Hermilio <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -474,7 +486,7 @@
                             </div>
                         </div>
                         <!-- 15. Execução das Obras do SES do Município de Campina do Monte Alegre/Engº Hermilo - Rede, Compreendendo: Rce, Ligações, Emissário e Ete. (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Execução das Obras do SES do Município de Campina do Monte Alegre/Engº Hermilo - Rede, Compreendendo: Rce, Ligações, Emissário e Ete." data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Execução das Obras do SES do Município de Campina do Monte Alegre/Engº Hermilo - Rede, Compreendendo: Rce, Ligações, Emissário e Ete." data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Execução das Obras do SES do Município de Campina do Monte Alegre/Engº Hermilo - Rede, Compreendendo: Rce, Ligações, Emissário e Ete. <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -490,7 +502,7 @@
                             </div>
                         </div>
                         <!-- 16. Laranjal (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Laranjal" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Laranjal" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Laranjal <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -506,7 +518,7 @@
                             </div>
                         </div>
                         <!-- 17. Papagaios (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Papagaios" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Papagaios" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Papagaios <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -522,7 +534,7 @@
                             </div>
                         </div>
                         <!-- 18. Prainha 2 (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Prainha 2" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Prainha 2" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Prainha 2 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -538,7 +550,7 @@
                             </div>
                         </div>
                         <!-- 19. Salto (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Salto" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Salto" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Salto <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -554,7 +566,7 @@
                             </div>
                         </div>
                         <!-- 20. Tapiá (Campina do Monte Alegre) -->
-                        <div class="quant-row bairro-card" data-bairro="Tapiá" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Tapiá" data-mun="Campina do Monte Alegre" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Tapiá <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Campina do Monte Alegre)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -570,7 +582,7 @@
                             </div>
                         </div>
                         <!-- 21. Capão Bonito - ETE - Ampliação de 32,27 L/S (Capão Bonito) -->
-                        <div class="quant-row bairro-card" data-bairro="Capão Bonito - ETE - Ampliação de 32,27 L/S" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Capão Bonito - ETE - Ampliação de 32,27 L/S" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Capão Bonito - ETE - Ampliação de 32,27 L/S <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Capão Bonito)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -586,7 +598,7 @@
                             </div>
                         </div>
                         <!-- 22. Capão Bonito-Ampliação da Captação 23,34 L/S (Capão Bonito) -->
-                        <div class="quant-row bairro-card" data-bairro="Capão Bonito-Ampliação da Captação 23,34 L/S" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Capão Bonito-Ampliação da Captação 23,34 L/S" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Capão Bonito-Ampliação da Captação 23,34 L/S <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Capão Bonito)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -602,7 +614,7 @@
                             </div>
                         </div>
                         <!-- 23. Dos Gomes (Capão Bonito) -->
-                        <div class="quant-row bairro-card" data-bairro="Dos Gomes" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Dos Gomes" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Dos Gomes <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Capão Bonito)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -618,7 +630,7 @@
                             </div>
                         </div>
                         <!-- 24. Dos Lemes (Capão Bonito) -->
-                        <div class="quant-row bairro-card" data-bairro="Dos Lemes" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Dos Lemes" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Dos Lemes <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Capão Bonito)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -634,7 +646,7 @@
                             </div>
                         </div>
                         <!-- 25. Itanguá (Capão Bonito) -->
-                        <div class="quant-row bairro-card" data-bairro="Itanguá" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Itanguá" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Itanguá <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Capão Bonito)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -650,7 +662,7 @@
                             </div>
                         </div>
                         <!-- 26. Jd. Boa Esperança (Capão Bonito) -->
-                        <div class="quant-row bairro-card" data-bairro="Jd. Boa Esperança" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jd. Boa Esperança" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jd. Boa Esperança <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Capão Bonito)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -666,7 +678,7 @@
                             </div>
                         </div>
                         <!-- 27. Querência do Turvo (Capão Bonito) -->
-                        <div class="quant-row bairro-card" data-bairro="Querência do Turvo" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Querência do Turvo" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Querência do Turvo <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Capão Bonito)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -682,7 +694,7 @@
                             </div>
                         </div>
                         <!-- 28. Turvo dos Almeidas (Capão Bonito) -->
-                        <div class="quant-row bairro-card" data-bairro="Turvo dos Almeidas" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Turvo dos Almeidas" data-mun="Capão Bonito" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Turvo dos Almeidas <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Capão Bonito)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -698,7 +710,7 @@
                             </div>
                         </div>
                         <!-- 29. Capela Velha (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Capela Velha" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Capela Velha" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Capela Velha <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -714,7 +726,7 @@
                             </div>
                         </div>
                         <!-- 30. Cerrito (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Cerrito" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Cerrito" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Cerrito <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -730,7 +742,7 @@
                             </div>
                         </div>
                         <!-- 31. Cerro (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Cerro" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Cerro" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Cerro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -746,7 +758,7 @@
                             </div>
                         </div>
                         <!-- 32. Frente 01 - GRI (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Frente 01 - GRI" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Frente 01 - GRI" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Frente 01 - GRI <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -762,7 +774,7 @@
                             </div>
                         </div>
                         <!-- 33. Frente 02 - GRI (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Frente 02 - GRI" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Frente 02 - GRI" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Frente 02 - GRI <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -778,7 +790,7 @@
                             </div>
                         </div>
                         <!-- 34. Frente 03 - GRI (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Frente 03 - GRI" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Frente 03 - GRI" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Frente 03 - GRI <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -794,7 +806,7 @@
                             </div>
                         </div>
                         <!-- 35. Guaréi - Implantação  Rservatório 200m³ (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Guaréi - Implantação  Rservatório 200m³" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Guaréi - Implantação  Rservatório 200m³" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Guaréi - Implantação  Rservatório 200m³ <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -810,7 +822,7 @@
                             </div>
                         </div>
                         <!-- 36. Jacutinga (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Jacutinga" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jacutinga" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jacutinga <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -826,7 +838,7 @@
                             </div>
                         </div>
                         <!-- 37. Jardim Adelina (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Jardim Adelina" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jardim Adelina" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Adelina <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -842,7 +854,7 @@
                             </div>
                         </div>
                         <!-- 38. Pedras e Vitória (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Pedras e Vitória" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Pedras e Vitória" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Pedras e Vitória <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -858,7 +870,7 @@
                             </div>
                         </div>
                         <!-- 39. Rua Benedito Tomé (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua Benedito Tomé" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua Benedito Tomé" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua Benedito Tomé <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -874,7 +886,7 @@
                             </div>
                         </div>
                         <!-- 40. Rua Francis Castanho de Moraes (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua Francis Castanho de Moraes" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua Francis Castanho de Moraes" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua Francis Castanho de Moraes <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -890,7 +902,7 @@
                             </div>
                         </div>
                         <!-- 41. Rua Tiradentes (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua Tiradentes" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua Tiradentes" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua Tiradentes <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -906,7 +918,7 @@
                             </div>
                         </div>
                         <!-- 42. Sarandi (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Sarandi" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Sarandi" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Sarandi <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -922,7 +934,7 @@
                             </div>
                         </div>
                         <!-- 43. Sobar (Guareí) -->
-                        <div class="quant-row bairro-card" data-bairro="Sobar" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Sobar" data-mun="Guareí" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Sobar <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Guareí)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -938,7 +950,7 @@
                             </div>
                         </div>
                         <!-- 44. Ampliação ETA Itapetininga (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação ETA Itapetininga" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação ETA Itapetininga" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação ETA Itapetininga <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -954,7 +966,7 @@
                             </div>
                         </div>
                         <!-- 45. Ampliação ETE Tupi (Implantação em 2026) (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação ETE Tupi (Implantação em 2026)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação ETE Tupi (Implantação em 2026)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação ETE Tupi (Implantação em 2026) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -970,7 +982,7 @@
                             </div>
                         </div>
                         <!-- 46. Ampliação Reservatório Conceição (Implantação em 2026) (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação Reservatório Conceição (Implantação em 2026)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação Reservatório Conceição (Implantação em 2026)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação Reservatório Conceição (Implantação em 2026) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -986,7 +998,7 @@
                             </div>
                         </div>
                         <!-- 47. Ampliação Reservatório Rechan (Implantação em 2026) (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação Reservatório Rechan (Implantação em 2026)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação Reservatório Rechan (Implantação em 2026)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação Reservatório Rechan (Implantação em 2026) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1002,7 +1014,7 @@
                             </div>
                         </div>
                         <!-- 48. Areião (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Areião" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Areião" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Areião <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1018,7 +1030,7 @@
                             </div>
                         </div>
                         <!-- 49. Biscoito Duro (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Biscoito Duro" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Biscoito Duro" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Biscoito Duro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1034,7 +1046,7 @@
                             </div>
                         </div>
                         <!-- 50. Campo Grande e Vatinga (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Campo Grande e Vatinga" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Campo Grande e Vatinga" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Campo Grande e Vatinga <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1050,7 +1062,7 @@
                             </div>
                         </div>
                         <!-- 51. Campo do Meio (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Campo do Meio" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Campo do Meio" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Campo do Meio <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1066,7 +1078,7 @@
                             </div>
                         </div>
                         <!-- 52. Canta Galo (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Canta Galo" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Canta Galo" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Canta Galo <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1082,7 +1094,7 @@
                             </div>
                         </div>
                         <!-- 53. Capivari (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Capivari" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Capivari" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Capivari <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1098,7 +1110,7 @@
                             </div>
                         </div>
                         <!-- 54. Claros (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Claros" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Claros" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Claros <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1114,7 +1126,7 @@
                             </div>
                         </div>
                         <!-- 55. Curuça I (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Curuça I" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Curuça I" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Curuça I <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1130,7 +1142,7 @@
                             </div>
                         </div>
                         <!-- 56. Curuça II (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Curuça II" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Curuça II" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Curuça II <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1146,7 +1158,7 @@
                             </div>
                         </div>
                         <!-- 57. Curuça III (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Curuça III" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Curuça III" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Curuça III <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1162,7 +1174,7 @@
                             </div>
                         </div>
                         <!-- 58. Distrito Gramadinho (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Distrito Gramadinho" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Distrito Gramadinho" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Distrito Gramadinho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1178,7 +1190,7 @@
                             </div>
                         </div>
                         <!-- 59. Distrito de Conceição (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Distrito de Conceição" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Distrito de Conceição" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Distrito de Conceição <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1195,7 +1207,7 @@
                         </div>
                         <!-- 60. Distrito do Rechan (Travessa
 Manoel Rodrigues) (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Distrito do Rechan (Travessa
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Distrito do Rechan (Travessa
 Manoel Rodrigues)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Distrito do Rechan (Travessa
@@ -1213,7 +1225,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 61. ETE Compacta Itarecreio  371_ar_1847 (Implantação em 2026) (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="ETE Compacta Itarecreio  371_ar_1847 (Implantação em 2026)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="ETE Compacta Itarecreio  371_ar_1847 (Implantação em 2026)" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> ETE Compacta Itarecreio  371_ar_1847 (Implantação em 2026) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1229,7 +1241,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 62. Gramadinho - Formal 2 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Gramadinho - Formal 2" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Gramadinho - Formal 2" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Gramadinho - Formal 2 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1245,7 +1257,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 63. Gramadinho Formal 1 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Gramadinho Formal 1" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Gramadinho Formal 1" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Gramadinho Formal 1 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1261,7 +1273,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 64. Ita Recreio (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Ita Recreio" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ita Recreio" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ita Recreio <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1277,7 +1289,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 65. Jardim Monte Santo 1 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Jardim Monte Santo 1" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jardim Monte Santo 1" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Monte Santo 1 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1293,7 +1305,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 66. Jardim Monte Santo 2 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Jardim Monte Santo 2" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jardim Monte Santo 2" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Monte Santo 2 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1309,7 +1321,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 67. Jd Aeroporto (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Jd Aeroporto" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Jd Aeroporto" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Jd Aeroporto <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1325,7 +1337,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 68. Jurumirim (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Jurumirim" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jurumirim" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jurumirim <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1341,7 +1353,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 69. Mato Seco (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Mato Seco" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Mato Seco" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Mato Seco <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1357,7 +1369,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 70. Morro Vermelho (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Morro Vermelho" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Morro Vermelho" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Morro Vermelho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1373,7 +1385,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 71. Morro do Alto (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Morro do Alto" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Morro do Alto" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Morro do Alto <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1389,7 +1401,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 72. Morro do Alto 1 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Morro do Alto 1" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Morro do Alto 1" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Morro do Alto 1 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1405,7 +1417,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 73. P4 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="P4" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="P4" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> P4 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1421,7 +1433,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 74. P5 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="P5" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="P5" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> P5 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1437,7 +1449,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 75. Pacaembu (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Pacaembu" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Pacaembu" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Pacaembu <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1453,7 +1465,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 76. Peixoto (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Peixoto" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Peixoto" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Peixoto <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1469,7 +1481,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 77. Pescaria (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Pescaria" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Pescaria" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Pescaria <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1485,7 +1497,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 78. Portal da Figueira (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Portal da Figueira" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Portal da Figueira" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Portal da Figueira <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1501,7 +1513,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 79. Porto (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Porto" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Porto" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Porto <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1517,7 +1529,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 80. Registro/Porto Velho (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Registro/Porto Velho" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Registro/Porto Velho" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Registro/Porto Velho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1533,7 +1545,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 81. Retiro (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Retiro" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Retiro" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Retiro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1549,7 +1561,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 82. Rio Acima (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Rio Acima" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rio Acima" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rio Acima <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1565,7 +1577,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 83. Tande - Distrito do Rechan (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Tande - Distrito do Rechan" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Tande - Distrito do Rechan" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Tande - Distrito do Rechan <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1581,7 +1593,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 84. Tupy - EEE (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Tupy - EEE" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Tupy - EEE" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Tupy - EEE <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1597,7 +1609,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 85. Tupy 1 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Tupy 1" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Tupy 1" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Tupy 1 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1613,7 +1625,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 86. Tupy 2 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Tupy 2" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Tupy 2" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Tupy 2 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1629,7 +1641,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 87. Tupy 3 (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Tupy 3" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Tupy 3" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Tupy 3 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1645,7 +1657,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 88. Turvo dos Rodrigues (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Turvo dos Rodrigues" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Turvo dos Rodrigues" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Turvo dos Rodrigues <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1661,7 +1673,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                             </div>
                         </div>
                         <!-- 89. Turvo dos Rodrigues (Itapetininga) -->
-                        <div class="quant-row bairro-card" data-bairro="Turvo dos Rodrigues" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Turvo dos Rodrigues" data-mun="Itapetininga" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Turvo dos Rodrigues <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Itapetininga)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1678,7 +1690,7 @@ Manoel Rodrigues) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;"
                         </div>
                         <!-- 90. Avenida José Gil Plens (Entrada
 da Cidade) (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Avenida José Gil Plens (Entrada
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Avenida José Gil Plens (Entrada
 da Cidade)" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Avenida José Gil Plens (Entrada
@@ -1696,7 +1708,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 91. Bairro Aparecida (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Bairro Aparecida" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Bairro Aparecida" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Bairro Aparecida <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1712,7 +1724,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 92. Loteamento Apiaí (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Loteamento Apiaí" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Loteamento Apiaí" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Loteamento Apiaí <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1728,7 +1740,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 93. Mato Dentro PNP (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Mato Dentro PNP" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Mato Dentro PNP" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Mato Dentro PNP <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1744,7 +1756,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 94. Paranapanema - Captação - Implantação de 13,59 L/S  - Ampliação da Outorga em 10,5 L/S (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Paranapanema - Captação - Implantação de 13,59 L/S  - Ampliação da Outorga em 10,5 L/S" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Paranapanema - Captação - Implantação de 13,59 L/S  - Ampliação da Outorga em 10,5 L/S" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Paranapanema - Captação - Implantação de 13,59 L/S  - Ampliação da Outorga em 10,5 L/S <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1760,7 +1772,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 95. Paranapanema - ETA Sede - Ampliação de 9,11 L/S (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Paranapanema - ETA Sede - Ampliação de 9,11 L/S" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Paranapanema - ETA Sede - Ampliação de 9,11 L/S" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Paranapanema - ETA Sede - Ampliação de 9,11 L/S <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1776,7 +1788,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 96. Ponte (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Ponte" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ponte" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ponte <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1792,7 +1804,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 97. Recanto I (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Recanto I" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Recanto I" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Recanto I <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1808,7 +1820,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 98. Remanso do Paranapanema (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Remanso do Paranapanema" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Remanso do Paranapanema" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Remanso do Paranapanema <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1824,7 +1836,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 99. Rua Um (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua Um" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua Um" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua Um <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1840,7 +1852,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 100. Rua das Posses (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua das Posses" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua das Posses" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua das Posses <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1856,7 +1868,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 101. Serra da Prata (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="Serra da Prata" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Serra da Prata" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Serra da Prata <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1872,7 +1884,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 102. São Pedro (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="São Pedro" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="São Pedro" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> São Pedro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1888,7 +1900,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 103. São Pedro II (Paranapanema) -->
-                        <div class="quant-row bairro-card" data-bairro="São Pedro II" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="São Pedro II" data-mun="Paranapanema" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> São Pedro II <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paranapanema)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1904,7 +1916,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 104. Bairro Serra Italiana (Pardinho) -->
-                        <div class="quant-row bairro-card" data-bairro="Bairro Serra Italiana" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Bairro Serra Italiana" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Bairro Serra Italiana <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pardinho)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1920,7 +1932,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 105. Campos Eliseos (Pardinho) -->
-                        <div class="quant-row bairro-card" data-bairro="Campos Eliseos" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Campos Eliseos" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Campos Eliseos <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pardinho)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1936,7 +1948,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 106. Distrito Industrial (Pardinho) -->
-                        <div class="quant-row bairro-card" data-bairro="Distrito Industrial" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Distrito Industrial" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Distrito Industrial <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pardinho)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1952,7 +1964,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 107. Lot. Jd. São João (Pardinho) -->
-                        <div class="quant-row bairro-card" data-bairro="Lot. Jd. São João" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Lot. Jd. São João" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Lot. Jd. São João <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pardinho)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1968,7 +1980,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 108. Maristela (Pardinho) -->
-                        <div class="quant-row bairro-card" data-bairro="Maristela" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Maristela" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Maristela <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pardinho)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -1984,7 +1996,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 109. Rua Nicanor Teodoro Rosa (Pardinho) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua Nicanor Teodoro Rosa" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua Nicanor Teodoro Rosa" data-mun="Pardinho" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua Nicanor Teodoro Rosa <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pardinho)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2000,7 +2012,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 110. Bairro Ilha (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Bairro Ilha" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Bairro Ilha" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Bairro Ilha <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2016,7 +2028,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 111. Chapadão (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Chapadão" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Chapadão" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Chapadão <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2032,7 +2044,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 112. Ete_sede_ampliação_2028 (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Ete_sede_ampliação_2028" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ete_sede_ampliação_2028" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ete_sede_ampliação_2028 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2048,7 +2060,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 113. Frente 01 - PLS (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Frente 01 - PLS" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Frente 01 - PLS" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Frente 01 - PLS <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2064,7 +2076,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 114. Guaçuzal (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Guaçuzal" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Guaçuzal" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Guaçuzal <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2080,7 +2092,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 115. Jardim Panorama (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Jardim Panorama" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jardim Panorama" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Panorama <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2096,7 +2108,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 116. Jardim Vitória Matadouro (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Jardim Vitória Matadouro" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jardim Vitória Matadouro" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Vitória Matadouro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2112,7 +2124,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 117. Jd Cananéia e Ch. Reunidas (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Jd Cananéia e Ch. Reunidas" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jd Cananéia e Ch. Reunidas" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jd Cananéia e Ch. Reunidas <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2128,7 +2140,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 118. Lavrinha (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Lavrinha" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Lavrinha" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Lavrinha <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2144,7 +2156,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 119. Paineiras (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Paineiras" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Paineiras" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Paineiras <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2160,7 +2172,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 120. Ribeirão (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Ribeirão" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ribeirão" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ribeirão <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2176,7 +2188,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 121. Rod. Nestor Fogaça (Bairro) (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Rod. Nestor Fogaça (Bairro)" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rod. Nestor Fogaça (Bairro)" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rod. Nestor Fogaça (Bairro) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2192,7 +2204,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 122. Turvinho (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Turvinho" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Turvinho" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Turvinho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2208,7 +2220,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 123. Turvo dos Goes (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Turvo dos Goes" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Turvo dos Goes" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Turvo dos Goes <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2224,7 +2236,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 124. Água Doce/Bom Retiro (Pilar do Sul) -->
-                        <div class="quant-row bairro-card" data-bairro="Água Doce/Bom Retiro" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Água Doce/Bom Retiro" data-mun="Pilar do Sul" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Água Doce/Bom Retiro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Pilar do Sul)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2240,7 +2252,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 125. Barreiro do Cabral (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Barreiro do Cabral" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Barreiro do Cabral" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Barreiro do Cabral <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2256,7 +2268,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 126. Barro Branco (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Barro Branco" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Barro Branco" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Barro Branco <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2272,7 +2284,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 127. Boa Vista RG (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Boa Vista RG" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Boa Vista RG" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Boa Vista RG <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2288,7 +2300,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 128. Capoeira Alta (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Capoeira Alta" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Capoeira Alta" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Capoeira Alta <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2304,7 +2316,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 129. Conchas (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Conchas" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Conchas" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Conchas <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2320,7 +2332,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 130. Cristal (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Cristal" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Cristal" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Cristal <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2336,7 +2348,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 131. Ferreira dos Matos (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Ferreira dos Matos" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ferreira dos Matos" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ferreira dos Matos <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2352,7 +2364,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 132. Jurubatuba (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Jurubatuba" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jurubatuba" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jurubatuba <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2368,7 +2380,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 133. Lagoa (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Lagoa" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Lagoa" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Lagoa <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2384,7 +2396,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 134. Machados (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Machados" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Machados" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Machados <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2400,7 +2412,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 135. Mato Dentro RG (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Mato Dentro RG" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Mato Dentro RG" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Mato Dentro RG <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2416,7 +2428,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 136. Rodrigues (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Rodrigues" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rodrigues" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rodrigues <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2432,7 +2444,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 137. Rua Doracina Meira e Região (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua Doracina Meira e Região" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua Doracina Meira e Região" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua Doracina Meira e Região <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2448,7 +2460,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 138. Rua Francisco Cesarino Ferreira (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua Francisco Cesarino Ferreira" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua Francisco Cesarino Ferreira" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua Francisco Cesarino Ferreira <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2464,7 +2476,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 139. Taquarianos (Ribeirão Grande) -->
-                        <div class="quant-row bairro-card" data-bairro="Taquarianos" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Taquarianos" data-mun="Ribeirão Grande" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Taquarianos <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Ribeirão Grande)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2480,7 +2492,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 140. Abaitinga (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Abaitinga" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Abaitinga" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Abaitinga <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2496,7 +2508,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 141. Ampliação ETA São Miguel Arcanjo (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação ETA São Miguel Arcanjo" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação ETA São Miguel Arcanjo" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação ETA São Miguel Arcanjo <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2512,7 +2524,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 142. Ampliação ETE Pocinho (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação ETE Pocinho" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação ETE Pocinho" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação ETE Pocinho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2528,7 +2540,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 143. Ampliação Imediata CR Capão Rico (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação Imediata CR Capão Rico" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação Imediata CR Capão Rico" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação Imediata CR Capão Rico <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2544,7 +2556,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 144. Ampliação Imediata CR Gaviões (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação Imediata CR Gaviões" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação Imediata CR Gaviões" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação Imediata CR Gaviões <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2560,7 +2572,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 145. Ampliação Imediata CR Pocinho (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação Imediata CR Pocinho" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação Imediata CR Pocinho" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação Imediata CR Pocinho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2576,7 +2588,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 146. Ampliação Imediata CR Santa Cruz de Matos (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Ampliação Imediata CR Santa Cruz de Matos" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ampliação Imediata CR Santa Cruz de Matos" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ampliação Imediata CR Santa Cruz de Matos <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2592,7 +2604,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 147. Bairro Laranjal (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Bairro Laranjal" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Bairro Laranjal" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Bairro Laranjal <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2608,7 +2620,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 148. Bairro Monho (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Bairro Monho" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Bairro Monho" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Bairro Monho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2624,7 +2636,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 149. Boa Vista SMA (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Boa Vista SMA" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Boa Vista SMA" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Boa Vista SMA <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2640,7 +2652,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 150. Faxinal dos Almeidas (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Faxinal dos Almeidas" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Faxinal dos Almeidas" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Faxinal dos Almeidas <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2656,7 +2668,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 151. Ferreirada (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Ferreirada" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Ferreirada" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Ferreirada <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2672,7 +2684,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 152. Frente 01 SMA (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Frente 01 SMA" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Frente 01 SMA" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Frente 01 SMA <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2688,7 +2700,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 153. Gramadão (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Gramadão" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Gramadão" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Gramadão <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2704,7 +2716,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 154. Gramadão 2 (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Gramadão 2" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Gramadão 2" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Gramadão 2 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2720,7 +2732,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 155. Gramadão 3 (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Gramadão 3" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Gramadão 3" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Gramadão 3 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2736,7 +2748,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 156. Gramadão 4 (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Gramadão 4" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Gramadão 4" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Gramadão 4 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2752,7 +2764,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 157. Guararema (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Guararema" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Guararema" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Guararema <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2768,7 +2780,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 158. Jardim Colinas 1 (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Jardim Colinas 1" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jardim Colinas 1" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Colinas 1 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2784,7 +2796,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 159. Jardim Colinas 2 (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Jardim Colinas 2" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Jardim Colinas 2" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Jardim Colinas 2 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2800,7 +2812,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 160. Justinada (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Justinada" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Justinada" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Justinada <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2816,7 +2828,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 161. Pocinho (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Pocinho" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Pocinho" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Pocinho <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2832,7 +2844,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 162. Pocinho 2 (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Pocinho 2" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Pocinho 2" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Pocinho 2 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2848,7 +2860,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 163. Pocinho 3 (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Pocinho 3" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Pocinho 3" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Pocinho 3 <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2864,7 +2876,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 164. Retiro (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Retiro" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Retiro" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Retiro <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2880,7 +2892,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 165. Rio Acima (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Rio Acima" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="INICIADO" data-bairro="Rio Acima" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#0284c7; font-size:9px; margin-right:4px;"></i> Rio Acima <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2896,7 +2908,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 166. Rua Jacarandá (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Rua Jacarandá" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Rua Jacarandá" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Rua Jacarandá <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2912,7 +2924,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 167. Tozan (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Tozan" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Tozan" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Tozan <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2928,7 +2940,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 168. Turvo da Lagoa (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Turvo da Lagoa" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Turvo da Lagoa" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Turvo da Lagoa <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -2944,7 +2956,7 @@ da Cidade) <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(Paran
                             </div>
                         </div>
                         <!-- 169. Turvo dos Hilários (São Miguel Arcanjo) -->
-                        <div class="quant-row bairro-card" data-bairro="Turvo dos Hilários" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
+                        <div class="quant-row bairro-card" data-status="NÃO INICIADO" data-bairro="Turvo dos Hilários" data-mun="São Miguel Arcanjo" style="cursor:pointer; margin-bottom: 6px;">
                             <div class="quant-header-row">
                                 <span class="quant-title-text"><i class="fas fa-circle" style="color:#f59e0b; font-size:9px; margin-right:4px;"></i> Turvo dos Hilários <span style="font-size:0.72rem; opacity:0.8; font-weight:400;">(São Miguel Arcanjo)</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -5757,20 +5769,20 @@ da Cidade) <span style="font-size:0.7rem; opacity:0.75; font-weight:400;">(Paran
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <!-- Embedded GeoJSON Data Package -->
-    <script src="js/data.js?v=20261111o"></script>
-    <script src="js/escopo_original_data.js?v=20261111o"></script>
-    <script src="js/municipios_data.js?v=20261111o"></script>
-    <script src="js/metas_data.js?v=20261111o"></script>
+    <script src="js/data.js?v=20261111p"></script>
+    <script src="js/escopo_original_data.js?v=20261111p"></script>
+    <script src="js/municipios_data.js?v=20261111p"></script>
+    <script src="js/metas_data.js?v=20261111p"></script>
 
     <!-- WebGIS Modules -->
-    <script src="js/auth.js?v=20261111o"></script>
-    <script src="js/editor.js?v=20261111o"></script>
-    <script src="js/export.js?v=20261111o"></script>
-    <script src="js/layers.js?v=20261111o"></script>
-    <script src="js/charts.js?v=20261111o"></script>
-    <script src="js/filters.js?v=20261111o"></script>
-    <script src="js/metas.js?v=20261111o"></script>
-    <script src="js/app.js?v=20261111o"></script>
+    <script src="js/auth.js?v=20261111p"></script>
+    <script src="js/editor.js?v=20261111p"></script>
+    <script src="js/export.js?v=20261111p"></script>
+    <script src="js/layers.js?v=20261111p"></script>
+    <script src="js/charts.js?v=20261111p"></script>
+    <script src="js/filters.js?v=20261111p"></script>
+    <script src="js/metas.js?v=20261111p"></script>
+    <script src="js/app.js?v=20261111p"></script>
 
 </body>
 </html>

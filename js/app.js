@@ -1122,25 +1122,72 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
-    // 17. Search & Municipality Filter for 169 Frentes de Obra (Camada AE)
+    // 17. Search, Municipality & Status Filters for 169 Frentes de Obra (Camada AE - Painel Visão Geral)
     const searchFrentesInput = document.getElementById('search-frentes-input');
     const selectMunFrentes = document.getElementById('select-mun-frentes');
+    const selectStatusFrentes = document.getElementById('select-status-frentes');
+    const titleFrentesEl = document.getElementById('frentes-card-title-count');
 
     function filterFrentesUI() {
         const term = (searchFrentesInput ? searchFrentesInput.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
         const selMun = (selectMunFrentes ? selectMunFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-        
-        document.querySelectorAll('.frentes-scroll-container .bairro-card').forEach(card => {
+        const selStatus = (selectStatusFrentes ? selectStatusFrentes.value : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+
+        let visibleCount = 0;
+        const cards = document.querySelectorAll('.frentes-scroll-container .bairro-card');
+
+        cards.forEach(card => {
             const b = (card.dataset.bairro || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
             const m = (card.dataset.mun || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-            const matchTerm = !term || b.includes(term) || m.includes(term);
+            let st = (card.dataset.status || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+
+            // Fallback for status from badge if data-status is not yet set
+            if (!st) {
+                const badge = card.querySelector('.popup-badge');
+                if (badge) {
+                    const bText = badge.textContent.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+                    if (bText.includes('CONCLUIDO')) st = 'CONCLUIDO';
+                    else if (bText.includes('NAO INICIADO')) st = 'NAO INICIADO';
+                    else if (bText.includes('INICIADO')) st = 'INICIADO';
+                }
+            }
+
+            const matchTerm = !term || b.includes(term) || m.includes(term) || st.includes(term);
             const matchMun = !selMun || m === selMun;
-            card.style.display = (matchTerm && matchMun) ? '' : 'none';
+            const matchStatus = !selStatus || st === selStatus || (selStatus === 'INICIADO' && st.startsWith('INICIADO'));
+
+            const isVisible = matchTerm && matchMun && matchStatus;
+            card.style.display = isVisible ? '' : 'none';
+            if (isVisible) visibleCount++;
         });
+
+        if (titleFrentesEl) {
+            if (visibleCount === cards.length) {
+                titleFrentesEl.textContent = `(${cards.length} — Camada AE)`;
+            } else {
+                titleFrentesEl.textContent = `(${visibleCount} de ${cards.length} — Camada AE)`;
+            }
+        }
     }
 
     if (searchFrentesInput) searchFrentesInput.addEventListener('input', filterFrentesUI);
     if (selectMunFrentes) selectMunFrentes.addEventListener('change', filterFrentesUI);
+    if (selectStatusFrentes) selectStatusFrentes.addEventListener('change', filterFrentesUI);
+
+    // Quick-filter clicking on legend items
+    document.querySelectorAll('.quick-status-filter').forEach(item => {
+        item.addEventListener('click', function() {
+            const st = this.dataset.status;
+            if (selectStatusFrentes) {
+                if (selectStatusFrentes.value === st) {
+                    selectStatusFrentes.value = ''; // Toggle off
+                } else {
+                    selectStatusFrentes.value = st;
+                }
+                filterFrentesUI();
+            }
+        });
+    });
 
     console.log("Portal WebGIS Engeform & Sabesp ready with Dynamic Bairro Segment & Obras Localizadas Widgets!");
 });
