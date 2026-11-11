@@ -977,6 +977,64 @@ body.light-theme .form-select, body.light-theme .form-input {
     border-color: var(--engeform-taupe);
 }
 
+.form-select option {
+    background-color: #242623;
+    color: #f8fafc;
+    padding: 8px 12px;
+}
+
+body.light-theme .form-select option {
+    background-color: #ffffff;
+    color: #1e201d;
+}
+
+/* --------------------------------------------------------------------------
+   Destaque e Alto Contraste para Listas Suspensas de Confrontação de Escopo
+   Garante texto claro e perfeitamente legível sobre fundo escuro
+   -------------------------------------------------------------------------- */
+#select-confrontar-frente,
+#select-modal-confrontar-frente {
+    background-color: #1e201d !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(249, 115, 22, 0.6) !important;
+    font-weight: 600 !important;
+}
+
+#select-confrontar-frente option,
+#select-modal-confrontar-frente option {
+    background-color: #1e201d !important;
+    color: #f8fafc !important; /* Texto branco/claro de alto contraste para itens não selecionados */
+    padding: 8px 12px !important;
+    font-size: 0.84rem !important;
+    font-weight: 500 !important;
+}
+
+#select-confrontar-frente option:checked,
+#select-modal-confrontar-frente option:checked {
+    background-color: #f97316 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+body.light-theme #select-confrontar-frente,
+body.light-theme #select-modal-confrontar-frente {
+    background-color: #ffffff !important;
+    color: #1e201d !important;
+    border-color: rgba(249, 115, 22, 0.7) !important;
+}
+
+body.light-theme #select-confrontar-frente option,
+body.light-theme #select-modal-confrontar-frente option {
+    background-color: #ffffff !important;
+    color: #1e201d !important;
+}
+
+body.light-theme #select-confrontar-frente option:checked,
+body.light-theme #select-modal-confrontar-frente option:checked {
+    background-color: #f97316 !important;
+    color: #ffffff !important;
+}
+
 /* --------------------------------------------------------------------------
    Map Canvas & Overlay Tools
    -------------------------------------------------------------------------- */

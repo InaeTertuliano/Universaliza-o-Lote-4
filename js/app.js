@@ -431,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </span>
                 </div>
                 
-                <p style="font-size:0.82rem; color:var(--text-light); margin:0.65rem 0 1.1rem 0; line-height: 1.45;">
+                <p style="font-size:0.82rem; color:#e2e8f0; margin:0.65rem 0 1.1rem 0; line-height: 1.45;">
                     <i class="fas fa-info-circle" style="color: ${deltaColor}; margin-right: 5px;"></i>
                     ${variacaoDesc}
                 </p>
@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let optionsHtml = '';
         list.forEach(f => {
-            optionsHtml += `<option value="${f.id}">${f.frente} (${f.municipio}) - ${f.status_label}</option>`;
+            optionsHtml += `<option value="${f.id}" style="background-color: #1e201d; color: #f8fafc; font-weight: 500; padding: 6px 10px;">${f.frente} (${f.municipio}) - ${f.status_label}</option>`;
         });
 
         if (selConfrontarCard) selConfrontarCard.innerHTML = optionsHtml;
