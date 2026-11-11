@@ -22,10 +22,14 @@ window.GIS_LAYERS = (function() {
     let currentHighlightedBairro = null;
 
     // Limiar de zoom:
-    // - Obras Localizadas (EEE): visíveis em zoom aproximado (>= 13); ocultas em zoom distante
+    // - Obras Localizadas (Grandes Instalações: EEE, EEAT, Reservatórios, ETAs, Boosters): visíveis a partir de zoom aproximado (>= 13)
+    // - Detalhes de Rede (Poços de Esgoto / PVs e Nós de Rede): micro-marcadores discretos visíveis APENAS em zoom alto (>= 16)
     // - Centróides de Bairro (Ícone + Rótulo): visíveis em zoom distante (< 13); ocultos em zoom aproximado
     const MIN_ZOOM_LOCALIZADA = 13;
+    const MIN_ZOOM_POCOS_NOS = 16;
     let isLocalizadaEnabled = true; // Controlado pelo checkbox da camada no painel
+    let layerGroupLocalizadaMajor = null;   // Grandes instalações (EEE, EEAT, Reservatório, Booster, ETA, etc.)
+    let layerGroupLocalizadaDetalhe = null; // Detalhes de rede (Poços de Esgoto e Nós de Rede)
 
     // Centróides calculados das 28 Frentes de Obra / Bairros para exibição em zoom distante (< 13)
     // Classificados rigorosamente por Status de Execução: Concluído (#10b981), Iniciado (#0284c7) e Não Iniciado (#f59e0b)
@@ -264,22 +268,68 @@ const BAIRRO_CENTROIDS = [
         return getStatusColor(props.status);
     }
 
-    // Custom Icon for EEE Points
-    function createEEEMarker(latlng, feature) {
-        const props = feature.properties;
+    // Classificação funcional de elementos pontuais da camada localizada
+    function getLocalizadaCategory(props) {
+        if (!props) return 'no';
+        const seg = (props.segmento || '').toString().trim().toUpperCase();
+        if (seg.includes('EEE') || seg.includes('EEAT') || seg.includes('ETE') ||
+            seg.includes('RESERVAT') || seg.includes('BOOSTER') || seg.includes('ETA') ||
+            seg.includes('POÇO PROFUNDO') || seg.includes('POCO PROFUNDO')) {
+            return 'major';
+        }
+        if (seg.includes('POÇO') || seg.includes('POCO') || seg.includes('PVE') || seg.includes('PV')) {
+            return 'poco';
+        }
+        return 'no';
+    }
+
+    // Marcadores inteligentes da Camada Localizada:
+    // - Grandes Instalações (EEE, EEAT, etc.): ícone de 22px com anel pulsante
+    // - Poços de Esgoto (PV): micro-marcador circular 7px (Zoom >= 16)
+    // - Nós de Rede: micro-marcador circular 5px (Zoom >= 16)
+    function createLocalizadaMarker(latlng, feature) {
+        const props = (feature && feature.properties) ? feature.properties : {};
+        const cat = getLocalizadaCategory(props);
         const color = getFeatureColor(props, 'localizada');
-        
-        const customIcon = L.divIcon({
-            className: 'pulsing-marker',
-            html: `
-                <div class="pulsing-marker-ring" style="background: ${color}55;"></div>
-                <div class="pulsing-marker-icon" style="background: ${color};">
-                    <i class="fas fa-industry"></i>
-                </div>
-            `,
-            iconSize: [32, 32],
-            iconAnchor: [16, 16]
-        });
+
+        let customIcon;
+        if (cat === 'poco') {
+            const pvName = props.Name || 'PV';
+            customIcon = L.divIcon({
+                className: 'poco-leaflet-icon',
+                html: `<div class="poco-esgoto-marker" style="background-color: ${color};" title="Poço de Esgoto: ${pvName} (${props.status || 'Não Iniciado'})"></div>`,
+                iconSize: [8, 8],
+                iconAnchor: [4, 4]
+            });
+        } else if (cat === 'no') {
+            const noName = props.Name || 'Nó';
+            customIcon = L.divIcon({
+                className: 'no-leaflet-icon',
+                html: `<div class="no-rede-marker" style="background-color: ${color};" title="Nó de Rede: ${noName}"></div>`,
+                iconSize: [6, 6],
+                iconAnchor: [3, 3]
+            });
+        } else {
+            // Grandes Instalações
+            let faIcon = 'fa-industry';
+            const seg = (props.segmento || '').toUpperCase();
+            if (seg.includes('RESERVAT')) faIcon = 'fa-water';
+            else if (seg.includes('POÇO') || seg.includes('POCO')) faIcon = 'fa-droplet';
+            else if (seg.includes('BOOSTER') || seg.includes('EEAT')) faIcon = 'fa-bolt';
+            else if (seg.includes('ETA')) faIcon = 'fa-filter';
+
+            customIcon = L.divIcon({
+                className: 'pulsing-marker',
+                html: `
+                    <div class="pulsing-marker-ring" style="background: ${color}55;"></div>
+                    <div class="pulsing-marker-icon" style="background: ${color};">
+                        <i class="fas ${faIcon}"></i>
+                    </div>
+                `,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+        }
 
         const marker = L.marker(latlng, { icon: customIcon });
         marker.bindPopup(function() {
@@ -295,6 +345,8 @@ const BAIRRO_CENTROIDS = [
         });
         return marker;
     }
+
+    const createEEEMarker = createLocalizadaMarker; // Retrocompatibilidade
 
     // Styles for Áreas de Expansão (Frentes de Obra - Camada AE)
     function styleAreas(feature) {
@@ -450,10 +502,81 @@ const BAIRRO_CENTROIDS = [
 
     function createLocalizadaPopup(props) {
         const isEditor = window.GIS_AUTH && typeof window.GIS_AUTH.isEditor === 'function' && window.GIS_AUTH.isEditor();
+        const cat = getLocalizadaCategory(props);
+
+        if (cat === 'poco') {
+            const pvName = props.Name || 'Poço de Visita (PV)';
+            const prof = (props.prof_poco !== null && props.prof_poco !== undefined && props.prof_poco !== '') ? `${props.prof_poco} m` : '-';
+            const rim = (props.RimElevati !== null && props.RimElevati !== undefined && props.RimElevati !== '') ? `${props.RimElevati} m` : '-';
+            const sump = (props.SumpElevat !== null && props.SumpElevat !== undefined && props.SumpElevat !== '') ? `${Number(props.SumpElevat).toFixed(2)} m` : '-';
+            const statusBadgeClass = (props.status || 'não-iniciado').toLowerCase().replace(/ /g, '-').replace(/ã/g, 'a').replace(/õ/g, 'o');
+
+            return `
+                <div class="popup-header" style="background: linear-gradient(135deg, #059669, #064e3b);">
+                    <div class="popup-category"><i class="fas fa-circle-dot"></i> Poço de Visita (PV) / Esgoto</div>
+                    <div class="popup-title">${pvName}</div>
+                </div>
+                <div class="popup-body">
+                    <div class="popup-row"><span class="popup-key">Identificação:</span><span class="popup-val" style="color:#10b981; font-weight:800;">${pvName}</span></div>
+                    <div class="popup-row"><span class="popup-key">Profundidade:</span><span class="popup-val" style="color:#38bdf8; font-weight:800;">${prof}</span></div>
+                    <div class="popup-row"><span class="popup-key">Cota Tampão:</span><span class="popup-val">${rim}</span></div>
+                    <div class="popup-row"><span class="popup-key">Cota Fundo:</span><span class="popup-val">${sump}</span></div>
+                    <div class="popup-row"><span class="popup-key">Frente / Bairro:</span><span class="popup-val">${props.bairro || '-'}</span></div>
+                    <div class="popup-row"><span class="popup-key">Município:</span><span class="popup-val">${props.nm_mun || '-'}</span></div>
+                    <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${statusBadgeClass}">${props.status || 'NÃO INICIADO'}</span></span></div>
+                    ${props.material_p ? `<div class="popup-row"><span class="popup-key">Material:</span><span class="popup-val">${props.material_p}</span></div>` : ''}
+                    ${props.bairro ? `
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
+                        <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                            <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                        </button>
+                    </div>` : ''}
+                    ${isEditor ? `
+                    <div style="margin-top: 6px;">
+                        <button type="button" class="btn-popup-edit" style="width:100%; background: linear-gradient(135deg, #f59e0b, #d97706); color:#1e201d; border:none; border-radius:6px; padding:7px 10px; font-size:0.75rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 8px rgba(245,158,11,0.35); transition:all 0.2s;" onclick="if(window.GIS_EDITOR) window.GIS_EDITOR.openModal();">
+                            <i class="fas fa-edit"></i> Editar Atributos da Feição
+                        </button>
+                    </div>` : ''}
+                </div>
+            `;
+        } else if (cat === 'no') {
+            const noName = props.Name || 'Nó de Rede';
+            const rim = (props.RimElevati !== null && props.RimElevati !== undefined && props.RimElevati !== '') ? `${props.RimElevati} m` : '-';
+            const statusBadgeClass = (props.status || 'não-iniciado').toLowerCase().replace(/ /g, '-').replace(/ã/g, 'a').replace(/õ/g, 'o');
+
+            return `
+                <div class="popup-header" style="background: linear-gradient(135deg, #0284c7, #1e293b);">
+                    <div class="popup-category"><i class="fas fa-share-nodes"></i> Ponto de Conexão / Nó de Rede</div>
+                    <div class="popup-title">${noName}</div>
+                </div>
+                <div class="popup-body">
+                    <div class="popup-row"><span class="popup-key">Identificação:</span><span class="popup-val" style="color:#38bdf8; font-weight:800;">${noName}</span></div>
+                    <div class="popup-row"><span class="popup-key">Cota Terreno:</span><span class="popup-val">${rim}</span></div>
+                    <div class="popup-row"><span class="popup-key">Produto / Sistema:</span><span class="popup-val">${props.produto || 'ESGOTO'}</span></div>
+                    <div class="popup-row"><span class="popup-key">Frente / Bairro:</span><span class="popup-val">${props.bairro || '-'}</span></div>
+                    <div class="popup-row"><span class="popup-key">Município:</span><span class="popup-val">${props.nm_mun || '-'}</span></div>
+                    <div class="popup-row"><span class="popup-key">Status Obra:</span><span class="popup-val"><span class="popup-badge ${statusBadgeClass}">${props.status || 'NÃO INICIADO'}</span></span></div>
+                    ${props.bairro ? `
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-dark);">
+                        <button type="button" style="width:100%; background: #0284c7; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" onclick="if(window.selectBairro) window.selectBairro('${props.bairro}', false);">
+                            <i class="fas fa-crosshairs"></i> Centralizar Frente (${props.bairro})
+                        </button>
+                    </div>` : ''}
+                    ${isEditor ? `
+                    <div style="margin-top: 6px;">
+                        <button type="button" class="btn-popup-edit" style="width:100%; background: linear-gradient(135deg, #f59e0b, #d97706); color:#1e201d; border:none; border-radius:6px; padding:7px 10px; font-size:0.75rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: 0 2px 8px rgba(245,158,11,0.35); transition:all 0.2s;" onclick="if(window.GIS_EDITOR) window.GIS_EDITOR.openModal();">
+                            <i class="fas fa-edit"></i> Editar Atributos da Feição
+                        </button>
+                    </div>` : ''}
+                </div>
+            `;
+        }
+
+        // Instalações Principais (EEE, EEAT, Reservatórios, etc.)
         return `
             <div class="popup-header" style="background: linear-gradient(135deg, #8b5cf6, #353733);">
                 <div class="popup-category">Infraestrutura Localizada (${props.segmento || 'EEE'})</div>
-                <div class="popup-title">${props.bairro || 'Estação Elevatória de Esgoto'}</div>
+                <div class="popup-title">${props.nome || props.bairro || 'Estação Elevatória de Esgoto'}</div>
             </div>
             <div class="popup-body">
                 <div class="popup-row"><span class="popup-key">AE_ID:</span><span class="popup-val">${props.ae_id || '-'}</span></div>
@@ -653,7 +776,9 @@ const BAIRRO_CENTROIDS = [
                 { label: 'Rede Coletora de Esgoto', color: '#2563eb', type: 'line' },
                 { label: 'Linha de Recalque', color: '#dc2626', type: 'line' },
                 { label: 'Emissário de Esgoto', color: '#ea580c', type: 'line' },
-                { label: 'Estação Elevatória (EEE)', color: '#919389', type: 'circle' }
+                { label: 'Estação Elevatória (EEE)', color: '#919389', type: 'circle' },
+                { label: 'Poço de Esgoto (PV) [Zoom ≥ 16]', color: '#10b981', type: 'poco' },
+                { label: 'Nó de Rede [Zoom ≥ 16]', color: '#94a3b8', type: 'no' }
             ]
         },
         material: {
@@ -704,6 +829,10 @@ const BAIRRO_CENTROIDS = [
                 symbolHtml = `<div class="legend-color-line" style="background:${item.color};"></div>`;
             } else if (item.type === 'circle') {
                 symbolHtml = `<div class="legend-color-circle" style="background:${item.color}; border:1px solid rgba(255,255,255,0.4);"></div>`;
+            } else if (item.type === 'poco') {
+                symbolHtml = `<div class="poco-esgoto-marker" style="background:${item.color}; display:inline-block; vertical-align:middle; margin-right:6px;"></div>`;
+            } else if (item.type === 'no') {
+                symbolHtml = `<div class="no-rede-marker" style="background:${item.color}; display:inline-block; vertical-align:middle; margin-right:6px;"></div>`;
             } else {
                 symbolHtml = `<div class="legend-color-box" style="background:${item.color};"></div>`;
             }
@@ -753,13 +882,20 @@ const BAIRRO_CENTROIDS = [
         if (!layerGroupLocalizada) return;
         layerGroupLocalizada.eachLayer(function(layer) {
             if (layer.feature && layer.feature.properties) {
-                const color = getFeatureColor(layer.feature.properties, 'localizada');
+                const props = layer.feature.properties;
+                const color = getFeatureColor(props, 'localizada');
                 const el = (typeof layer.getElement === 'function') ? layer.getElement() : null;
                 if (el) {
                     const ring = el.querySelector('.pulsing-marker-ring');
                     const icon = el.querySelector('.pulsing-marker-icon');
                     if (ring) ring.style.background = color + '55';
                     if (icon) icon.style.background = color;
+
+                    const pocoEl = el.querySelector('.poco-esgoto-marker');
+                    if (pocoEl) pocoEl.style.backgroundColor = color;
+
+                    const noEl = el.querySelector('.no-rede-marker');
+                    if (noEl) noEl.style.backgroundColor = color;
                 }
             }
         });
@@ -828,23 +964,35 @@ const BAIRRO_CENTROIDS = [
             }
         }
 
-        // 1. Obras Localizadas (EEE) - Visíveis em zoom aproximado (>= 13)
-        if (layerGroupLocalizada) {
-            const shouldBeVisibleLocalizada = isLocalizadaEnabled && (currentZoom >= MIN_ZOOM_LOCALIZADA);
-            if (shouldBeVisibleLocalizada) {
-                if (!map.hasLayer(layerGroupLocalizada)) {
-                    map.addLayer(layerGroupLocalizada);
-                    updateLocalizadaMarkers();
-                    if (currentHighlightedBairro) {
-                        highlightBairro(currentHighlightedBairro);
-                    }
+        // 1. Obras Localizadas:
+        // - Instalações Principais (EEE, EEAT, Reservatórios, etc.): visíveis em zoom aproximado (>= 13)
+        // - Poços de Esgoto e Nós de Rede: micro-marcadores visíveis APENAS em zoom alto (>= 16)
+        if (layerGroupLocalizadaMajor) {
+            const shouldBeVisibleMajor = isLocalizadaEnabled && (currentZoom >= MIN_ZOOM_LOCALIZADA);
+            if (shouldBeVisibleMajor) {
+                if (!map.hasLayer(layerGroupLocalizadaMajor)) {
+                    map.addLayer(layerGroupLocalizadaMajor);
                 }
             } else {
-                if (map.hasLayer(layerGroupLocalizada)) {
-                    map.removeLayer(layerGroupLocalizada);
+                if (map.hasLayer(layerGroupLocalizadaMajor)) {
+                    map.removeLayer(layerGroupLocalizadaMajor);
                 }
             }
         }
+
+        if (layerGroupLocalizadaDetalhe) {
+            const shouldBeVisibleDetalhe = isLocalizadaEnabled && (currentZoom >= MIN_ZOOM_POCOS_NOS);
+            if (shouldBeVisibleDetalhe) {
+                if (!map.hasLayer(layerGroupLocalizadaDetalhe)) {
+                    map.addLayer(layerGroupLocalizadaDetalhe);
+                }
+            } else {
+                if (map.hasLayer(layerGroupLocalizadaDetalhe)) {
+                    map.removeLayer(layerGroupLocalizadaDetalhe);
+                }
+            }
+        }
+        updateLocalizadaMarkers();
 
         // 2. Centróides de Bairro (Ícone + Rótulo) - Visíveis em zoom distante (< 13)
         if (layerGroupBairroCentroids) {
@@ -1041,11 +1189,62 @@ const BAIRRO_CENTROIDS = [
                 }
             }).addTo(map);
 
-            layerGroupLocalizada = L.geoJSON(window.GIS_DATA.localizada, {
+            // Separar camada localizada em:
+            // 1. Instalações Principais (EEE, EEAT, Reservatório, ETA, Booster, Poço Profundo) - Zoom >= 13
+            // 2. Detalhes de Rede (Poço de Esgoto e Nós de Rede) - Zoom >= 16 com micro-marcadores
+            const majorFeatures = [];
+            const detailFeatures = [];
+            if (window.GIS_DATA && window.GIS_DATA.localizada && window.GIS_DATA.localizada.features) {
+                window.GIS_DATA.localizada.features.forEach(f => {
+                    if (getLocalizadaCategory(f.properties) === 'major') {
+                        majorFeatures.push(f);
+                    } else {
+                        detailFeatures.push(f);
+                    }
+                });
+            }
+
+            layerGroupLocalizadaMajor = L.geoJSON({ type: "FeatureCollection", features: majorFeatures }, {
                 pointToLayer: function(feature, latlng) {
-                    return createEEEMarker(latlng, feature);
+                    return createLocalizadaMarker(latlng, feature);
                 }
             });
+
+            layerGroupLocalizadaDetalhe = L.geoJSON({ type: "FeatureCollection", features: detailFeatures }, {
+                pointToLayer: function(feature, latlng) {
+                    return createLocalizadaMarker(latlng, feature);
+                }
+            });
+
+            // Interface unificada para manter total compatibilidade com os widgets e filtros existentes
+            layerGroupLocalizada = {
+                eachLayer: function(fn) {
+                    if (layerGroupLocalizadaMajor) layerGroupLocalizadaMajor.eachLayer(fn);
+                    if (layerGroupLocalizadaDetalhe) layerGroupLocalizadaDetalhe.eachLayer(fn);
+                },
+                clearLayers: function() {
+                    if (layerGroupLocalizadaMajor) layerGroupLocalizadaMajor.clearLayers();
+                    if (layerGroupLocalizadaDetalhe) layerGroupLocalizadaDetalhe.clearLayers();
+                },
+                addData: function(geojsonData) {
+                    if (!geojsonData || !geojsonData.features) return;
+                    const majors = [];
+                    const details = [];
+                    geojsonData.features.forEach(f => {
+                        if (getLocalizadaCategory(f.properties) === 'major') {
+                            majors.push(f);
+                        } else {
+                            details.push(f);
+                        }
+                    });
+                    if (layerGroupLocalizadaMajor && majors.length > 0) {
+                        layerGroupLocalizadaMajor.addData({ type: "FeatureCollection", features: majors });
+                    }
+                    if (layerGroupLocalizadaDetalhe && details.length > 0) {
+                        layerGroupLocalizadaDetalhe.addData({ type: "FeatureCollection", features: details });
+                    }
+                }
+            };
 
             // Camadas do Escopo Original (Comparativo Bairro / Frente de Obra)
             if (window.GIS_ESCOPO_ORIGINAL) {
@@ -1147,6 +1346,17 @@ const BAIRRO_CENTROIDS = [
                 layerGroupOrigAreas.setStyle({ fillOpacity: opacity * 0.25, opacity: opacity });
             } else if (layerName === 'orig-linear' && layerGroupOrigLinear) {
                 layerGroupOrigLinear.setStyle({ opacity: opacity });
+            } else if (layerName === 'localizada') {
+                if (layerGroupLocalizadaMajor) {
+                    layerGroupLocalizadaMajor.eachLayer(m => {
+                        if (m.setOpacity) m.setOpacity(opacity);
+                    });
+                }
+                if (layerGroupLocalizadaDetalhe) {
+                    layerGroupLocalizadaDetalhe.eachLayer(m => {
+                        if (m.setOpacity) m.setOpacity(opacity);
+                    });
+                }
             }
         },
 
@@ -1194,6 +1404,8 @@ const BAIRRO_CENTROIDS = [
             if (name === 'areas') return layerGroupAreas;
             if (name === 'linear') return layerGroupLinear;
             if (name === 'localizada') return layerGroupLocalizada;
+            if (name === 'localizada-major') return layerGroupLocalizadaMajor;
+            if (name === 'localizada-detalhe') return layerGroupLocalizadaDetalhe;
             if (name === 'centroids') return layerGroupBairroCentroids;
             if (name === 'orig-areas') return layerGroupOrigAreas;
             if (name === 'orig-linear') return layerGroupOrigLinear;
@@ -1208,6 +1420,7 @@ const BAIRRO_CENTROIDS = [
         updateLegends: updateLegends,
         renderLegendHTML: renderLegendHTML,
         getMinZoomLocalizada: function() { return MIN_ZOOM_LOCALIZADA; },
+        getMinZoomPocosNos: function() { return MIN_ZOOM_POCOS_NOS; },
         updateZoomVisibility: updateZoomVisibility,
         updateLocalizadaZoomVisibility: updateZoomVisibility,
         getBairroCentroids: function() { return BAIRRO_CENTROIDS; }

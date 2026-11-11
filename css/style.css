@@ -1360,7 +1360,51 @@ body.light-theme .datatable th {
     cursor: pointer;
 }
 
-/* Pulsing SVG Marker for EEE */
+/* Micro-marcadores para Poços de Esgoto e Nós de Rede (Exibidos em Zoom >= 16) */
+.poco-leaflet-icon,
+.no-leaflet-icon {
+    background: transparent !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.poco-esgoto-marker {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1.5px solid #ffffff;
+    background-color: #10b981;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+}
+
+.poco-esgoto-marker:hover {
+    transform: scale(2.2);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.95), 0 2px 6px rgba(0, 0, 0, 0.8);
+    z-index: 9999 !important;
+}
+
+.no-rede-marker {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    background-color: #64748b;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+}
+
+.no-rede-marker:hover {
+    transform: scale(2.4);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.95), 0 2px 5px rgba(0, 0, 0, 0.7);
+    z-index: 9999 !important;
+}
+
+/* Pulsing SVG Marker for Major Facilities (EEE, EEAT, Reservatórios, ETAs) */
 .pulsing-marker {
     display: flex;
     align-items: center;
@@ -1369,8 +1413,8 @@ body.light-theme .datatable th {
 
 .pulsing-marker-ring {
     position: absolute;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: rgba(145, 147, 137, 0.4);
     animation: pulse 2s infinite;
@@ -1394,6 +1438,12 @@ body.light-theme .datatable th {
     color: #ffffff;
     font-size: 11px;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pulsing-marker:hover .pulsing-marker-icon {
+    transform: scale(1.2);
 }
 
 /* Centroid Marker & Label for Distant Zoom (< 13) */
