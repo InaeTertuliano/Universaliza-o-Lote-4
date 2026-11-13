@@ -454,6 +454,10 @@ document.addEventListener('DOMContentLoaded', function() {
             statusBadgeClass = 'iniciado';
         }
 
+        const isAgua = (item.produto === 'Água');
+        const prodIcon = isAgua ? 'fa-tint' : 'fa-water';
+        const prodBadge = `<span class="popup-badge" style="background: ${isAgua ? 'rgba(56, 189, 248, 0.2)' : 'rgba(16, 185, 129, 0.2)'}; color: ${isAgua ? '#38bdf8' : '#10b981'}; font-size: 0.68rem; padding: 2px 7px; font-weight: 700; border: 1px solid ${isAgua ? 'rgba(56, 189, 248, 0.4)' : 'rgba(16, 185, 129, 0.4)'};"><i class="fas ${prodIcon}"></i> Produto: ${item.produto}</span>`;
+
         // Formatação numérica
         const origKm = (item.orig.ext_m / 1000).toFixed(2).replace('.', ',') + ' km';
         const consKm = (item.cons.ext_m / 1000).toFixed(2).replace('.', ',') + ' km';
@@ -471,8 +475,15 @@ document.addEventListener('DOMContentLoaded', function() {
             deltaColor = '#38bdf8'; // Azul para estável
         }
 
-        const origInst = `${item.orig.eees} EEE${item.orig.eees !== 1 ? 's' : ''}${item.orig.etes > 0 ? ` • ${item.orig.etes} ETE` : ''}`;
-        const consInst = `${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''}${item.cons.etes > 0 ? ` • ${item.cons.etes} ETE` : ''}${item.cons.pocos_nos > 0 ? ` • ${item.cons.pocos_nos} PV/Nós` : ''}`;
+        const origInst = isAgua 
+            ? `${item.orig.major} instalaç${item.orig.major !== 1 ? 'ões' : 'ão'}` 
+            : `${item.orig.eees} EEE${item.orig.eees !== 1 ? 's' : ''}${item.orig.etes > 0 ? ` • ${item.orig.etes} ETE` : ''}`;
+        const consInst = isAgua 
+            ? `${item.cons.major} instalaç${item.cons.major !== 1 ? 'ões' : 'ão'}` 
+            : `${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''}${item.cons.etes > 0 ? ` • ${item.cons.etes} ETE` : ''}${item.cons.pocos_nos > 0 ? ` • ${item.cons.pocos_nos} PV/Nós` : ''}`;
+        const deltaInstStr = isAgua
+            ? `${item.delta.major >= 0 ? '+' : ''}${item.delta.major} inst.`
+            : `${item.delta.eees >= 0 ? '+' : ''}${item.delta.eees} EEE${Math.abs(item.delta.eees) !== 1 ? 's' : ''}`;
 
         container.style.display = 'block';
         container.innerHTML = `
@@ -486,6 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span style="font-size: 0.74rem; color: #94a3b8;">(${item.municipio})</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
+                        ${prodBadge}
                         <span class="popup-badge ${statusBadgeClass}" style="font-size: 0.68rem; padding: 2px 7px;">
                             ${item.status_label || item.status}
                         </span>
@@ -506,13 +518,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         </thead>
                         <tbody>
                             <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
-                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Extensão Total de Rede</td>
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Extensão Total de Rede (${item.produto})</td>
                                 <td style="padding: 7px 8px; color: #f8fafc; white-space: nowrap;">${origM} (${origKm})</td>
                                 <td style="padding: 7px 8px; color: #38bdf8; font-weight: 700; white-space: nowrap;">${consM} (${consKm})</td>
                                 <td style="padding: 7px 8px; color: ${deltaColor}; font-weight: 700; white-space: nowrap;">${deltaMStr} (${deltaPctStr})</td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
-                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Trechos Cadastrados</td>
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Trechos Cadastrados (${item.produto})</td>
                                 <td style="padding: 7px 8px; color: #f8fafc; white-space: nowrap;">${item.orig.trechos} trechos</td>
                                 <td style="padding: 7px 8px; color: #ffffff; font-weight: 700; white-space: nowrap;">${item.cons.trechos} trechos</td>
                                 <td style="padding: 7px 8px; color: ${item.delta.trechos >= 0 ? '#10b981' : '#f59e0b'}; font-weight: 700; white-space: nowrap;">${item.delta.trechos >= 0 ? '+' : ''}${item.delta.trechos} trechos</td>
@@ -524,13 +536,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <td style="padding: 7px 8px; color: ${item.delta.poligonos >= 0 ? '#10b981' : '#94a3b8'}; font-weight: 700; white-space: nowrap;">${item.delta.poligonos >= 0 ? '+' : ''}${item.delta.poligonos} polígono${Math.abs(item.delta.poligonos) !== 1 ? 's' : ''}</td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
-                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Grandes Instalações (EEEs / ETEs)</td>
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">${isAgua ? 'Grandes Instalações (Poço / Reservatório / Booster)' : 'Grandes Instalações (EEEs / ETEs)'}</td>
                                 <td style="padding: 7px 8px; color: #f8fafc; white-space: nowrap;">${origInst}</td>
                                 <td style="padding: 7px 8px; color: #ffffff; font-weight: 700; white-space: nowrap;">${consInst}</td>
-                                <td style="padding: 7px 8px; color: ${item.delta.eees >= 0 ? '#10b981' : '#f59e0b'}; font-weight: 700; white-space: nowrap;">${item.delta.eees >= 0 ? '+' : ''}${item.delta.eees} EEE${Math.abs(item.delta.eees) !== 1 ? 's' : ''}</td>
+                                <td style="padding: 7px 8px; color: ${(isAgua ? item.delta.major : item.delta.eees) >= 0 ? '#10b981' : '#f59e0b'}; font-weight: 700; white-space: nowrap;">${deltaInstStr}</td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
-                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">Elementos de Rede (Poços de Visita e Nós)</td>
+                                <td style="padding: 7px 8px; font-weight: 700; color: #f8fafc; white-space: nowrap;">${isAgua ? 'Elementos de Rede (Nós e Conexões)' : 'Elementos de Rede (Poços de Visita e Nós)'}</td>
                                 <td style="padding: 7px 8px; color: #94a3b8; font-size: 0.71rem;">Não detalhados na concepção preliminar</td>
                                 <td style="padding: 7px 8px; color: #ffffff; font-weight: 700; white-space: nowrap;">${item.cons.pocos_nos} elementos cadastrados</td>
                                 <td style="padding: 7px 8px; color: #10b981; font-weight: 700; white-space: nowrap;">+${item.cons.pocos_nos} pontos detalhados</td>
@@ -581,8 +593,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnCsv) {
             btnCsv.addEventListener('click', function() {
                 const rows = [
-                    ["FRENTE", "MUNICIPIO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"],
-                    [item.frente, item.municipio, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.eees, item.cons.eees, item.cons.pocos_nos]
+                    ["FRENTE", "MUNICIPIO", "PRODUTO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "INST_MAJOR_ORIGINAL", "INST_MAJOR_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"],
+                    [item.frente, item.municipio, item.produto, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.major, item.cons.major, item.orig.eees, item.cons.eees, item.cons.pocos_nos]
                 ];
                 const csvContent = rows.map(r => r.map(c => `"${c}"`).join(";")).join("\n");
                 const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -625,6 +637,10 @@ document.addEventListener('DOMContentLoaded', function() {
             statusBadgeClass = 'iniciado';
         }
 
+        const isAgua = (item.produto === 'Água');
+        const prodIcon = isAgua ? 'fa-tint' : 'fa-water';
+        const prodBadge = `<span class="popup-badge" style="background: ${isAgua ? 'rgba(56, 189, 248, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; color: ${isAgua ? '#38bdf8' : '#10b981'}; border: 1px solid ${isAgua ? 'rgba(56, 189, 248, 0.35)' : 'rgba(16, 185, 129, 0.35)'}; font-size:0.75rem;"><i class="fas ${prodIcon}"></i> Produto: ${item.produto}</span>`;
+
         // Atualiza status badge na barra superior do modal
         const badgeContainer = document.getElementById('modal-frente-status-badge');
         if (badgeContainer) {
@@ -632,6 +648,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span class="popup-badge" style="background: rgba(2, 132, 199, 0.15); color: #38bdf8; border: 1px solid rgba(2, 132, 199, 0.35); font-size:0.75rem;">
                     <i class="fas fa-city"></i> ${item.municipio}
                 </span>
+                ${prodBadge}
                 <span class="popup-badge ${statusBadgeClass}" style="font-size:0.75rem;">
                     ${item.status_label || item.status}
                 </span>
@@ -654,20 +671,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let deltaColor = '#10b981'; // Verde para ampliação
         let deltaLabel = 'AMPLIAÇÃO LÍQUIDA REDE';
-        let variacaoDesc = `Expansão de <strong>${deltaKmStr} (${deltaPctStr})</strong> de rede de esgoto após consolidação de campo no Geopackage.`;
+        let variacaoDesc = `Expansão de <strong>${deltaKmStr} (${deltaPctStr})</strong> de rede de ${isAgua ? 'água' : 'esgoto'} após consolidação de campo no Geopackage.`;
 
         if (item.delta.tipo === 'otimizacao') {
             deltaColor = '#f59e0b'; // Âmbar para otimização
             deltaLabel = 'OTIMIZAÇÃO DE TRAÇADO';
-            variacaoDesc = `Racionalização de traçado com foco executivo prioritário (variação líquida de <strong>${deltaKmStr}</strong>).`;
+            variacaoDesc = `Racionalização de traçado com foco executivo prioritário (variação líquida de <strong>${deltaKmStr}</strong> de ${isAgua ? 'água' : 'esgoto'}).`;
         } else if (item.delta.tipo === 'estavel') {
             deltaColor = '#38bdf8'; // Azul para estável
             deltaLabel = 'ADERÊNCIA CONCEITUAL';
-            variacaoDesc = `Traçado executivo com perfeita aderência ao estudo preliminar de concepção original (<strong>${deltaMStr}</strong>).`;
+            variacaoDesc = `Traçado executivo de ${isAgua ? 'água' : 'esgoto'} com perfeita aderência ao estudo preliminar de concepção original (<strong>${deltaMStr}</strong>).`;
         }
 
-        const origInst = `${item.orig.eees} EEE${item.orig.eees !== 1 ? 's' : ''}${item.orig.etes > 0 ? ` • ${item.orig.etes} ETE` : ''}`;
-        const consInst = `${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''}${item.cons.etes > 0 ? ` • ${item.cons.etes} ETE` : ''}${item.cons.pocos_nos > 0 ? ` • ${item.cons.pocos_nos} PV/Nós` : ''}`;
+        const origInst = isAgua 
+            ? `${item.orig.major} instalaç${item.orig.major !== 1 ? 'ões' : 'ão'}` 
+            : `${item.orig.eees} EEE${item.orig.eees !== 1 ? 's' : ''}${item.orig.etes > 0 ? ` • ${item.orig.etes} ETE` : ''}`;
+        const consInst = isAgua 
+            ? `${item.cons.major} instalaç${item.cons.major !== 1 ? 'ões' : 'ão'}` 
+            : `${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''}${item.cons.etes > 0 ? ` • ${item.cons.etes} ETE` : ''}${item.cons.pocos_nos > 0 ? ` • ${item.cons.pocos_nos} PV/Nós` : ''}`;
+        const deltaInstStr = isAgua
+            ? `${item.delta.major >= 0 ? '+' : ''}${item.delta.major} inst.`
+            : `${item.delta.eees >= 0 ? '+' : ''}${item.delta.eees} EEE${Math.abs(item.delta.eees) !== 1 ? 's' : ''}`;
 
         dynContainer.innerHTML = `
             <!-- Card Exclusivo da Frente Selecionada -->
@@ -689,12 +713,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Grid de KPIs da Frente -->
                 <div class="modal-kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1.25rem;">
                     <div class="modal-kpi-card" style="border-top-color: #f97316;">
-                        <div class="modal-kpi-title">ESCOPO ORIGINAL</div>
+                        <div class="modal-kpi-title">ESCOPO ORIGINAL (${item.produto.toUpperCase()})</div>
                         <div class="modal-kpi-num" style="color:#f97316;">${origKm}</div>
                         <div class="modal-kpi-sub">${item.orig.trechos} trechos • ${item.orig.poligonos} polígono${item.orig.poligonos > 1 ? 's' : ''}</div>
                     </div>
                     <div class="modal-kpi-card" style="border-top-color: #0284c7;">
-                        <div class="modal-kpi-title">ESCOPO ATUAL CONSOLIDADO</div>
+                        <div class="modal-kpi-title">ESCOPO ATUAL CONSOLIDADO (${item.produto.toUpperCase()})</div>
                         <div class="modal-kpi-num" style="color:#38bdf8;">${consKm}</div>
                         <div class="modal-kpi-sub">${item.cons.trechos} trechos • ${item.cons.poligonos} polígono${item.cons.poligonos > 1 ? 's' : ''}</div>
                     </div>
@@ -704,8 +728,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="modal-kpi-sub">${deltaPctStr} de variação</div>
                     </div>
                     <div class="modal-kpi-card" style="border-top-color: #a855f7;">
-                        <div class="modal-kpi-title">ESTRUTURAS & LOCALIZADAS</div>
-                        <div class="modal-kpi-num" style="color:#c084fc;">${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''} / ${item.cons.etes} ETE</div>
+                        <div class="modal-kpi-title">${isAgua ? 'ESTRUTURAS DE ÁGUA' : 'ESTRUTURAS & LOCALIZADAS'}</div>
+                        <div class="modal-kpi-num" style="color:#c084fc;">${isAgua ? `${item.cons.major} Instalaç${item.cons.major !== 1 ? 'ões' : 'ão'}` : `${item.cons.eees} EEE${item.cons.eees !== 1 ? 's' : ''}${item.cons.etes > 0 ? ` / ${item.cons.etes} ETE` : ''}`}</div>
                         <div class="modal-kpi-sub">${item.cons.loc_total} obras localizadas no total</div>
                     </div>
                 </div>
@@ -722,31 +746,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="padding: 8px 12px;"><strong>Extensão Total de Rede</strong></td>
+                            <td style="padding: 8px 12px;"><strong>Extensão Total de Rede (${item.produto})</strong></td>
                             <td style="padding: 8px 12px;">${origM} (${origKm})</td>
                             <td style="padding: 8px 12px;"><strong style="color:#38bdf8;">${consM} (${consKm})</strong></td>
                             <td style="padding: 8px 12px;"><span style="color:${deltaColor}; font-weight:700;">${deltaMStr} (${deltaPctStr})</span></td>
                         </tr>
                         <tr>
-                            <td style="padding: 8px 12px;"><strong>Trechos Cadastrados</strong></td>
+                            <td style="padding: 8px 12px;"><strong>Trechos Cadastrados (${item.produto})</strong></td>
                             <td style="padding: 8px 12px;">${item.orig.trechos} trechos</td>
                             <td style="padding: 8px 12px;"><strong>${item.cons.trechos} trechos</strong></td>
                             <td style="padding: 8px 12px;"><span style="color:${item.delta.trechos >= 0 ? '#10b981' : '#f59e0b'}; font-weight:700;">${item.delta.trechos >= 0 ? '+' : ''}${item.delta.trechos} trechos</span></td>
                         </tr>
                         <tr>
                             <td style="padding: 8px 12px;"><strong>Polígonos de Área de Expansão (AE)</strong></td>
-                            <td style="padding: 8px 12px;">${item.orig.poligonos} polígono${item.orig.poligonos > 1 ? 's' : ''} (${item.orig.area_ha} ha)</td>
+                            <td style="padding: 8px 12px;">${item.orig.poligonos} polígono${item.orig.poligonos > 1 ? 's' : ''}${item.orig.area_ha > 0 ? ` (${item.orig.area_ha} ha)` : ''}</td>
                             <td style="padding: 8px 12px;"><strong>${item.cons.poligonos} polígono${item.cons.poligonos > 1 ? 's' : ''}</strong></td>
                             <td style="padding: 8px 12px;"><span style="color:${item.delta.poligonos >= 0 ? '#10b981' : '#94a3b8'}; font-weight:700;">${item.delta.poligonos >= 0 ? '+' : ''}${item.delta.poligonos} polígono${Math.abs(item.delta.poligonos) !== 1 ? 's' : ''}</span></td>
                         </tr>
                         <tr>
-                            <td style="padding: 8px 12px;"><strong>Grandes Instalações (EEEs / ETEs)</strong></td>
+                            <td style="padding: 8px 12px;"><strong>${isAgua ? 'Grandes Instalações (Poço / Reservatório / Booster)' : 'Grandes Instalações (EEEs / ETEs)'}</strong></td>
                             <td style="padding: 8px 12px;">${origInst}</td>
                             <td style="padding: 8px 12px;"><strong>${consInst}</strong></td>
-                            <td style="padding: 8px 12px;"><span style="color:${item.delta.eees >= 0 ? '#10b981' : '#f59e0b'}; font-weight:700;">${item.delta.eees >= 0 ? '+' : ''}${item.delta.eees} EEE${Math.abs(item.delta.eees) !== 1 ? 's' : ''}</span></td>
+                            <td style="padding: 8px 12px;"><span style="color:${(isAgua ? item.delta.major : item.delta.eees) >= 0 ? '#10b981' : '#f59e0b'}; font-weight:700;">${deltaInstStr}</span></td>
                         </tr>
                         <tr>
-                            <td style="padding: 8px 12px;"><strong>Elementos de Rede (Poços de Visita e Nós)</strong></td>
+                            <td style="padding: 8px 12px;"><strong>${isAgua ? 'Elementos de Rede (Nós e Conexões)' : 'Elementos de Rede (Poços de Visita e Nós)'}</strong></td>
                             <td style="padding: 8px 12px; color:var(--text-muted-dark);">Não detalhados na concepção preliminar</td>
                             <td style="padding: 8px 12px;"><strong>${item.cons.pocos_nos} elementos cadastrados</strong></td>
                             <td style="padding: 8px 12px;"><span style="color:#10b981; font-weight:700;">+${item.cons.pocos_nos} pontos detalhados</span></td>
@@ -771,33 +795,24 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        // Vincula evento ao botão Enquadrar no Mapa
-        const btnGoto = document.getElementById('btn-modal-enquadrar-mapa');
-        if (btnGoto) {
-            btnGoto.addEventListener('click', function() {
-                if (modalComparativo) modalComparativo.style.display = 'none';
-
-                // Ativa a legenda "Classificar por Escopo"
-                const selLegend = document.getElementById('select-legend-mode');
-                if (selLegend) selLegend.value = 'escopo';
-                if (window.GIS_LAYERS && typeof window.GIS_LAYERS.setLegendMode === 'function') {
-                    window.GIS_LAYERS.setLegendMode('escopo');
-                }
-                if (window.selectBairro) {
-                    window.selectBairro(item.frente, false, item.municipio);
-                }
+        // Evento do botão interno do modal para enquadrar no mapa
+        const btnModalEnquadrar = document.getElementById('btn-modal-enquadrar-mapa');
+        if (btnModalEnquadrar) {
+            btnModalEnquadrar.addEventListener('click', function() {
+                modalComparativo.style.display = 'none';
+                renderQuadroConfrontoLateral(item.id);
+                enquadrarFrenteNoMapa(item.frente, item.municipio);
             });
         }
     }
 
-    // Inicialização das opções da lista suspensa e sincronização de eventos
     function initComparativoEscopoControls() {
         const list = getFrentesComparativoList();
         if (list.length === 0) return;
 
         let optionsHtml = '';
         list.forEach(f => {
-            optionsHtml += `<option value="${f.id}" style="background-color: #1e201d; color: #f8fafc; font-weight: 500; padding: 6px 10px;">${f.frente} (${f.municipio}) - ${f.status_label}</option>`;
+            optionsHtml += `<option value="${f.id}" style="background-color: #1e201d; color: #f8fafc; font-weight: 500; padding: 6px 10px;">${f.frente} (${f.municipio}) - ${f.status_label || f.status}</option>`;
         });
 
         if (selConfrontarCard) selConfrontarCard.innerHTML = optionsHtml;
@@ -869,8 +884,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const currentVal = (selConfrontarModal && selConfrontarModal.value) ? selConfrontarModal.value : (selConfrontarCard ? selConfrontarCard.value : defaultId);
                 const item = list.find(f => f.id === currentVal) || list[0];
                 const rows = [
-                    ["FRENTE", "MUNICIPIO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"],
-                    [item.frente, item.municipio, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.eees, item.cons.eees, item.cons.pocos_nos]
+                    ["FRENTE", "MUNICIPIO", "PRODUTO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "INST_MAJOR_ORIGINAL", "INST_MAJOR_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"],
+                    [item.frente, item.municipio, item.produto, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.major, item.cons.major, item.orig.eees, item.cons.eees, item.cons.pocos_nos]
                 ];
                 const csvContent = rows.map(r => r.map(c => `"${c}"`).join(";")).join("\n");
                 const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -887,10 +902,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnExportTodasCsv) {
             btnExportTodasCsv.addEventListener('click', function() {
                 const rows = [
-                    ["FRENTE", "MUNICIPIO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"]
+                    ["FRENTE", "MUNICIPIO", "PRODUTO", "STATUS_OBRA", "EXT_ORIGINAL_M", "EXT_CONSOLIDADO_M", "DELTA_EXT_M", "DELTA_EXT_KM", "DELTA_PCT", "TRECHOS_ORIGINAL", "TRECHOS_CONSOLIDADO", "DELTA_TRECHOS", "POLIGONOS_ORIGINAL", "POLIGONOS_CONSOLIDADO", "INST_MAJOR_ORIGINAL", "INST_MAJOR_CONSOLIDADO", "EEES_ORIGINAL", "EEES_CONSOLIDADO", "POCOS_NOS_CONSOLIDADO"]
                 ];
                 list.forEach(item => {
-                    rows.push([item.frente, item.municipio, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.eees, item.cons.eees, item.cons.pocos_nos]);
+                    rows.push([
+                        item.frente, item.municipio, item.produto, item.status_label, item.orig.ext_m, item.cons.ext_m, item.delta.m, item.delta.km, item.delta.pct_str, item.orig.trechos, item.cons.trechos, item.delta.trechos, item.orig.poligonos, item.cons.poligonos, item.orig.major, item.cons.major, item.orig.eees, item.cons.eees, item.cons.pocos_nos
+                    ]);
                 });
                 const csvContent = rows.map(r => r.map(c => `"${c}"`).join(";")).join("\n");
                 const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -903,10 +920,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-
     // Inicializa controles de confrontação de escopo
     initComparativoEscopoControls();
     window.renderModalComparativoFrente = renderModalComparativoFrente;
+    window.renderQuadroConfrontoLateral = renderQuadroConfrontoLateral;
 
     // 12. Quantitativos CSV Export (Dinamico a partir das camadas carregadas)
     const handleExportQuant = function() {

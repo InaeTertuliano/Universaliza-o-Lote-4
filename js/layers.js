@@ -640,7 +640,34 @@ const BAIRRO_CENTROIDS = [
         };
     }
 
+    function getActiveConfrontoProduct(bairroTarget) {
+        if (!bairroTarget || !window.FRENTES_COMPARATIVO_ESCOPO) return null;
+        const item = window.FRENTES_COMPARATIVO_ESCOPO.find(f => {
+            if (!f) return false;
+            if (f.frente && f.frente.toLowerCase() === bairroTarget.toLowerCase()) return true;
+            if (f.id && f.id.toLowerCase() === bairroTarget.toLowerCase()) return true;
+            if (typeof isBairroMatch === 'function' && isBairroMatch(bairroTarget, f.frente)) return true;
+            return false;
+        });
+        if (!item || !item.produto) return null;
+        return (item.produto === 'Água' || item.produto === 'AGUA') ? 'AGUA' : 'ESGOTO';
+    }
+
     function styleOrigLinear(feature) {
+        const props = (feature && feature.properties) ? feature.properties : {};
+        const featTipo = (props.tipo || 'ESGOTO').toUpperCase();
+
+        if (currentLegendMode === 'escopo' && currentHighlightedBairro) {
+            const activeProd = getActiveConfrontoProduct(currentHighlightedBairro);
+            if (activeProd && featTipo !== activeProd) {
+                return {
+                    opacity: 0,
+                    weight: 0,
+                    fillOpacity: 0
+                };
+            }
+        }
+
         return {
             color: '#f97316',          // Laranja contrastante
             weight: 3.5,
@@ -706,7 +733,7 @@ const BAIRRO_CENTROIDS = [
         const extStr = props.ext_calcul ? props.ext_calcul.toFixed(2) + ' m' : (props.extensao_c ? props.extensao_c + ' m' : 'Calculado no mapa');
         return `
             <div class="popup-header" style="background: linear-gradient(135deg, #c2410c, #9a3412);">
-                <div class="popup-category" style="color:#fdba74;">Escopo Original • ${props.subtipo || props.tipo || 'Rede de Esgoto'}</div>
+                <div class="popup-category" style="color:#fdba74;">Escopo Original • ${((props.tipo || '').toUpperCase() === 'AGUA') ? 'Rede de Água' : (props.subtipo || props.tipo || 'Rede de Esgoto')}</div>
                 <div class="popup-title" style="color:#ffffff;">${props.bairro || props.nm_mun || 'Trecho de Rede'}</div>
             </div>
             <div class="popup-body">
@@ -733,7 +760,7 @@ const BAIRRO_CENTROIDS = [
     function createOrigPontualPopup(props) {
         return `
             <div class="popup-header" style="background: linear-gradient(135deg, #c2410c, #9a3412);">
-                <div class="popup-category" style="color:#fdba74;">Escopo Original • Obra Pontual</div>
+                <div class="popup-category" style="color:#fdba74;">Escopo Original • ${((props.tipo || '').toUpperCase() === 'AGUA') ? 'Instalação de Água' : 'Obra Pontual'}</div>
                 <div class="popup-title" style="color:#ffffff;">${props.nome || props.subtipo || 'Estrutura Pontual'}</div>
             </div>
             <div class="popup-body">
@@ -770,6 +797,20 @@ const BAIRRO_CENTROIDS = [
         if (layerGroupAreas) layerGroupAreas.setStyle(styleAreas);
         if (layerGroupOrigLinear) layerGroupOrigLinear.setStyle(styleOrigLinear);
         if (layerGroupOrigAreas) layerGroupOrigAreas.setStyle(styleOrigAreas);
+        if (layerGroupOrigPontual) {
+            const activeProd = (currentLegendMode === 'escopo' && currentHighlightedBairro) ? getActiveConfrontoProduct(currentHighlightedBairro) : null;
+            layerGroupOrigPontual.eachLayer(layer => {
+                const props = (layer.feature && layer.feature.properties) ? layer.feature.properties : {};
+                const featTipo = (props.tipo || 'ESGOTO').toUpperCase();
+                if (activeProd && featTipo !== activeProd) {
+                    if (layer.setOpacity) layer.setOpacity(0);
+                    if (layer._icon) layer._icon.style.display = 'none';
+                } else {
+                    if (layer.setOpacity) layer.setOpacity(1);
+                    if (layer._icon) layer._icon.style.display = '';
+                }
+            });
+        }
     }
 
     // Legend Configurations for the Styling Modes (Escopo, Status, Segmento, Material)
