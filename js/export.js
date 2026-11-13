@@ -151,13 +151,14 @@ window.GIS_EXPORTER = (function() {
 
             // 2. Check active Frente de Obra / Bairro filter
             if (activeBairro) {
-                const normTarget = normStr(activeBairro);
-                const featBairro = normStr(p.bairro);
-                if (!featBairro) return false;
-                if (featBairro !== normTarget) {
-                    if (normTarget.startsWith("PEDRAS E VITORIA") && featBairro.startsWith("PEDRAS E VITORIA")) return true;
-                    if (normTarget.startsWith("TURVO DOS ALMEIDAS") && featBairro.startsWith("TURVO DOS ALMEIDAS")) return true;
-                    return false;
+                const featBairro = p.bairro || p.frente || '';
+                const featMun = p.nm_mun || p.municipio || '';
+                if (typeof window.isBairroMatch === 'function') {
+                    if (!window.isBairroMatch(activeBairro, featBairro, null, featMun)) return false;
+                } else {
+                    const normTarget = normStr(activeBairro);
+                    const b = normStr(featBairro);
+                    if (!b || (b !== normTarget && !normTarget.includes(b) && !b.includes(normTarget))) return false;
                 }
             }
 
